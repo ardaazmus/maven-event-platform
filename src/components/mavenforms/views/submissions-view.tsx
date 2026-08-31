@@ -83,8 +83,14 @@ export function SubmissionsView() {
   }, [])
 
   useEffect(() => {
-    if (selectedFormId) setSelectedForm(selectedFormId)
-    else if (forms.length > 0 && !selectedForm) setSelectedForm(forms[0].id)
+    if (selectedFormId) {
+      setSelectedForm(selectedFormId)
+    } else if (forms.length > 0 && !selectedForm) {
+      // Prefer published forms with submissions
+      const publishedWithSubs = forms.find(f => f.status === 'published' && f.submissionCount > 0)
+      const published = forms.find(f => f.status === 'published')
+      setSelectedForm((publishedWithSubs || published || forms[0]).id)
+    }
   }, [forms, selectedFormId, selectedForm])
 
   useEffect(() => {

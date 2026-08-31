@@ -32,34 +32,75 @@ export function LoginView() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!email.trim() || !password.trim()) {
+      toast({
+        title: 'Eksik bilgi',
+        description: 'Lütfen e-posta ve parola alanlarını doldurun',
+        variant: 'destructive',
+      })
+      return
+    }
     setLoading(true)
     try {
       // Step 1: Login - returns token in response body
-      const loginData = await api<LoginResponse>('/api/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email, password, remember }),
-        skipAuth: true,
-      })
+      let loginData: LoginResponse
+      try {
+        loginData = await api<LoginResponse>('/api/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({ email: email.trim().toLowerCase(), password, remember }),
+          skipAuth: true,
+        })
+      } catch (loginErr: any) {
+        // Login failed - show specific error
+        const msg = loginErr.message || 'Giriş başarısız'
+        toast({
+          title: 'Giriş başarısız',
+          description: msg.includes('Geçersiz') ? 'E-posta veya parola hatalı. Demo: demo@mavenforms.com / demo1234' : msg,
+          variant: 'destructive',
+        })
+        return
+      }
 
-      // Step 2: Store token in localStorage (used for Authorization header)
+      // Step 2: Store token in localStorage
+      if (!loginData.token) {
+        throw new Error('Sunucu token döndürmedi')
+      }
       setStoredToken(loginData.token)
 
-      // Step 3: Fetch session to get user + workspace
-      const session = await api<SessionContext>('/api/auth/me', { skipAuth: true })
+      // Step 3: Fetch session to get user + workspace (with token in header)
+      let session: SessionContext
+      try {
+        session = await api<SessionContext>('/api/auth/me')
+      } catch (meErr: any) {
+        // Token was set but /me failed - try reload as fallback
+        toast({ title: 'Giriş yapıldı', description: 'Yönlendiriliyorsunuz...' })
+        setTimeout(() => window.location.reload(), 500)
+        return
+      }
 
-      // Step 4: Initialize the app store (no reload needed)
+      // Step 4: Initialize the app store
       init(session.user, session.workspace)
       toast({ title: 'Giriş başarılı', description: `Hoş geldiniz, ${session.user.name || session.user.email}!` })
     } catch (err: any) {
       setStoredToken(null)
       toast({
         title: 'Giriş başarısız',
-        description: err.message || 'E-posta veya parola hatalı',
+        description: err.message || 'Beklenmeyen bir hata oluştu',
         variant: 'destructive',
       })
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleDemoLogin = () => {
+    setEmail('demo@mavenforms.com')
+    setPassword('demo1234')
+    // Trigger submit after state update
+    setTimeout(() => {
+      const form = document.querySelector('form') as HTMLFormElement
+      form?.requestSubmit()
+    }, 100)
   }
 
   return (
@@ -200,16 +241,39 @@ export function LoginView() {
                   'Giriş Yap'
                 )}
               </Button>
+
+              <div className="relative my-2">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-card px-2 text-muted-foreground">veya</span>
+                </div>
+              </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full gap-2"
+                onClick={handleDemoLogin}
+                disabled={loading}
+              >
+                <Sparkles className="w-4 h-4" />
+                Demo hesabıyla giriş yap
+              </Button>
             </form>
 
             <div className="mt-6 pt-6 border-t border-border/60">
               <div className="rounded-lg bg-muted/50 p-4 text-xs space-y-1">
-                <div className="font-medium text-foreground/80">Demo Hesap</div>
+                <div className="font-medium text-foreground/80">Demo Hesap Bilgileri</div>
                 <div className="text-muted-foreground">
                   E-posta: <code className="text-foreground">demo@mavenforms.com</code>
                 </div>
                 <div className="text-muted-foreground">
                   Parola: <code className="text-foreground">demo1234</code>
+                </div>
+                <div className="text-muted-foreground mt-1 pt-1 border-t border-border/40">
+                  ↑ Yukarıdaki butona tıklayarak otomatik giriş yapabilirsiniz
                 </div>
               </div>
             </div>

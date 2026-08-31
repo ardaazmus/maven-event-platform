@@ -141,3 +141,46 @@ Stage Summary:
 - Token-based auth (Bearer header) is cross-origin safe
 - Cookie kept as backup for same-origin scenarios
 - All API endpoints accept token via Authorization header
+
+---
+Task ID: E2E-TEST-FIX
+Agent: Main (Z.ai)
+Task: Independent e2e testing with screenshots - fix toast not showing, fix submissions auto-load, add demo login button
+
+Work Log:
+- Performed comprehensive e2e testing with 28 screenshots covering every view and flow
+- Found Bug #1: Toast notifications NOT rendering (Radix Toaster had z-index/viewport issues)
+  - Fix: Switched from Radix Toast to Sonner (more reliable, built-in positioning)
+  - Updated useToast hook to wrap sonner's toast() function
+  - Updated layout.tsx to render <SonnerToaster position="top-right" richColors closeButton />
+- Found Bug #2: SubmissionsView auto-selecting forms with 0 submissions (e.g. "Test Direct")
+  - Fix: Auto-select logic now prefers published forms with submissions > 0
+- Found Bug #3: Login error message not visible to user ("Giriş başarısız" shown but no toast)
+  - Fix: Toast now renders properly via Sonner
+  - Added "Demo hesabıyla giriş yap" button for one-click login
+  - Improved error messages: wrong password → "E-posta veya parola hatalı. Demo: demo@mavenforms.com / demo1234"
+  - Added empty field validation
+  - Added network error fallback
+
+Independent Verification Results (agent-browser with screenshots):
+1. ✅ Initial load → Login screen (screenshot 01)
+2. ✅ Wrong password → "Giriş başarısız" toast now visible (screenshot 19)
+3. ✅ Correct password → Dashboard loads (screenshot 20)
+4. ✅ Demo login button → One-click login works (screenshot 25)
+5. ✅ Dashboard: 6 stat cards (6/3/3/15/2/₺40.000), 1 trend chart, 5 sections (screenshot 07)
+6. ✅ Forms list: 6 form cards with status badges, folder sidebar (screenshot 08)
+7. ✅ Submissions: Auto-loads 20 rows with correct form selection (screenshot 28)
+8. ✅ Reports: 3 charts (trend/status/source), KPI cards (screenshot 11)
+9. ✅ Settings: 9 tabs render (screenshot 12)
+10. ✅ Audit: Timeline of actions loads (screenshot 13)
+11. ✅ Users: Role matrix + user list (screenshot 14)
+12. ✅ Builder: 3-panel layout, 21 field types, tabs (screenshot 16)
+13. ✅ Add field: POST /api/forms/{id}/fields 200 (screenshot 17)
+
+Stage Summary:
+- All views verified working via independent browser testing
+- Toast notifications now render reliably (Sonner)
+- Submissions auto-loads correct form
+- Demo login button for easy access
+- Login errors now visible with helpful messages
+- All API endpoints returning 200 (verified in dev.log)
