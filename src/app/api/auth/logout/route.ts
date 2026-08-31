@@ -1,12 +1,18 @@
 import { NextResponse } from 'next/server'
-import { clearSessionCookie, destroySession } from '@/lib/auth'
+import { clearSessionCookieOnResponse, destroySession, getTokenFromRequest } from '@/lib/auth'
 
 export async function POST() {
   try {
-    // Note: in real impl we'd extract token from cookie and destroy session
-    await destroySession('placeholder') // We use cookie clearing approach
-    await clearSessionCookie()
-    return NextResponse.json({ data: { success: true } })
+    // Get token from cookie and destroy the session in DB
+    const token = await getTokenFromRequest()
+    if (token) {
+      await destroySession(token)
+    }
+    
+    // Clear cookie on response
+    const res = NextResponse.json({ data: { success: true } })
+    clearSessionCookieOnResponse(res)
+    return res
   } catch (e) {
     return NextResponse.json({ error: 'Çıkış hatası' }, { status: 500 })
   }

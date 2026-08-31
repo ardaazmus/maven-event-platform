@@ -71,3 +71,37 @@ Known Limitations / Next Steps:
 Demo Credentials:
 - Email: demo@mavenforms.com
 - Password: demo1234
+
+---
+Task ID: LOGIN-FIX
+Agent: Main (Z.ai)
+Task: Fix login screen issue - user reported that clicking "Giriş Yap" returns to the same login screen
+
+Work Log:
+- Investigated the login flow: LoginView → api('/api/auth/login') → window.location.reload() → AppShell checks /api/auth/me
+- Found the root cause: `cookies().set()` from `next/headers` was NOT propagating the Set-Cookie header to the NextResponse in Route Handlers
+- Confirmed via `curl -v` that the Set-Cookie header was missing from the login response
+- Fixed by creating `setSessionCookieOnResponse()` that sets cookies directly on the NextResponse object via `res.cookies.set()`
+- Updated login route to build NextResponse first, then set cookie on it
+- Updated logout route to clear cookie on response
+- Also fixed the client-side login flow:
+  - Removed the reliance on `window.location.reload()` which was unreliable
+  - After login, now fetches `/api/auth/me` to get the session context
+  - Calls `init(user, workspace)` directly on the Zustand store to transition to dashboard
+  - Added retry logic (3 attempts with 200ms delay) in case cookie isn't committed yet
+  - Fallback: full page reload if /me fails after retries
+
+Verification (agent-browser):
+- Cleared cookies, reloaded to login screen
+- Clicked "Giriş Yap" button with full pointer event sequence
+- Login succeeded (POST /api/auth/login 200)
+- Session fetched (GET /api/auth/me 200) 
+- Dashboard loaded ("Genel Bakış" heading shown)
+- Reloaded page → dashboard persisted (cookie was properly set)
+
+Stage Summary:
+- Login now works reliably: button click → API call → cookie set → store updated → dashboard shown
+- No more "stuck on login screen" issue
+- Cookie is properly set via Set-Cookie header on NextResponse
+- Store is updated in-place (no full page reload needed in the happy path)
+- Retry logic handles cookie commit timing issues

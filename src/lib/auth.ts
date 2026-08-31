@@ -1,6 +1,7 @@
 import { db } from '@/lib/db'
 import { randomBytes, scryptSync, timingSafeEqual } from 'crypto'
 import { cookies } from 'next/headers'
+import { NextResponse } from 'next/server'
 
 const SESSION_COOKIE = 'mavenforms_session'
 const SESSION_DURATION = 30 * 24 * 60 * 60 * 1000 // 30 days
@@ -109,6 +110,21 @@ export async function setSessionCookie(token: string, expiresAt: Date) {
   })
 }
 
+// Set cookie directly on a NextResponse (needed in Route Handlers)
+export function setSessionCookieOnResponse(res: NextResponse, token: string, expiresAt: Date) {
+  res.cookies.set(SESSION_COOKIE, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    expires: expiresAt,
+    path: '/',
+  })
+}
+
+export function clearSessionCookieOnResponse(res: NextResponse) {
+  res.cookies.delete(SESSION_COOKIE)
+}
+
 export async function clearSessionCookie() {
   const cookieStore = await cookies()
   cookieStore.delete(SESSION_COOKIE)
@@ -118,6 +134,15 @@ export async function destroySession(token: string) {
   try {
     await db.session.deleteMany({ where: { token } })
   } catch {}
+}
+
+export async function getTokenFromRequest(): Promise<string | null> {
+  try {
+    const cookieStore = await cookies()
+    return cookieStore.get(SESSION_COOKIE)?.value ?? null
+  } catch {
+    return null
+  }
 }
 
 export const SESSION_COOKIE_NAME = SESSION_COOKIE

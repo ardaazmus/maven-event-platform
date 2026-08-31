@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { verifyPassword, createSession, setSessionCookie } from '@/lib/auth'
+import { verifyPassword, createSession, setSessionCookieOnResponse } from '@/lib/auth'
 import { z } from 'zod'
 
 const loginSchema = z.object({
@@ -30,15 +30,18 @@ export async function POST(req: NextRequest) {
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0] ?? undefined
 
     const { token, expiresAt } = await createSession(user.id, userAgent, ip)
-    await setSessionCookie(token, expiresAt)
 
-    return NextResponse.json({
+    // Build response and set cookie directly on it
+    const res = NextResponse.json({
       data: {
         id: user.id,
         email: user.email,
         name: user.name,
       },
     })
+    setSessionCookieOnResponse(res, token, expiresAt)
+
+    return res
   } catch (e) {
     return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })
   }

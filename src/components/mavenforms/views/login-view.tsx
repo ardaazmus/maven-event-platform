@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { MavenFormsLogo } from '@/components/mavenforms/brand'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,6 +10,8 @@ import { Card } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
 import { Eye, EyeOff, Lock, Mail, Shield, Sparkles, Zap, Globe } from 'lucide-react'
 import { api } from '@/lib/api-client'
+import { useApp } from '@/lib/store'
+import type { SessionContext } from '@/lib/types'
 
 export function LoginView() {
   const [email, setEmail] = useState('demo@mavenforms.com')
@@ -19,19 +20,43 @@ export function LoginView() {
   const [remember, setRemember] = useState(true)
   const [loading, setLoading] = useState(false)
   const { toast } = useToast()
+  const init = useApp((s) => s.init)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     try {
+      // Step 1: Login (sets cookie via Set-Cookie header)
       await api('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password, remember }),
         skipAuth: true,
       })
-      toast({ title: 'Giriş başarılı', description: 'Dashboard\'a yönlendiriliyorsunuz...' })
-      // Reload page to re-fetch session
-      setTimeout(() => window.location.reload(), 500)
+
+      // Brief delay to ensure cookie is committed to browser store
+      await new Promise((r) => setTimeout(r, 200))
+
+      // Step 2: Fetch session to get user + workspace
+      // Retry up to 3 times in case cookie isn't committed yet
+      let session: SessionContext | null = null
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          session = await api<SessionContext>('/api/auth/me', { skipAuth: true })
+          break
+        } catch {
+          await new Promise((r) => setTimeout(r, 300))
+        }
+      }
+
+      if (session) {
+        // Step 3: Initialize the app store (no reload needed)
+        init(session.user, session.workspace)
+        toast({ title: 'Giriş başarılı', description: `Hoş geldiniz, ${session.user.name || session.user.email}!` })
+      } else {
+        // Fallback: reload the page to pick up the cookie
+        toast({ title: 'Giriş başarılı', description: 'Yönlendiriliyorsunuz...' })
+        setTimeout(() => window.location.reload(), 300)
+      }
     } catch (err: any) {
       toast({
         title: 'Giriş başarısız',
