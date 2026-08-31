@@ -1,0 +1,383 @@
+// MavenForms - Modern Form Platform
+// Hostinger-compatible schema (SQLite for dev, MySQL/PostgreSQL for Hostinger VPS production)
+// Multi-tenant architecture with workspace isolation
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============ AUTH & IDENTITY ============
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String?
+  passwordHash  String
+  avatarUrl     String?
+  status        String   @default("active") // active, suspended, invited
+  mfaEnabled    Boolean  @default(false)
+  mfaSecret     String?
+  lastLoginAt   DateTime?
+  locale        String   @default("tr")
+  timezone      String   @default("Europe/Istanbul")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  memberships   WorkspaceMember[]
+  sessions      Session[]
+  ownedForms    Form[]       @relation("FormOwner")
+  createdForms  Form[]       @relation("FormCreator")
+  submissions   Submission[] @relation("SubmissionCreator")
+  refreshTokens RefreshToken[]
+  auditActions  AuditLog[]   @relation("AuditActor")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token        String   @unique
+  userAgent    String?
+  ip           String?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ============ WORKSPACE & RBAC ============
+
+model Workspace {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  locale      String   @default("tr")
+  timezone    String   @default("Europe/Istanbul")
+  plan        String   @default("free") // free, pro, business, enterprise
+  status      String   @default("active")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members       WorkspaceMember[]
+  folders       Folder[]
+  tags          Tag[]
+  forms         Form[]
+  themes        Theme[]
+  auditLogs     AuditLog[]
+  integrations  Integration[]
+}
+
+model WorkspaceMember {
+  id          String   @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        String   @default("viewer") // owner, admin, form_manager, analyst, reviewer, viewer
+  status      String   @default("active") // active, invited, suspended
+  invitedAt   DateTime?
+  joinedAt    DateTime @default(now())
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+}
+
+// ============ FOLDERS & TAGS ============
+
+model Folder {
+  id          String   @id @default(cuid())
+  workspaceId String
+  parentId    String?
+  name        String
+  color       String   @default("#64748b")
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  parent      Folder?  @relation("FolderTree", fields: [parentId], references: [id])
+  children    Folder[] @relation("FolderTree")
+  forms       Form[]
+
+  @@index([workspaceId])
+}
+
+model Tag {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  color       String   @default("#10b981")
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  forms       FormTag[]
+
+  @@unique([workspaceId, name])
+  @@index([workspaceId])
+}
+
+model FormTag {
+  formId String
+  tagId  String
+  form   Form @relation(fields: [formId], references: [id], onDelete: Cascade)
+  tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([formId, tagId])
+}
+
+// ============ FORMS & VERSIONS ============
+
+model Form {
+  id                  String   @id @default(cuid())
+  workspaceId         String
+  folderId            String?
+  ownerId             String
+  createdById         String
+  title               String
+  description         String?
+  slug                String   @unique
+  status              String   @default("draft") // draft, published, paused, archived
+  settingsJson        String   @default("{}")
+  publishedVersionId  String?
+  submissionCount     Int      @default(0)
+  todaySubmissionCount Int     @default(0)
+  responseLimit       Int?
+  startDate           DateTime?
+  endDate             DateTime?
+  closedMessage       String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  deletedAt           DateTime?
+
+  workspace           Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  folder              Folder?   @relation(fields: [folderId], references: [id])
+  owner               User      @relation("FormOwner", fields: [ownerId], references: [id])
+  creator             User      @relation("FormCreator", fields: [createdById], references: [id])
+  versions            FormVersion[]
+  fields              FormField[]
+  submissions         Submission[]
+  themes              Theme[]
+  notifications       Notification[]
+  logicRules          LogicRule[]
+  tags                FormTag[]
+  reports             Report[]
+
+  @@index([workspaceId, status])
+  @@index([workspaceId, deletedAt])
+}
+
+model FormVersion {
+  id           String   @id @default(cuid())
+  formId       String
+  versionNo    Int
+  schemaJson   String   @default("{}")
+  checksum     String
+  status       String   @default("draft") // draft, published, archived
+  publishedAt  DateTime?
+  createdAt    DateTime @default(now())
+  form         Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([formId])
+}
+
+model FormField {
+  id           String   @id @default(cuid())
+  formId       String
+  fieldKey     String
+  type         String   // text, paragraph, email, phone, number, date, time, checkbox, radio, select, dropdown, file, address, signature, rating, price, matrix, section, page_break, media, hidden, captcha
+  label        String
+  description  String?
+  placeholder  String?
+  helpText     String?
+  required     Boolean  @default(false)
+  unique       Boolean  @default(false)
+  readOnly     Boolean  @default(false)
+  hidden       Boolean  @default(false)
+  adminOnly    Boolean  @default(false)
+  encrypted    Boolean  @default(false)
+  defaultValue String?
+  configJson   String   @default("{}") // validation, options, conditional logic, etc.
+  sortOrder    Int      @default(0)
+  pageSize     Int      @default(1)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  form         Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  values       SubmissionValue[]
+
+  @@index([formId, sortOrder])
+}
+
+// ============ THEMES ============
+
+model Theme {
+  id           String   @id @default(cuid())
+  workspaceId  String
+  formId       String?
+  name         String
+  tokensJson   String   @default("{}") // primary, background, text, error, success, etc.
+  customCss    String?
+  font         String   @default("Inter")
+  radius       Float    @default(0.625)
+  version      Int      @default(1)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  workspace    Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  form         Form?     @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+}
+
+// ============ SUBMISSIONS ============
+
+model Submission {
+  id            String   @id @default(cuid())
+  formId        String
+  publicToken   String   @unique
+  status        String   @default("new") // new, reviewing, approved, rejected, spam, archived
+  locale        String   @default("tr")
+  source        String   @default("web") // web, embed, api, import
+  ipHash        String?
+  userAgentHash String?
+  paymentStatus String?  // pending, authorized, paid, failed, refunded
+  submittedById String?
+  submittedAt   DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  form          Form      @relation(fields: [formId], references: [id], onDelete: Cascade)
+  submitter     User?     @relation("SubmissionCreator", fields: [submittedById], references: [id])
+  values        SubmissionValue[]
+  files         SubmissionFile[]
+
+  @@index([formId, submittedAt])
+  @@index([formId, status])
+}
+
+model SubmissionValue {
+  id             String   @id @default(cuid())
+  submissionId   String
+  fieldId        String
+  valueJson      String   @default("{}")
+  normalizedText String?
+  createdAt      DateTime @default(now())
+  submission     Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  field          FormField  @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+
+  @@unique([submissionId, fieldId])
+  @@index([submissionId])
+}
+
+model SubmissionFile {
+  id           String   @id @default(cuid())
+  submissionId String
+  fieldId      String
+  storageKey   String
+  originalName String
+  mime         String
+  size         Int
+  checksum     String?
+  scanStatus   String   @default("pending") // pending, clean, infected
+  createdAt    DateTime @default(now())
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index([submissionId])
+}
+
+// ============ LOGIC & NOTIFICATIONS ============
+
+model LogicRule {
+  id            String   @id @default(cuid())
+  formId        String
+  name          String?
+  priority      Int      @default(0)
+  conditionsJson String  @default("{}")
+  actionsJson   String   @default("{}")
+  enabled       Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  form          Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([formId])
+}
+
+model Notification {
+  id            String   @id @default(cuid())
+  formId        String
+  name          String
+  type          String   // admin, user_confirmation, webhook
+  enabled       Boolean  @default(true)
+  configJson    String   @default("{}") // recipients, cc, bcc, subject, body, condition
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  form          Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([formId])
+}
+
+// ============ REPORTS ============
+
+model Report {
+  id          String   @id @default(cuid())
+  formId      String
+  workspaceId String
+  name        String
+  description String?
+  configJson  String   @default("{}")
+  isShared    Boolean  @default(false)
+  shareToken  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  form        Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([formId])
+}
+
+// ============ INTEGRATIONS ============
+
+model Integration {
+  id          String   @id @default(cuid())
+  workspaceId String
+  provider    String   // stripe, paypal, mailchimp, zapier, slack, google_sheets
+  name        String
+  configJson  String   @default("{}")
+  status      String   @default("disconnected") // connected, disconnected, error
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+}
+
+// ============ AUDIT LOG ============
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  workspaceId   String?
+  actorId       String?
+  action        String   // form.create, form.update, form.delete, submission.update, etc.
+  resourceType  String
+  resourceId    String
+  beforeJson    String?
+  afterJson     String?
+  ipHash        String?
+  createdAt     DateTime @default(now())
+  workspace     Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  actor         User?      @relation("AuditActor", fields: [actorId], references: [id])
+
+  @@index([workspaceId, createdAt])
+  @@index([resourceType, resourceId])
+}
