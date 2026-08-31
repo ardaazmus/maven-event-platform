@@ -24,7 +24,7 @@ import {
   Command,
   HelpCircle,
 } from 'lucide-react'
-import { api } from '@/lib/api-client'
+import { api, setStoredToken } from '@/lib/api-client'
 import { useToast } from '@/hooks/use-toast'
 
 const viewTitles: Record<string, { title: string; subtitle: string }> = {
@@ -51,9 +51,11 @@ export function TopBar() {
   const handleLogout = async () => {
     try {
       await api('/api/auth/logout', { method: 'POST' })
+      setStoredToken(null)
+      logout()
       toast({ title: 'Çıkış yapıldı' })
-      setTimeout(() => window.location.reload(), 300)
     } catch {
+      setStoredToken(null)
       logout()
     }
   }

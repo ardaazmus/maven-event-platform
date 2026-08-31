@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { useApp } from '@/lib/store'
-import { api } from '@/lib/api-client'
+import { api, getStoredToken } from '@/lib/api-client'
 import type { SessionContext } from '@/lib/types'
 import { Sidebar } from '@/components/mavenforms/sidebar'
 import { TopBar } from '@/components/mavenforms/topbar'
@@ -30,13 +30,20 @@ export function AppShell() {
   }, [])
 
   useEffect(() => {
-    // Check session
-    api<SessionContext>('/api/auth/me', { skipAuth: true })
+    // Check session: only attempt if we have a token in localStorage
+    const token = getStoredToken()
+    if (!token) {
+      // No token, skip API call and show login
+      useApp.setState({ initialized: true })
+      return
+    }
+
+    api<SessionContext>('/api/auth/me')
       .then((ctx) => {
         init(ctx.user, ctx.workspace)
       })
       .catch(() => {
-        // Not logged in, show login
+        // Token invalid, show login
         useApp.setState({ initialized: true })
       })
   }, [])
@@ -44,7 +51,7 @@ export function AppShell() {
   useEffect(() => {
     // Listen for unauthorized events
     const handler = () => {
-      useApp.setState({ user: null, workspace: null, view: 'login' })
+      useApp.setState({ user: null, workspace: null, view: 'dashboard', initialized: true })
     }
     window.addEventListener('mavenforms:unauthorized', handler)
     return () => window.removeEventListener('mavenforms:unauthorized', handler)

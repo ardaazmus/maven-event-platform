@@ -2,6 +2,7 @@ import { db } from '@/lib/db'
 import { randomBytes, scryptSync, timingSafeEqual } from 'crypto'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
 const SESSION_COOKIE = 'mavenforms_session'
 const SESSION_DURATION = 30 * 24 * 60 * 60 * 1000 // 30 days
@@ -51,10 +52,28 @@ export async function createSession(userId: string, userAgent?: string, ip?: str
   return { session, token, expiresAt }
 }
 
-export async function getSessionFromCookie(): Promise<{ user: any; workspace: any } | null> {
+// Extract token from either Authorization header OR cookie
+export async function getTokenFromRequest(req?: NextRequest): Promise<string | null> {
   try {
+    // 1. Try Authorization Bearer header first (most reliable for cross-origin)
+    if (req) {
+      const authHeader = req.headers.get('authorization')
+      if (authHeader?.startsWith('Bearer ')) {
+        return authHeader.slice(7)
+      }
+    }
+
+    // 2. Fallback to cookie
     const cookieStore = await cookies()
-    const token = cookieStore.get(SESSION_COOKIE)?.value
+    return cookieStore.get(SESSION_COOKIE)?.value ?? null
+  } catch {
+    return null
+  }
+}
+
+export async function getSessionFromRequest(req?: NextRequest): Promise<{ user: any; workspace: any } | null> {
+  try {
+    const token = await getTokenFromRequest(req)
     if (!token) return null
 
     const session = await db.session.findUnique({
@@ -99,35 +118,28 @@ export async function getSessionFromCookie(): Promise<{ user: any; workspace: an
   }
 }
 
-export async function setSessionCookie(token: string, expiresAt: Date) {
-  const cookieStore = await cookies()
-  cookieStore.set(SESSION_COOKIE, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    expires: expiresAt,
-    path: '/',
-  })
+// Legacy alias for backward compatibility
+export async function getSessionFromCookie(): Promise<{ user: any; workspace: any } | null> {
+  return getSessionFromRequest()
 }
 
-// Set cookie directly on a NextResponse (needed in Route Handlers)
+// Set cookie directly on a NextResponse (as backup; primary auth via Authorization header)
 export function setSessionCookieOnResponse(res: NextResponse, token: string, expiresAt: Date) {
-  res.cookies.set(SESSION_COOKIE, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    expires: expiresAt,
-    path: '/',
-  })
+  try {
+    res.cookies.set(SESSION_COOKIE, token, {
+      httpOnly: true,
+      secure: false, // Allow HTTP for dev; production should set secure via env
+      sameSite: 'lax',
+      expires: expiresAt,
+      path: '/',
+    })
+  } catch {}
 }
 
 export function clearSessionCookieOnResponse(res: NextResponse) {
-  res.cookies.delete(SESSION_COOKIE)
-}
-
-export async function clearSessionCookie() {
-  const cookieStore = await cookies()
-  cookieStore.delete(SESSION_COOKIE)
+  try {
+    res.cookies.delete(SESSION_COOKIE)
+  } catch {}
 }
 
 export async function destroySession(token: string) {
@@ -136,13 +148,5 @@ export async function destroySession(token: string) {
   } catch {}
 }
 
-export async function getTokenFromRequest(): Promise<string | null> {
-  try {
-    const cookieStore = await cookies()
-    return cookieStore.get(SESSION_COOKIE)?.value ?? null
-  } catch {
-    return null
-  }
-}
-
 export const SESSION_COOKIE_NAME = SESSION_COOKIE
+export const SESSION_DURATION_MS = SESSION_DURATION

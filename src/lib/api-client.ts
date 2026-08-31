@@ -8,16 +8,48 @@ export class ApiError extends Error {
   }
 }
 
+const TOKEN_KEY = 'mavenforms_token'
+
+export function getStoredToken(): string | null {
+  if (typeof window === 'undefined') return null
+  try {
+    return localStorage.getItem(TOKEN_KEY)
+  } catch {
+    return null
+  }
+}
+
+export function setStoredToken(token: string | null) {
+  if (typeof window === 'undefined') return
+  try {
+    if (token) {
+      localStorage.setItem(TOKEN_KEY, token)
+    } else {
+      localStorage.removeItem(TOKEN_KEY)
+    }
+  } catch {}
+}
+
 export async function api<T = any>(
   path: string,
   options?: RequestInit & { skipAuth?: boolean }
 ): Promise<T> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options?.headers as Record<string, string> || {}),
+  }
+
+  // Attach Authorization header if we have a token (unless skipAuth)
+  if (!options?.skipAuth) {
+    const token = getStoredToken()
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+  }
+
   const res = await fetch(path, {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options?.headers || {}),
-    },
+    headers,
     credentials: 'same-origin',
   })
 
@@ -28,7 +60,8 @@ export async function api<T = any>(
       if (data.error) message = data.error
     } catch {}
     if (res.status === 401 && !options?.skipAuth) {
-      // Redirect to login handled by store
+      // Token invalid or missing - clear and redirect to login
+      setStoredToken(null)
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('mavenforms:unauthorized'))
       }

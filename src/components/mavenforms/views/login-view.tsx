@@ -9,9 +9,17 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Card } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
 import { Eye, EyeOff, Lock, Mail, Shield, Sparkles, Zap, Globe } from 'lucide-react'
-import { api } from '@/lib/api-client'
+import { api, setStoredToken } from '@/lib/api-client'
 import { useApp } from '@/lib/store'
 import type { SessionContext } from '@/lib/types'
+
+interface LoginResponse {
+  id: string
+  email: string
+  name: string | null
+  token: string
+  expiresAt: string
+}
 
 export function LoginView() {
   const [email, setEmail] = useState('demo@mavenforms.com')
@@ -26,38 +34,24 @@ export function LoginView() {
     e.preventDefault()
     setLoading(true)
     try {
-      // Step 1: Login (sets cookie via Set-Cookie header)
-      await api('/api/auth/login', {
+      // Step 1: Login - returns token in response body
+      const loginData = await api<LoginResponse>('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password, remember }),
         skipAuth: true,
       })
 
-      // Brief delay to ensure cookie is committed to browser store
-      await new Promise((r) => setTimeout(r, 200))
+      // Step 2: Store token in localStorage (used for Authorization header)
+      setStoredToken(loginData.token)
 
-      // Step 2: Fetch session to get user + workspace
-      // Retry up to 3 times in case cookie isn't committed yet
-      let session: SessionContext | null = null
-      for (let attempt = 0; attempt < 3; attempt++) {
-        try {
-          session = await api<SessionContext>('/api/auth/me', { skipAuth: true })
-          break
-        } catch {
-          await new Promise((r) => setTimeout(r, 300))
-        }
-      }
+      // Step 3: Fetch session to get user + workspace
+      const session = await api<SessionContext>('/api/auth/me', { skipAuth: true })
 
-      if (session) {
-        // Step 3: Initialize the app store (no reload needed)
-        init(session.user, session.workspace)
-        toast({ title: 'Giriş başarılı', description: `Hoş geldiniz, ${session.user.name || session.user.email}!` })
-      } else {
-        // Fallback: reload the page to pick up the cookie
-        toast({ title: 'Giriş başarılı', description: 'Yönlendiriliyorsunuz...' })
-        setTimeout(() => window.location.reload(), 300)
-      }
+      // Step 4: Initialize the app store (no reload needed)
+      init(session.user, session.workspace)
+      toast({ title: 'Giriş başarılı', description: `Hoş geldiniz, ${session.user.name || session.user.email}!` })
     } catch (err: any) {
+      setStoredToken(null)
       toast({
         title: 'Giriş başarısız',
         description: err.message || 'E-posta veya parola hatalı',

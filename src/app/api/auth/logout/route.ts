@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { clearSessionCookieOnResponse, destroySession, getTokenFromRequest } from '@/lib/auth'
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   try {
-    // Get token from cookie and destroy the session in DB
-    const token = await getTokenFromRequest()
+    // Get token from Authorization header or cookie
+    const token = await getTokenFromRequest(req)
     if (token) {
       await destroySession(token)
     }

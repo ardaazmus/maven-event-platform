@@ -31,12 +31,15 @@ export async function POST(req: NextRequest) {
 
     const { token, expiresAt } = await createSession(user.id, userAgent, ip)
 
-    // Build response and set cookie directly on it
+    // Build response - return token in body (client stores in localStorage)
+    // Also set cookie as backup
     const res = NextResponse.json({
       data: {
         id: user.id,
         email: user.email,
         name: user.name,
+        token,
+        expiresAt: expiresAt.toISOString(),
       },
     })
     setSessionCookieOnResponse(res, token, expiresAt)

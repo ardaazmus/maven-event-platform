@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server'
-import { getSessionFromCookie } from '@/lib/auth'
+import { NextRequest, NextResponse } from 'next/server'
+import { getSessionFromRequest } from '@/lib/auth'
 
-export async function GET() {
-  const ctx = await getSessionFromCookie()
+export async function GET(req: NextRequest) {
+  const ctx = await getSessionFromRequest(req)
   if (!ctx) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
