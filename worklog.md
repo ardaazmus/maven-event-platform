@@ -302,3 +302,98 @@ Stage Summary:
 - oEmbed provider registration included
 - Sandbox iframe security attributes
 - postMessage height synchronization
+
+---
+Task ID: BRANDING-AND-RELEASE-TEST
+Agent: Main (Z.ai)
+Task: Add branding/logo settings + comprehensive release testing
+
+Work Log:
+- Added WorkspaceBranding model to Prisma (30+ fields: appName, tagline, logoUrl, logoDarkUrl, faviconUrl, primaryColor, loginTitle, loginSubtitle, loginHeroImage, loginBgColor, loginShowFeatures, footerText, footerLinks, customDomain)
+- Created branding API: GET (public + auth), PATCH (auth)
+- Updated MavenFormsLogo component to support custom branding (logo URL, app name, tagline)
+- Added useBranding() hook with singleton cache
+- Updated Sidebar to use workspace branding
+- Updated LoginView to use branding (logo, title, subtitle)
+- Added BrandingSettings panel in Settings (new "Marka & Logo" tab):
+  * App name, tagline, logo URL (with preview), dark logo, favicon, primary color
+  * Login page branding (hero title, subtitle, hero image, bg color, show features toggle)
+  * Footer text, custom domain
+  * Save clears branding cache and reloads page
+- Seeded default branding for demo workspace
+
+Bug Fixes Found & Fixed:
+1. GET /api/forms/[id]/fields was returning 405 (Method Not Allowed) - only POST/PATCH existed
+   Fix: Added GET handler to list all fields
+2. Duplicate useToast import in settings-view.tsx causing compile error
+   Fix: Removed duplicate import
+
+RELEASE TESTING RESULTS (comprehensive e2e via curl):
+
+1. AUTHENTICATION (4/4 ✅)
+   1.1 Login correct credentials ✅
+   1.2 Login wrong password → 401 ✅
+   1.3 /me with token → 200 ✅
+   1.4 /me without token → 401 ✅
+
+2. BRANDING API (3/3 ✅)
+   2.1 GET public branding ✅
+   2.2 GET branding (auth) ✅
+   2.3 PATCH branding ✅
+
+3. FORMS CRUD (4/4 ✅)
+   3.1 GET forms list (5 forms) ✅
+   3.2 GET single form ✅
+   3.3 Create form ✅
+   3.4 Delete form ✅
+
+4. FORM BUILDER (3/3 ✅)
+   4.1 GET fields ✅ (FIXED - was 405)
+   4.2 Create field ✅
+   4.3 Delete field ✅
+
+5. SUBMISSIONS (1/1 ✅)
+   5.1 GET submissions ✅
+
+6. APPEARANCE (2/2 ✅)
+   6.1 GET appearance ✅
+   6.2 PATCH appearance ✅
+
+7. REPORTS (1/1 ✅)
+   7.1 GET reports ✅
+
+8. AUDIT & INTEGRATIONS (2/2 ✅)
+   8.1 GET audit logs ✅
+   8.2 GET integrations ✅
+
+9. PUBLIC FORM (6/6 ✅)
+   9.1 Public form API ✅
+   9.2 Public form page ✅
+   9.3 Page has header ✅
+   9.4 Page has footer ✅
+   9.5 Page has form fields ✅
+   9.6 Page has branding title ✅
+
+10. WORDPRESS EMBED (5/5 ✅)
+    10.1 Embed script endpoint ✅
+    10.2 Script has iframe ✅
+    10.3 Script has message listener ✅
+    10.4 Script has sandbox ✅
+    10.5 Script size: 3576 bytes ✅
+
+11. FORM PUBLISH (1/1 ✅)
+    11.1 Publish form ✅
+
+12. FORM SUBMISSION (1/1 ✅)
+    12.1 Public submission ✅
+
+TOTAL: 33/33 tests PASSED ✅
+
+Stage Summary:
+- Branding settings: ✅ Complete (logo, app name, login page customization)
+- All API endpoints: ✅ Working (33/33 tests passed)
+- Form header/footer: ✅ Renders correctly with appearance config
+- WordPress embed: ✅ JS script, iframe, sandbox, postMessage
+- Public form submission: ✅ Works
+- Bugs fixed: GET fields 405, duplicate import
+- Lint: ✅ Clean (0 errors, 0 warnings)

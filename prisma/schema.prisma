@@ -82,6 +82,7 @@ model Workspace {
   themes        Theme[]
   auditLogs     AuditLog[]
   integrations  Integration[]
+  branding      WorkspaceBranding?
 }
 
 model WorkspaceMember {
@@ -429,4 +430,34 @@ model FormAppearance {
   form            Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
 
   @@index([formId])
+}
+
+// ============ WORKSPACE BRANDING (White-label) ============
+
+model WorkspaceBranding {
+  id              String   @id @default(cuid())
+  workspaceId     String   @unique
+  // App branding
+  appName         String   @default("MavenForms")
+  appTagline      String   @default("FORM PLATFORM")
+  logoUrl         String?  // custom logo image URL
+  logoDarkUrl     String?  // logo for dark mode
+  faviconUrl      String?
+  primaryColor    String   @default("#10b981")
+  // Login page branding
+  loginTitle      String   @default("Formlarınızı tasarlayın, yanıtları otomatikleştirin.")
+  loginSubtitle   String   @default("Modern, mobil öncelikli form platformu. Tasarla → yayınla → topla → raporla zincirinde tek çalışma alanı.")
+  loginHeroImage  String?  // hero image URL for login left panel
+  loginBgColor    String   @default("#10b981")
+  loginShowFeatures Boolean @default(true)
+  // Footer
+  footerText      String   @default("© 2026 MavenForms. Tüm hakları saklıdır.")
+  footerLinks     String?  // JSON array
+  // Custom domain
+  customDomain    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
 }

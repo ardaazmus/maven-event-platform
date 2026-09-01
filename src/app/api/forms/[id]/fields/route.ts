@@ -7,6 +7,28 @@ interface RouteParams {
   params: Promise<{ id: string }>
 }
 
+// GET - list all fields for a form
+export async function GET(req: NextRequest, { params }: RouteParams) {
+  const ctx = await getSessionFromCookie()
+  if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { id } = await params
+  const form = await db.form.findFirst({ where: { id, workspaceId: ctx.workspace.id } })
+  if (!form) return NextResponse.json({ error: 'Form bulunamadı' }, { status: 404 })
+
+  const fields = await db.formField.findMany({
+    where: { formId: id },
+    orderBy: { sortOrder: 'asc' },
+  })
+
+  return NextResponse.json({
+    data: fields.map((f) => ({
+      ...f,
+      config: JSON.parse(f.configJson || '{}'),
+    })),
+  })
+}
+
 const createFieldSchema = z.object({
   fieldKey: z.string().min(1),
   type: z.string(),

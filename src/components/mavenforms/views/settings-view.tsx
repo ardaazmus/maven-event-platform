@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,13 +10,15 @@ import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { api } from '@/lib/api-client'
+import { clearBrandingCache } from '@/components/mavenforms/brand'
+import { useToast } from '@/hooks/use-toast'
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs'
-import { useToast } from '@/hooks/use-toast'
 import { useApp } from '@/lib/store'
 import {
   User as UserIcon,
@@ -58,10 +60,11 @@ export function SettingsView() {
           {[
             { id: 'account', label: 'Hesap', icon: UserIcon },
             { id: 'workspace', label: 'Workspace', icon: Building },
+            { id: 'branding', label: 'Marka & Logo', icon: Palette },
             { id: 'security', label: 'Güvenlik', icon: Shield },
             { id: 'email', label: 'E-posta / SMTP', icon: Mail },
             { id: 'ldap', label: 'LDAP / AD', icon: Server },
-            { id: 'appearance', label: 'Görünüm', icon: Palette },
+            { id: 'appearance', label: 'Tema', icon: Palette },
             { id: 'notifications', label: 'Bildirimler', icon: Bell },
             { id: 'billing', label: 'Faturalama', icon: CreditCard },
             { id: 'system', label: 'Sistem', icon: SettingsIcon },
@@ -83,6 +86,9 @@ export function SettingsView() {
           </TabsContent>
           <TabsContent value="workspace" className="mt-0">
             <WorkspaceSettings />
+          </TabsContent>
+          <TabsContent value="branding" className="mt-0">
+            <BrandingSettings />
           </TabsContent>
           <TabsContent value="security" className="mt-0">
             <SecuritySettings />
@@ -759,6 +765,232 @@ function SystemSettings() {
           </div>
         </div>
       </SectionCard>
+    </div>
+  )
+}
+
+function BrandingSettings() {
+  const [data, setData] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const { toast } = useToast()
+
+  useEffect(() => {
+    api('/api/branding')
+      .then(setData)
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [])
+
+  const update = (key: string, value: any) => {
+    setData((prev: any) => (prev ? { ...prev, [key]: value } : prev))
+  }
+
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      await api('/api/branding', {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+      })
+      // Clear branding cache so changes reflect immediately
+      clearBrandingCache()
+      toast({ title: 'Marka ayarları kaydedildi', description: 'Logo ve görünüm güncellendi' })
+      // Reload to reflect branding changes
+      setTimeout(() => window.location.reload(), 1000)
+    } catch (err: any) {
+      toast({ title: 'Kaydetme hatası', description: err.message, variant: 'destructive' })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (loading || !data) {
+    return (
+      <div className="space-y-4">
+        {[...Array(3)].map((_, i) => (
+          <Card key={i} className="p-5 h-32">
+            <div className="shimmer h-full w-full rounded" />
+          </Card>
+        ))}
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      <SectionCard title="Uygulama Markası" description="Sol üstteki logo ve uygulama adı">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Uygulama Adı</Label>
+            <Input
+              value={data.appName || ''}
+              onChange={(e) => update('appName', e.target.value)}
+              placeholder="MavenForms"
+            />
+            <p className="text-xs text-muted-foreground">Sidebar'da ve login ekranında görünür</p>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Tagline (Alt Başlık)</Label>
+            <Input
+              value={data.appTagline || ''}
+              onChange={(e) => update('appTagline', e.target.value)}
+              placeholder="FORM PLATFORM"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Logo URL (PNG, JPG, SVG, WebP)</Label>
+            <Input
+              value={data.logoUrl || ''}
+              onChange={(e) => update('logoUrl', e.target.value)}
+              placeholder="https://example.com/logo.png"
+            />
+            <p className="text-xs text-muted-foreground">Boş bırakılırsa varsayılan MavenForms logosu kullanılır</p>
+            {data.logoUrl && (
+              <div className="p-3 rounded-lg border border-border bg-muted/30">
+                <img
+                  src={data.logoUrl}
+                  alt="Logo preview"
+                  className="max-h-16 w-auto"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none'
+                  }}
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label>Logo (Koyu Tema için) - opsiyonel</Label>
+            <Input
+              value={data.logoDarkUrl || ''}
+              onChange={(e) => update('logoDarkUrl', e.target.value)}
+              placeholder="https://example.com/logo-dark.png"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Favicon URL</Label>
+            <Input
+              value={data.faviconUrl || ''}
+              onChange={(e) => update('faviconUrl', e.target.value)}
+              placeholder="https://example.com/favicon.ico"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Marka Rengi (Primary)</Label>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={data.primaryColor || '#10b981'}
+                onChange={(e) => update('primaryColor', e.target.value)}
+                className="w-12 h-9 rounded border border-border cursor-pointer"
+              />
+              <Input
+                value={data.primaryColor || ''}
+                onChange={(e) => update('primaryColor', e.target.value)}
+                className="font-mono"
+              />
+            </div>
+          </div>
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Login Ekranı Markalaması" description="İlk açılış ekranındaki metinler ve görseller">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Login Hero Başlık</Label>
+            <Textarea
+              value={data.loginTitle || ''}
+              onChange={(e) => update('loginTitle', e.target.value)}
+              placeholder="Formlarınızı tasarlayın, yanıtları otomatikleştirin."
+              rows={2}
+            />
+            <p className="text-xs text-muted-foreground">Son 2 kelime gradient renkli olur</p>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Login Alt Başlık</Label>
+            <Textarea
+              value={data.loginSubtitle || ''}
+              onChange={(e) => update('loginSubtitle', e.target.value)}
+              placeholder="Modern, mobil öncelikli form platformu..."
+              rows={3}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Login Hero Görsel URL (opsiyonel)</Label>
+            <Input
+              value={data.loginHeroImage || ''}
+              onChange={(e) => update('loginHeroImage', e.target.value)}
+              placeholder="https://example.com/hero.jpg"
+            />
+            <p className="text-xs text-muted-foreground">Login ekranının sol panelinde gösterilir</p>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Login Arka Plan Rengi</Label>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={data.loginBgColor || '#10b981'}
+                onChange={(e) => update('loginBgColor', e.target.value)}
+                className="w-12 h-9 rounded border border-border cursor-pointer"
+              />
+              <Input
+                value={data.loginBgColor || ''}
+                onChange={(e) => update('loginBgColor', e.target.value)}
+                className="font-mono"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div>
+              <Label>Login özellikleri göster</Label>
+              <p className="text-xs text-muted-foreground">Kvkk, hızlı kurulum vb. kartlar</p>
+            </div>
+            <Switch
+              checked={data.loginShowFeatures}
+              onCheckedChange={(c) => update('loginShowFeatures', c)}
+            />
+          </div>
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Footer & Domain" description="Sayfa altı ve özel domain">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Footer Metni</Label>
+            <Input
+              value={data.footerText || ''}
+              onChange={(e) => update('footerText', e.target.value)}
+              placeholder="© 2026 Şirket Adı"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Özel Domain</Label>
+            <Input
+              value={data.customDomain || ''}
+              onChange={(e) => update('customDomain', e.target.value)}
+              placeholder="forms.sirketiniz.com"
+            />
+            <p className="text-xs text-muted-foreground">CNAME ile yönlendirme yapın</p>
+          </div>
+        </div>
+      </SectionCard>
+
+      <div className="flex gap-2 sticky bottom-4">
+        <Button onClick={handleSave} disabled={saving} className="gap-2 flex-1">
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+          {saving ? 'Kaydediliyor...' : 'Marka Ayarlarını Kaydet'}
+        </Button>
+      </div>
     </div>
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useApp } from '@/lib/store'
-import { MavenFormsLogo } from '@/components/mavenforms/brand'
+import { MavenFormsLogo, useBranding } from '@/components/mavenforms/brand'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -56,6 +56,8 @@ export function Sidebar() {
     selectFolder,
   } = useApp()
 
+  const branding = useBranding()
+
   return (
     <aside
       className={cn(
@@ -66,9 +68,9 @@ export function Sidebar() {
       {/* Logo */}
       <div className="h-16 flex items-center px-4 border-b border-sidebar-border shrink-0">
         {sidebarCollapsed ? (
-          <MavenFormsLogo showText={false} size={32} />
+          <MavenFormsLogo showText={false} size={32} branding={branding} />
         ) : (
-          <MavenFormsLogo size={32} />
+          <MavenFormsLogo size={32} branding={branding} />
         )}
       </div>
 

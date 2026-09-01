@@ -497,6 +497,22 @@ async function main() {
   })
 
   console.log('Form appearances added!')
+
+  // Add default branding
+  await db.workspaceBranding.create({
+    data: {
+      workspaceId: workspace.id,
+      appName: 'MavenForms',
+      appTagline: 'FORM PLATFORM',
+      primaryColor: '#10b981',
+      loginTitle: 'Formlarınızı tasarlayın, yanıtları otomatikleştirin.',
+      loginSubtitle: 'Modern, mobil öncelikli form platformu. Tasarla → yayınla → topla → raporla zincirinde tek çalışma alanı.',
+      loginBgColor: '#10b981',
+      loginShowFeatures: true,
+      footerText: `© ${new Date().getFullYear()} MavenForms. Tüm hakları saklıdır.`,
+    },
+  })
+  console.log('Default branding added!')
 }
 
 main()

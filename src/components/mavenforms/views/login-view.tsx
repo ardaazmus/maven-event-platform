@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { MavenFormsLogo } from '@/components/mavenforms/brand'
+import { useState, useEffect } from 'react'
+import { MavenFormsLogo, fetchBranding, type BrandingData } from '@/components/mavenforms/brand'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -27,8 +27,13 @@ export function LoginView() {
   const [showPassword, setShowPassword] = useState(false)
   const [remember, setRemember] = useState(true)
   const [loading, setLoading] = useState(false)
+  const [branding, setBranding] = useState<BrandingData | null>(null)
   const { toast } = useToast()
   const init = useApp((s) => s.init)
+
+  useEffect(() => {
+    fetchBranding().then(setBranding)
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -122,7 +127,7 @@ export function LoginView() {
         <div className="absolute bottom-20 -right-20 w-96 h-96 rounded-full bg-chart-3/10 blur-3xl" />
 
         <div className="relative flex flex-col justify-between p-12 w-full">
-          <MavenFormsLogo size={40} />
+          <MavenFormsLogo size={40} branding={branding} />
 
           <div className="space-y-8 max-w-md">
             <div className="space-y-4">
@@ -131,13 +136,23 @@ export function LoginView() {
                 KVKK uyumlu · Çok kiracılı
               </div>
               <h1 className="text-4xl font-bold tracking-tight leading-tight">
-                Formlarınızı <span className="gradient-text">tasarlayın</span>,
-                <br />
-                yanıtları <span className="gradient-text">otomatikleştirin</span>.
+                {branding?.loginTitle ? (
+                  <>
+                    {branding.loginTitle.split(' ').slice(0, -2).join(' ')}{' '}
+                    <span className="gradient-text">
+                      {branding.loginTitle.split(' ').slice(-2).join(' ')}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    Formlarınızı <span className="gradient-text">tasarlayın</span>,
+                    <br />
+                    yanıtları <span className="gradient-text">otomatikleştirin</span>.
+                  </>
+                )}
               </h1>
               <p className="text-muted-foreground text-lg leading-relaxed">
-                Modern, mobil öncelikli form platformu. Tasarla → yayınla → topla → raporla
-                zincirinde tek çalışma alanı.
+                {branding?.loginSubtitle || 'Modern, mobil öncelikli form platformu. Tasarla → yayınla → topla → raporla zincirinde tek çalışma alanı.'}
               </p>
             </div>
 
@@ -170,7 +185,7 @@ export function LoginView() {
       <div className="flex-1 flex items-center justify-center p-6 lg:p-12 bg-background">
         <div className="w-full max-w-md space-y-8">
           <div className="lg:hidden flex justify-center">
-            <MavenFormsLogo size={36} />
+            <MavenFormsLogo size={36} branding={branding} />
           </div>
 
           <div className="space-y-2">
