@@ -1,6 +1,6 @@
 import { db } from '@/lib/db'
 import { randomBytes, scryptSync, timingSafeEqual } from 'crypto'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
@@ -52,12 +52,22 @@ export async function createSession(userId: string, userAgent?: string, ip?: str
   return { session, token, expiresAt }
 }
 
-// Extract token from either Authorization header OR cookie
+// Extract token from Authorization header (via next/headers) OR cookie
+// Works WITHOUT a request parameter by using next/headers async APIs
 export async function getTokenFromRequest(req?: NextRequest): Promise<string | null> {
   try {
-    // 1. Try Authorization Bearer header first (most reliable for cross-origin)
+    // 1. Try Authorization Bearer header from the incoming request
+    //    - If req is provided, use it directly
+    //    - Otherwise, fall back to next/headers() to read headers from the current request
     if (req) {
       const authHeader = req.headers.get('authorization')
+      if (authHeader?.startsWith('Bearer ')) {
+        return authHeader.slice(7)
+      }
+    } else {
+      // Read headers from the current request context (works in Route Handlers)
+      const headerStore = await headers()
+      const authHeader = headerStore.get('authorization')
       if (authHeader?.startsWith('Bearer ')) {
         return authHeader.slice(7)
       }
@@ -118,7 +128,7 @@ export async function getSessionFromRequest(req?: NextRequest): Promise<{ user: 
   }
 }
 
-// Legacy alias for backward compatibility
+// Legacy alias - now also reads Authorization header via next/headers
 export async function getSessionFromCookie(): Promise<{ user: any; workspace: any } | null> {
   return getSessionFromRequest()
 }

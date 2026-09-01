@@ -30,6 +30,9 @@ export function setStoredToken(token: string | null) {
   } catch {}
 }
 
+// Track if we've already dispatched an unauthorized event to avoid loops
+let unauthorizedDispatched = false
+
 export async function api<T = any>(
   path: string,
   options?: RequestInit & { skipAuth?: boolean }
@@ -47,11 +50,16 @@ export async function api<T = any>(
     }
   }
 
-  const res = await fetch(path, {
-    ...options,
-    headers,
-    credentials: 'same-origin',
-  })
+  let res: Response
+  try {
+    res = await fetch(path, {
+      ...options,
+      headers,
+      credentials: 'include', // Changed from 'same-origin' to 'include' for cross-origin preview domains
+    })
+  } catch (fetchErr: any) {
+    throw new ApiError(`Ağ hatası: ${fetchErr.message || 'bağlanılamadı'}`, 0)
+  }
 
   if (!res.ok) {
     let message = `İstek başarısız (${res.status})`
@@ -59,11 +67,22 @@ export async function api<T = any>(
       const data = await res.json()
       if (data.error) message = data.error
     } catch {}
+
+    // Only handle 401 for authenticated requests (not login itself)
     if (res.status === 401 && !options?.skipAuth) {
-      // Token invalid or missing - clear and redirect to login
-      setStoredToken(null)
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('mavenforms:unauthorized'))
+      // Check if we actually have a token - if yes but got 401, token is invalid
+      const token = getStoredToken()
+      if (token) {
+        // Token is invalid - clear it and redirect to login
+        setStoredToken(null)
+        if (!unauthorizedDispatched) {
+          unauthorizedDispatched = true
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('mavenforms:unauthorized'))
+            // Reset flag after a delay to allow re-login
+            setTimeout(() => { unauthorizedDispatched = false }, 2000)
+          }
+        }
       }
     }
     throw new ApiError(message, res.status)

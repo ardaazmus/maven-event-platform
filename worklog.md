@@ -184,3 +184,57 @@ Stage Summary:
 - Demo login button for easy access
 - Login errors now visible with helpful messages
 - All API endpoints returning 200 (verified in dev.log)
+
+---
+Task ID: LOGIN-FIX-V3
+Agent: Main (Z.ai)
+Task: Fix login returning to login screen - root cause: server-side auth not reading Authorization header
+
+Work Log:
+- Analyzed user's screenshot showing: `GET https://preview-chat-...space-z.ai/api/dashboard 401 (Unauthorized)`
+- Identified ROOT CAUSE: Server-side `getSessionFromCookie()` was only reading cookies, NOT the Authorization header
+  - Token was stored in localStorage and sent via `Authorization: Bearer <token>` header
+  - But server-side `getTokenFromRequest(req?)` only read the header when `req` parameter was passed
+  - All API routes (dashboard, forms, etc.) called `getSessionFromCookie()` WITHOUT passing req
+  - So Authorization header was NEVER read on server-side → all authenticated requests returned 401
+  - Cookies didn't work on preview domain (cross-origin/secure issues)
+  - Result: Login succeeded (token returned), but immediate /api/dashboard call failed with 401
+  - api-client saw 401, cleared token, dispatched unauthorized event → user sent back to login
+
+- FIX: Updated `getTokenFromRequest()` to read Authorization header via `next/headers` async API
+  - Now works WITHOUT requiring req parameter
+  - Uses `headers()` from next/headers to read incoming request headers
+  - Falls back to cookie if no Authorization header
+
+- Also improved:
+  - `credentials: 'include'` instead of 'same-origin' (better cross-origin support)
+  - Added network error handling in api-client
+  - Added 401 deduplication to prevent multiple unauthorized events
+  - LoginView /me call now retries 3 times with increasing delay
+
+Verification (curl - all endpoints with Bearer token):
+- POST /api/auth/login → 200 (token returned)
+- GET /api/auth/me → 200 ✓
+- GET /api/dashboard → 200 ✓
+- GET /api/forms → 200 ✓
+- GET /api/folders → 200 ✓
+- GET /api/tags → 200 ✓
+- GET /api/audit → 200 ✓
+- GET /api/integrations → 200 ✓
+
+Verification (agent-browser e2e):
+- Fresh browser, cleared localStorage
+- Clicked "Demo hesabıyla giriş yap" button
+- POST /api/auth/login 200 → token stored
+- GET /api/auth/me 200 → session loaded
+- GET /api/dashboard 200 → dashboard rendered
+- Navigated all 6 views (Forms, Submissions, Reports, Settings, Audit, Users)
+- All API calls returned 200 (verified in network log)
+- Reload → session persisted (token in localStorage)
+
+Stage Summary:
+- ROOT CAUSE FIXED: Server now reads Authorization header via next/headers
+- All authenticated API endpoints work with Bearer token
+- Login no longer returns to login screen
+- Session persists across reloads
+- Works on preview domain (no cookie dependency)

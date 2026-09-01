@@ -67,20 +67,30 @@ export function LoginView() {
       }
       setStoredToken(loginData.token)
 
-      // Step 3: Fetch session to get user + workspace (with token in header)
-      let session: SessionContext
-      try {
-        session = await api<SessionContext>('/api/auth/me')
-      } catch (meErr: any) {
-        // Token was set but /me failed - try reload as fallback
-        toast({ title: 'Giriş yapıldı', description: 'Yönlendiriliyorsunuz...' })
-        setTimeout(() => window.location.reload(), 500)
-        return
+      // Step 3: Fetch session to get user + workspace (with token in Authorization header)
+      // Retry up to 3 times with increasing delay
+      let session: SessionContext | null = null
+      let lastMeErr: any = null
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          session = await api<SessionContext>('/api/auth/me')
+          break
+        } catch (meErr: any) {
+          lastMeErr = meErr
+          // Wait before retry (200ms, 400ms, 600ms)
+          await new Promise((r) => setTimeout(r, 200 * (attempt + 1)))
+        }
       }
 
-      // Step 4: Initialize the app store
-      init(session.user, session.workspace)
-      toast({ title: 'Giriş başarılı', description: `Hoş geldiniz, ${session.user.name || session.user.email}!` })
+      if (session) {
+        // Step 4: Initialize the app store
+        init(session.user, session.workspace)
+        toast({ title: 'Giriş başarılı', description: `Hoş geldiniz, ${session.user.name || session.user.email}!` })
+      } else {
+        // /me failed after retries - but login succeeded, so reload to pick up token
+        toast({ title: 'Giriş yapıldı', description: 'Yönlendiriliyorsunuz...' })
+        setTimeout(() => window.location.reload(), 500)
+      }
     } catch (err: any) {
       setStoredToken(null)
       toast({
