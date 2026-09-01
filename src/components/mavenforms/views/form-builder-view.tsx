@@ -43,6 +43,8 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Card } from '@/components/ui/card'
+import { AppearancePanel } from '@/components/mavenforms/views/appearance-panel'
+import { WordPressEmbedPanel } from '@/components/mavenforms/views/wordpress-embed-panel'
 
 const fieldLabels: Record<FieldType, string> = {
   text: 'Metin', paragraph: 'Paragraf', email: 'E-posta', phone: 'Telefon',
@@ -56,11 +58,12 @@ const fieldLabels: Record<FieldType, string> = {
 const tabs = [
   { id: 'fields', label: 'Alanlar', icon: FileText },
   { id: 'settings', label: 'Ayarlar', icon: Settings },
+  { id: 'appearance', label: 'Görünüm', icon: Palette },
   { id: 'theme', label: 'Tema', icon: Palette },
   { id: 'submissions', label: 'Yanıtlar', icon: Inbox },
   { id: 'logic', label: 'Mantık', icon: GitBranch },
   { id: 'notifications', label: 'Bildirim', icon: Bell },
-  { id: 'embed', label: 'Kod', icon: Code2 },
+  { id: 'embed', label: 'WordPress', icon: Code2 },
   { id: 'payment', label: 'Ödeme', icon: CreditCard },
   { id: 'integrations', label: 'Entegrasyon', icon: Plug },
   { id: 'reports', label: 'Rapor', icon: BarChart3 },
@@ -385,7 +388,11 @@ export function FormBuilderView() {
 
       {activeTab === 'settings' && <FormSettingsPanel form={form} onUpdate={(updates) => setForm({ ...form, ...updates })} onSave={handleSave} />}
 
-      {activeTab !== 'fields' && activeTab !== 'settings' && (
+      {activeTab === 'appearance' && <AppearancePanel formId={form.id} formTitle={form.title} formDescription={form.description} />}
+
+      {activeTab === 'embed' && <WordPressEmbedPanel form={form} />}
+
+      {activeTab !== 'fields' && activeTab !== 'settings' && activeTab !== 'appearance' && activeTab !== 'embed' && (
         <ComingSoonPanel tab={activeTab} form={form} />
       )}
     </div>

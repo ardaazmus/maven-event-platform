@@ -238,3 +238,67 @@ Stage Summary:
 - Login no longer returns to login screen
 - Session persists across reloads
 - Works on preview domain (no cookie dependency)
+
+---
+Task ID: HEADER-FOOTER-WORDPRESS
+Agent: Main (Z.ai)
+Task: Add customizable header/footer for forms + WordPress integration
+
+Work Log:
+- Analyzed user's screenshot showing event registration form with branded header (logo, title, contact bar, social media) and footer
+- Researched WordPress integration best practices (2026 standards):
+  * Iframe: Low security, not recommended
+  * Shortcode Plugin: Most secure + user-friendly (RECOMMENDED)
+  * oEmbed: Good but requires more dev work
+  * REST API: For data sync, not form display
+  * JS Embed: Flexible but risky if user-controlled
+  * CONCLUSION: Shortcode Plugin + JS Embed combination is best
+
+- Database: Added FormAppearance model with 30+ fields:
+  * Header: logo, title, subtitle, description, bg color/image, text color, alignment, padding
+  * Contact bar: email, phone, address, bg/text colors, social media (Instagram, LinkedIn, Twitter, Facebook, YouTube)
+  * Footer: logo, text, bg/text colors, links (JSON array), padding
+  * Custom CSS (scoped under .mavenforms-public)
+
+- API Endpoints created:
+  * GET/PATCH /api/forms/[id]/appearance - auth required
+  * GET /api/public/forms/[slug] - public, returns form + appearance
+  * GET /api/forms/[id]/embed-script?slug=X - returns JS embed code
+
+- UI Components:
+  * AppearancePanel: Full editor with logo URL, title, description, colors, alignment, padding sliders, contact info, social media links, footer links, custom CSS
+  * WordPressEmbedPanel: 4 tabs (Shortcode, Plugin Download, Iframe, JS Embed) with copy buttons, plugin PHP download, installation instructions
+  * PublicFormRenderer: Renders header + contact bar + form fields + footer with self-contained scoped CSS
+
+- Public form page: /forms/[slug] - server-side rendered with appearance
+- Self-contained CSS: All styles scoped under .mavenforms-public class, so exported HTML won't break
+- Responsive: Uses flexbox, media queries, max-width constraints
+- Image support: All types (PNG, JPG, SVG, WebP) via URL input with preview
+- WordPress Plugin: Downloadable PHP file with shortcode [mavenforms], oEmbed registration, sandbox iframe, postMessage height sync
+
+Backend E2E Test Results (curl):
+1. ✅ Login → token returned
+2. ✅ GET /api/forms/{id}/appearance → 200, returns headerTitle, headerEnabled, footerEnabled, contactBarEnabled, socialInstagram, footerLinks
+3. ✅ GET /forms/{slug} (public page) → 200, HTML contains "YILLIK TEKNOLOJİ ZİRVESİ 2026", "kayit@zirve2026.com", "instagram.com/teknozirve", "footer"
+4. ✅ GET /api/forms/{id}/embed-script → 200, 3576 bytes JS with iframe creation, postMessage listener, sandbox attribute
+5. ✅ PATCH /api/forms/{id}/appearance → 200, updates headerTitle successfully
+6. ✅ Public form renders: header (logo, title, subtitle, description), contact bar (email, phone, address, social), form fields, footer (text, links)
+
+Browser E2E Test Results (agent-browser):
+- ✅ Public form page loads at /forms/tekno-zirvesi-2026
+- ✅ H1: "YILLIK TEKNOLOJİ ZİRVESI 2026"
+- ✅ Header element present
+- ✅ Footer element present
+- ✅ 6 form fields rendered
+- Note: Dev server instability in sandbox required multiple restarts
+
+Stage Summary:
+- Customizable header/footer: ✅ Complete (logo, title, description, colors, contact, social, footer links)
+- All image types supported via URL (PNG, JPG, SVG, WebP)
+- Auto-responsive: flexbox + media queries
+- Self-contained CSS: scoped under .mavenforms-public, won't break when exported
+- WordPress integration: ✅ Complete (shortcode, plugin download, iframe, JS embed)
+- WordPress plugin PHP file downloadable with [mavenforms] shortcode
+- oEmbed provider registration included
+- Sandbox iframe security attributes
+- postMessage height synchronization

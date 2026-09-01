@@ -435,6 +435,68 @@ async function main() {
   console.log(`User: ${user.email}`)
   console.log(`Forms: 5`)
   console.log(`Submissions: 100+`)
+
+  // Add appearance for demo forms
+  console.log('Adding form appearances...')
+
+  await db.formAppearance.create({
+    data: {
+      formId: 'form_event_reg',
+      headerEnabled: true,
+      headerLogoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Red_high-heel.svg/120px-Red_high-heel.svg.png',
+      headerLogoAlt: 'Etkinlik Logosu',
+      headerLogoWidth: 80,
+      headerTitle: 'YILLIK TEKNOLOJİ ZİRVESİ 2026',
+      headerSubtitle: '8 Ekim 2026 · İstanbul',
+      headerDescription: 'Türkiye\'nin en büyük teknoloji etkinliğine katılın. 50+ konuşmacı, 1000+ katılımcı, network fırsatları.',
+      headerBgColor: '#ffffff',
+      headerTextColor: '#1a1a1a',
+      headerAlign: 'center',
+      headerPadding: 40,
+      contactBarEnabled: true,
+      contactBarBgColor: '#e31e24',
+      contactBarTextColor: '#ffffff',
+      contactEmail: 'kayit@zirve2026.com',
+      contactPhone: '+90 212 555 00 00',
+      contactAddress: 'Süleyman Seba Cad. No:1, İstanbul',
+      socialInstagram: 'https://instagram.com/teknozirve',
+      socialLinkedin: 'https://linkedin.com/company/teknozirve',
+      socialTwitter: 'https://x.com/teknozirve',
+      socialFacebook: null,
+      socialYoutube: 'https://youtube.com/@teknozirve',
+      footerEnabled: true,
+      footerText: '© 2026 Teknoloji Zirvesi. Tüm hakları saklıdır.',
+      footerBgColor: '#1a1a1a',
+      footerTextColor: '#ffffff',
+      footerLinks: JSON.stringify([
+        { label: 'Gizlilik Politikası', url: 'https://zirve2026.com/gizlilik' },
+        { label: 'KVKK', url: 'https://zirve2026.com/kvkk' },
+        { label: 'İletişim', url: 'https://zirve2026.com/iletisim' },
+      ]),
+      footerPadding: 24,
+    },
+  })
+
+  await db.formAppearance.create({
+    data: {
+      formId: 'form_survey',
+      headerEnabled: true,
+      headerTitle: 'MÜŞTERİ MEMNUNİYET ANKETİ',
+      headerSubtitle: 'Görüşleriniz bizim için önemli',
+      headerDescription: 'Hizmet kalitemizi artırmak için geri bildiriminize ihtiyacımız var. Anket 5 dakika sürecektir.',
+      headerBgColor: '#f0fdf4',
+      headerTextColor: '#064e3b',
+      headerAlign: 'center',
+      headerPadding: 32,
+      footerEnabled: true,
+      footerText: '© 2026 MavenForms. Tüm hakları saklıdır.',
+      footerBgColor: '#064e3b',
+      footerTextColor: '#ffffff',
+      footerPadding: 20,
+    },
+  })
+
+  console.log('Form appearances added!')
 }
 
 main()

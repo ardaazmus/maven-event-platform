@@ -175,6 +175,7 @@ model Form {
   logicRules          LogicRule[]
   tags                FormTag[]
   reports             Report[]
+  appearance          FormAppearance?
 
   @@index([workspaceId, status])
   @@index([workspaceId, deletedAt])
@@ -380,4 +381,52 @@ model AuditLog {
 
   @@index([workspaceId, createdAt])
   @@index([resourceType, resourceId])
+}
+
+// ============ FORM APPEARANCE (Header/Footer) ============
+
+model FormAppearance {
+  id              String   @id @default(cuid())
+  formId          String   @unique
+  // Header config
+  headerEnabled   Boolean  @default(true)
+  headerLogoUrl   String?
+  headerLogoAlt   String?
+  headerLogoWidth Int?     // in px, null = auto
+  headerTitle     String?
+  headerSubtitle  String?
+  headerDescription String? // rich text / multiline
+  headerBgColor   String   @default("#ffffff")
+  headerBgImage   String?
+  headerTextColor String   @default("#1a1a1a")
+  headerAlign     String   @default("center") // left, center, right
+  headerPadding   Int      @default(32)
+  // Contact bar
+  contactBarEnabled Boolean @default(false)
+  contactBarBgColor String  @default("#e31e24")
+  contactBarTextColor String @default("#ffffff")
+  contactEmail    String?
+  contactPhone    String?
+  contactAddress  String?
+  // Social media
+  socialInstagram String?
+  socialLinkedin  String?
+  socialTwitter   String?
+  socialFacebook  String?
+  socialYoutube   String?
+  // Footer config
+  footerEnabled   Boolean  @default(true)
+  footerLogoUrl   String?
+  footerText      String?  // copyright or description
+  footerBgColor   String   @default("#1a1a1a")
+  footerTextColor String   @default("#ffffff")
+  footerLinks     String?  // JSON array of {label, url}
+  footerPadding   Int      @default(24)
+  // Custom CSS (scoped under .mavenforms-embed)
+  customCss       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  form            Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([formId])
 }
