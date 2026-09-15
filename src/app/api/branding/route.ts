@@ -1,17 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getSessionFromCookie } from '@/lib/auth'
+import { can } from '@/lib/policy'
+import { createPublicMediaToken } from '@/lib/public-media-token'
+
+function safePublicBrandingMediaUrl(value: unknown, workspaceId: string) {
+  if (typeof value !== 'string' || value.length > 2048) return null
+  if (value.startsWith('/api/media/')) {
+    const match = value.match(/^\/api\/media\/([^/?]+)(?:\?scope=global)?$/)
+    return match ? `/api/public/branding/media/${createPublicMediaToken(match[1], workspaceId)}` : null
+  }
+  try {
+    const url = new URL(value)
+    return url.protocol === 'https:' ? url.toString() : null
+  } catch {
+    return null
+  }
+}
 
 function getDefaultBranding(workspaceName: string) {
   return {
     appName: 'MavenForms',
     appTagline: 'FORM PLATFORM',
+    logoMediaId: null,
     logoUrl: null,
+    logoDarkMediaId: null,
     logoDarkUrl: null,
+    faviconMediaId: null,
     faviconUrl: null,
     primaryColor: '#10b981',
     loginTitle: 'Formlarınızı tasarlayın, yanıtları otomatikleştirin.',
     loginSubtitle: 'Modern, mobil öncelikli form platformu. Tasarla → yayınla → topla → raporla zincirinde tek çalışma alanı.',
+    loginHeroMediaId: null,
     loginHeroImage: null,
     loginBgColor: '#10b981',
     loginShowFeatures: true,
@@ -39,6 +59,8 @@ export async function GET(req: NextRequest) {
     // Authenticated access
     const ctx = await getSessionFromCookie()
     if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const _auth = can.readForms(ctx as any)
+  if (!_auth.allowed) return NextResponse.json({ error: _auth.error }, { status: _auth.status })
     workspaceId = ctx.workspace.id
   }
 
@@ -58,24 +80,44 @@ export async function GET(req: NextRequest) {
     })
   }
 
-  return NextResponse.json({
-    data: {
-      ...branding,
-      footerLinks: branding.footerLinks ? JSON.parse(branding.footerLinks) : [],
-    },
-  })
+  const data = {
+    ...branding,
+    footerLinks: branding.footerLinks ? JSON.parse(branding.footerLinks) : [],
+  } as any
+  if (publicAccess) {
+    data.logoUrl = data.logoMediaId
+      ? `/api/public/branding/media/${createPublicMediaToken(data.logoMediaId, workspaceId)}`
+      : safePublicBrandingMediaUrl(data.logoUrl, workspaceId)
+    data.logoDarkUrl = data.logoDarkMediaId
+      ? `/api/public/branding/media/${createPublicMediaToken(data.logoDarkMediaId, workspaceId)}`
+      : safePublicBrandingMediaUrl(data.logoDarkUrl, workspaceId)
+    data.faviconUrl = data.faviconMediaId
+      ? `/api/public/branding/media/${createPublicMediaToken(data.faviconMediaId, workspaceId)}`
+      : safePublicBrandingMediaUrl(data.faviconUrl, workspaceId)
+    data.loginHeroImage = data.loginHeroMediaId
+      ? `/api/public/branding/media/${createPublicMediaToken(data.loginHeroMediaId, workspaceId)}`
+      : safePublicBrandingMediaUrl(data.loginHeroImage, workspaceId)
+    delete data.logoMediaId
+    delete data.logoDarkMediaId
+    delete data.faviconMediaId
+    delete data.loginHeroMediaId
+  }
+
+  return NextResponse.json({ data })
 }
 
 // PATCH - update branding (auth required)
 export async function PATCH(req: NextRequest) {
   const ctx = await getSessionFromCookie()
   if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const _auth = can.manageSettings(ctx as any)
+  if (!_auth.allowed) return NextResponse.json({ error: _auth.error }, { status: _auth.status })
 
   const body = await req.json()
 
   const allowedFields = [
-    'appName', 'appTagline', 'logoUrl', 'logoDarkUrl', 'faviconUrl', 'primaryColor',
-    'loginTitle', 'loginSubtitle', 'loginHeroImage', 'loginBgColor', 'loginShowFeatures',
+    'appName', 'appTagline', 'logoMediaId', 'logoUrl', 'logoDarkMediaId', 'logoDarkUrl', 'faviconMediaId', 'faviconUrl', 'primaryColor',
+    'loginTitle', 'loginSubtitle', 'loginHeroMediaId', 'loginHeroImage', 'loginBgColor', 'loginShowFeatures',
     'footerText', 'customDomain',
   ]
 
@@ -83,6 +125,18 @@ export async function PATCH(req: NextRequest) {
   for (const key of allowedFields) {
     if (body[key] !== undefined) {
       data[key] = body[key]
+    }
+  }
+
+  const mediaKeys = ['logoMediaId', 'logoDarkMediaId', 'faviconMediaId', 'loginHeroMediaId']
+  const mediaIds = mediaKeys.map((key) => data[key]).filter((value): value is string => typeof value === 'string' && value.length > 0)
+  if (mediaIds.length !== mediaKeys.filter((key) => data[key] !== undefined && data[key] !== null && data[key] !== '').length) {
+    return NextResponse.json({ error: 'Geçersiz medya kimliği' }, { status: 400 })
+  }
+  if (mediaIds.length > 0) {
+    const assets = await db.mediaAsset.findMany({ where: { id: { in: mediaIds }, workspaceId: ctx.workspace.id, formId: null }, select: { id: true } })
+    if (assets.length !== new Set(mediaIds).size) {
+      return NextResponse.json({ error: 'Medya workspace kapsamına ait değil' }, { status: 403 })
     }
   }
 

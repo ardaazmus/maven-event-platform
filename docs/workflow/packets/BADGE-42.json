@@ -1,0 +1,36 @@
+{
+  "id": "BADGE-42",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Builder yaka kartı panelinde tekil veya tüm uygun kayıt üretim modunu görünür ve kullanılabilir yapmak.",
+  "rollback": "BADGE-42 seçim UI/test ve durum satırını geri al; generation güvenlik kapılarını, payment, invoice, provider, R-10 ve V4 kapılarını açma.",
+  "previous": ["BADGE-41"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/app/api/forms/[id]/submissions/route.ts",
+    "src/app/api/forms/[id]/badges/generate/route.ts",
+    "tests/badge-generation-route.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-42.json",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/badge-ui-entry-wiring.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Builder paneli tekil ve tüm uygun kayıt seçeneklerini açıkça gösterir.",
+    "Tekil modda form kapsamlı uygun kayıt listesi seçilmeden üretim başlatılamaz; tüm modda seçim boş listeyle güvenli biçimde başlatılır.",
+    "Gerçek generation endpoint'i template sürümü, face mode ve selection mode ile çağrılır; sonuç karantina/scan açıklamasıyla yenilenir.",
+    "Focused UI wiring testi, TypeScript ve context-check geçer."
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-ui-entry-wiring.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

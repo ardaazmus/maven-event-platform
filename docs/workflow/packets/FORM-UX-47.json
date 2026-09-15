@@ -1,0 +1,35 @@
+{
+  "id": "FORM-UX-47",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Marka adi ile e-posta gonderici gorunen adini arayuzde ayri sahipliklerle aciklastirmak",
+  "rollback": "Yalniz FORM-UX-47 packetini, branding/email aciklama metinlerini, regression testini ve STATUS kaydini geri al",
+  "previous": ["FORM-UX-46"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/settings-view.tsx"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-47.json",
+    "src/components/mavenforms/views/settings-view.tsx",
+    "tests/form-ux-brand-sender-scope.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "SMTP gonderen adi e-posta alicisinin gorecegi kimlik olarak aciklanir",
+    "Uygulama markasi ile SMTP gonderen adi ayri sahiplikler olarak aciklanir",
+    "Iki ayarin birbirini otomatik degistirdigini ima eden metin bulunmaz",
+    "Regression, TypeScript, build, readiness, context-check ve workflow verify basarili olur"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-brand-sender-scope.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

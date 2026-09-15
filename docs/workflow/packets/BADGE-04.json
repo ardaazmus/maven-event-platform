@@ -1,0 +1,41 @@
+{
+  "id": "BADGE-04",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Tek yüz yaka kartı render sözleşmesini kurmak: ölçü, safe area, vektör QR ve metin taşması kuralları.",
+  "rollback": "Yalnız badge-front-render-contract modülü, sentetik focused testi, packet ve BADGE-04 durum satırını geri al; PDF motoru, medya, form yanıtı, ödeme ve fatura verilerine dokunma.",
+  "previous": ["BADGE-03"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-09-mavenforms-badge-module-roadmap.md",
+    "docs/research-sources/2026-09-09-badge-qr-output-research-receipt.md",
+    "src/lib/badge-contract.ts",
+    "src/lib/badge-field-mapping.ts",
+    "src/lib/badge-template-contract.ts"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-04.json",
+    "src/lib/badge-front-render-contract.ts",
+    "tests/badge-front-render-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Tek yüz planı tam olarak bir sayfa ve yalnız front yüzü üretir; back yokken boş arka sayfa sözleşmeye giremez.",
+    "Sayfa ve safe-area ölçüleri pozitif olur; dinamik metin kutuları safe-area dışına taşamaz.",
+    "QR alanı vektör olarak işaretlenir, kare ve en az dört modül quiet zone şartını taşır.",
+    "Metin uzunluğu ve satır limiti aşılırsa PASS yerine BLOCKED döner; sessiz kırpma yapılmaz.",
+    "Focused test, TypeScript ve context-check geçer; ödeme/fatura/V3/V4/R-10 davranışları değişmez."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-front-render-contract.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

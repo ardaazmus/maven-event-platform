@@ -1,0 +1,35 @@
+{
+  "id": "FORM-UX-46",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Sonuclar ekraninda bos yanit, filtre sonucu ve veri yukleme hatasi durumlarini ayristirmak",
+  "rollback": "Yalniz FORM-UX-46 packetini, submissions bos durum ve hata state degisikligini, regression testini ve STATUS kaydini geri al",
+  "previous": ["FORM-UX-45"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/submissions-view.tsx"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-46.json",
+    "src/components/mavenforms/views/submissions-view.tsx",
+    "tests/form-ux-submissions-empty-states.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Veri yukleme hatasi icerikte Veri yuklenemedi ve tekrar dene aksiyonu ile gosterilir",
+    "Arama veya filtre sonucu boslugu ile gercekten hic yanit olmamasi ayri metinler kullanir",
+    "Hata durumunda eski form verisi yeni secime karismaz ve mevcut toast davranisi korunur",
+    "Regression, TypeScript, build, readiness, context-check ve workflow verify basarili olur"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-submissions-empty-states.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

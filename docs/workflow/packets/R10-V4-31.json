@@ -1,0 +1,47 @@
+{
+  "id": "R10-V4-31",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Ortak wizard shell’inde responsive yerleşimi ve erişilebilir tab/panel ilişkisini sıkılaştırmak",
+  "rollback": "Connection wizard shell ve erişilebilirlik testindeki değişiklikleri geri al; wizard adım mantığını ve provider sınırlarını değiştirme",
+  "previous": ["R10-V4-30"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/components/mavenforms/connection-wizard.tsx",
+    "src/components/mavenforms/payment-connection-wizard.tsx",
+    "src/components/mavenforms/manual-invoice-wizard.tsx",
+    "src/components/mavenforms/future-invoice-wizard.tsx",
+    "src/components/mavenforms/transactional-mail-wizard.tsx",
+    "src/components/mavenforms/media-document-wizard.tsx",
+    "tests/connection-wizard.test.mjs",
+    "tests/payment-connection-wizard.test.mjs",
+    "tests/manual-invoice-wizard.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-31.json",
+    "src/components/mavenforms/connection-wizard.tsx",
+    "tests/connection-wizard.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Wizard tabları paneli aria-controls/aria-labelledby ilişkisiyle açıkça bağlar",
+    "Adım tabları mobilde iki kolon, geniş ekranda dört kolon olarak taşmadan görünür ve dokunma hedefi korunur",
+    "Mevcut payment, invoice ve diğer wizard akışlarının adım davranışı değişmez",
+    "Değişiklik network, DB, provider, credential veya release davranışı eklemez"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/connection-wizard.test.mjs"],
+    ["bun", "tests/payment-connection-wizard.test.mjs"],
+    ["bun", "tests/manual-invoice-wizard.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

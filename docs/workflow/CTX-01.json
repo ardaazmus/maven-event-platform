@@ -1,0 +1,13 @@
+{
+  "id": "CTX-01",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Kısa taşınabilir giriş, kayıpsız belge düzeni ve IDE bağımsız doğrulama kapıları",
+  "rollback": "Taşıma ledgerindeki hashleri kontrol ederek eski belgeleri kök yollarına geri taşı; yeni rehberleri yalnız bu değişikliğin diffiyle geri al. Uygulama verisine dokunma.",
+  "previous": [],
+  "reads": ["AI-RELEASE-EXECUTION-PLAN.md", "scripts/phase-gate.mjs", "package.json"],
+  "allowedFiles": ["AGENTS.md", "README.md", "PROJECT_CONTEXT.md", "STATUS.md", "CLAUDE.md", "AI-RELEASE-EXECUTION-PLAN.md", "RELEASE-ROADMAP.md", "IMPLEMENTATION-AUDIT-AND-MICROPHASE-PLAN.md", "CLOUD-DEBUG-HANDOFF.md", "worklog.md", "docs/**", "scripts/**", "tests/**", "package.json", ".gitignore", ".github/**", ".vscode/**"],
+  "acceptance": ["Arşiv hashleri aynı", "Kaynak ve yönlendirme yolları geçerli", "Geniş context gerekli olduğunda serbest", "Kapsam/önceki faz/gerçek komut kapıları", "Uygulama regresyonu ve readiness"],
+  "preflight": [["node", "scripts/run-tests.mjs"]],
+  "checks": [["node", "scripts/context-check.mjs"], ["node", "scripts/run-tests.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["node", "node_modules/eslint/bin/eslint.js", "scripts/workflow.mjs", "scripts/context-check.mjs", "tests/workflow.test.mjs"], ["bun", "run", "build"]]
+}

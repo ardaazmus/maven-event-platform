@@ -1,0 +1,13 @@
+{
+  "id": "FORM-UX-18",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Denetim ekranındaki bağlantısız Export kontrolünü erişilebilir ve dürüst ertelenmiş duruma almak",
+  "rollback": "Yalnız denetim toolbar durum/test/packet değişikliklerini geri al; denetim kayıtlarını silme/değiştirme",
+  "previous": ["FORM-UX-17"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/views/audit-view.tsx", "src/app/api/audit/route.ts", "tests/form-ux-final-gate.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-18.json", "src/components/mavenforms/views/audit-view.tsx", "tests/form-ux-audit-actions.test.mjs", "STATUS.md"],
+  "acceptance": ["Bağlanmamış denetim Export kontrolü aktifmiş gibi görünmez", "Ertelenmiş durum erişilebilir adla ve görünür metinle açıklanır", "Denetim arama/filtreleme ve kayıt verisi değişmez", "Hedef regression ve context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["bun", "tests/form-ux-audit-actions.test.mjs"], ["bun", "tests/form-ux-final-gate.test.mjs"], ["node", "scripts/context-check.mjs"]]
+}

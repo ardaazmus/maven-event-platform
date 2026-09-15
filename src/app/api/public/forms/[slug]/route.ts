@@ -1,70 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { containsForbiddenKeys } from '@/lib/public-dto'
 
 interface RouteParams {
   params: Promise<{ slug: string }>
 }
 
-// Public endpoint - returns form data for rendering (no auth required)
+// Public endpoint - returns immutable published snapshot (no auth, no live draft)
 export async function GET(req: NextRequest, { params }: RouteParams) {
   const { slug } = await params
 
   const form = await db.form.findFirst({
     where: { slug, deletedAt: null },
-    include: {
-      fields: {
-        where: { adminOnly: false, hidden: false },
-        orderBy: { sortOrder: 'asc' },
-      },
-      themes: { take: 1 },
-      appearance: true,
-    },
+    select: { id: true, status: true, publishedVersionId: true },
   })
 
   if (!form) return NextResponse.json({ error: 'Form bulunamadı' }, { status: 404 })
-
-  // Allow preview=true for draft forms, otherwise require published
-  const { searchParams } = new URL(req.url)
-  const isPreview = searchParams.get('preview') === 'true'
-  if (form.status !== 'published' && !isPreview) {
+  if (form.status !== 'published' || !form.publishedVersionId) {
     return NextResponse.json({ error: 'Form yayında değil' }, { status: 403 })
   }
-
-  return NextResponse.json({
-    data: {
-      id: form.id,
-      title: form.title,
-      description: form.description,
-      slug: form.slug,
-      status: form.status,
-      settings: JSON.parse(form.settingsJson || '{}'),
-      fields: form.fields.map((f) => ({
-        id: f.id,
-        fieldKey: f.fieldKey,
-        type: f.type,
-        label: f.label,
-        description: f.description,
-        placeholder: f.placeholder,
-        helpText: f.helpText,
-        required: f.required,
-        readOnly: f.readOnly,
-        defaultValue: f.defaultValue,
-        config: JSON.parse(f.configJson || '{}'),
-      })),
-      theme: form.themes[0]
-        ? {
-            ...form.themes[0],
-            tokens: JSON.parse(form.themes[0].tokensJson || '{}'),
-          }
-        : null,
-      appearance: form.appearance
-        ? {
-            ...form.appearance,
-            footerLinks: form.appearance.footerLinks
-              ? JSON.parse(form.appearance.footerLinks)
-              : [],
-          }
-        : null,
-    },
-  })
+  const version = await db.formVersion.findUnique({ where: { id: form.publishedVersionId } })
+  if (!version || version.status !== 'published') {
+    return NextResponse.json({ error: 'Form yayında değil' }, { status: 403 })
+  }
+  // Snapshot already sanitized at publish time; parse and return as is
+  let snapshot: any
+  try {
+    snapshot = JSON.parse(version.schemaJson)
+  } catch {
+    return NextResponse.json({ error: 'Form yayında değil' }, { status: 500 })
+  }
+  // Double-check no internal leakage in stored snapshot (defense in depth).
+  // Keep this at the anonymous read boundary so older or manually altered
+  // published snapshots fail closed even if publish-time validation changes.
+  const forbidden = containsForbiddenKeys(snapshot)
+  if (forbidden.length > 0) {
+    return NextResponse.json({ error: 'Form yayında değil' }, { status: 500 })
+  }
+  return NextResponse.json({ data: snapshot })
 }

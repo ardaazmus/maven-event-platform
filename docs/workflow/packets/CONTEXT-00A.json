@@ -1,0 +1,38 @@
+{
+  "id": "CONTEXT-00A",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Context-check'in yakaladığı eski R-04 packet read yolunu mevcut kanonik policy testiyle düzeltmek; packet keşfini yeniden çalışır hale getirmek ve V4 context kapısını kapatmak",
+  "rollback": "Yalnız CONTEXT-00A packet metadata değişikliğini geri al; uygulama, ödeme, fatura, form, yanıt, tenant veya geçmiş receipt verisini silme/değiştirme",
+  "previous": ["FORM-UX-08"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "scripts/context-check.mjs",
+    "docs/workflow/packets/R-04.json",
+    "tests/policy.test.mjs",
+    "tests/responsive-a11y.test.mjs",
+    "tests/submissions-layout.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/CONTEXT-00A.json",
+    "docs/workflow/packets/R-04.json",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "R-04.json içindeki artık var olmayan tests/role-ui.test.mjs read yolu mevcut kanonik tests/policy.test.mjs ile değiştirilir; yeni veya uydurma test dosyası oluşturulmaz",
+    "context-check tüm READY packet read yollarını doğrular ve PASS verir",
+    "R-04'ün responsive ve role görünürlüğü kapsamı mevcut responsive/submissions/policy testleriyle korunur; ana faz sırası ve R-10 NO-GO değişmez",
+    "V4-00 yalnız CONTEXT-00 ve CONTEXT-00A kapıları geçtikten sonra değerlendirilmeye devam eder"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/policy.test.mjs"],
+    ["bun", "tests/responsive-a11y.test.mjs"],
+    ["bun", "tests/submissions-layout.test.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "FORM-UX-11",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Form medya yüklemelerini tarama tamamlanana kadar pending tutmak ve public medya sunumunu yalnız clean varlıklarla sınırlamak",
+  "rollback": "Yalnız medya scan durumu ve hedef testlerini geri al; form, yanıt, ödeme, fatura veya medya dosyası verisini silme/değiştirme",
+  "previous": ["FORM-UX-10"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "RELEASE-DECISION.md", "docs/workflow/README.md", "src/app/api/forms/[id]/media/route.ts", "src/app/api/public/forms/[slug]/media/[token]/route.ts", "src/lib/media.ts", "prisma/schema.prisma", "tests/media-upload.test.mjs", "tests/media-scope.test.mjs", "tests/media-serve.test.mjs", "tests/media-abuse.test.mjs", "tests/form-ux-media-workflow.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-11.json", "src/app/api/forms/[id]/media/route.ts", "tests/media-upload.test.mjs", "STATUS.md"],
+  "acceptance": ["Yeni medya varlığı AV/quarantine doğrulaması tamamlanana kadar scanStatus pending ile oluşturulur", "Public medya endpoint'i yalnız aynı workspace/form kapsamındaki clean varlığı sunar; pending veya infected varlık public olmaz", "Form kapsamı, dosya türü/MIME/magic-byte/decoder, rate limit ve kota kontrolleri korunur", "Hedef medya testleri, TypeScript, build ve local readiness geçer; harici AV sağlayıcısı veya production release kanıtı iddia edilmez"],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["bun", "tests/media-upload.test.mjs"], ["bun", "tests/media-scope.test.mjs"], ["bun", "tests/media-serve.test.mjs"], ["bun", "tests/media-abuse.test.mjs"], ["bun", "tests/form-ux-media-workflow.test.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

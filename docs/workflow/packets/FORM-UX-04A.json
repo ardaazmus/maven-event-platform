@@ -1,0 +1,63 @@
+{
+  "id": "FORM-UX-04A",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Form ve marka medya yüzeylerinde medya klasöründen seçim, bilgisayardan tek adımda yükleme, form/workspace scope sınırı, seçili kaynağın aktif görünümü ve public render önizlemesini tek gerçek akışta doğrulamak; form medya endpoint'inin ortak workspace medyasını sızdırmamasını kilitlemek",
+  "rollback": "Yalnız FORM-UX-04A packetini, hedef medya workflow testini ve izin verilen medya UI/API kaynaklarındaki en küçük düzeltmeyi geri al; medya varlığı, form, publish snapshot, ödeme, fatura veya yanıt verisi silme/değiştirme",
+  "previous": ["FORM-UX-03"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/media-picker.tsx",
+    "src/components/mavenforms/views/appearance-panel.tsx",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/components/mavenforms/builder/properties-panel.tsx",
+    "src/components/mavenforms/builder/icon-picker.tsx",
+    "src/app/api/media/route.ts",
+    "src/app/api/media/[id]/route.ts",
+    "src/app/api/forms/[id]/media/route.ts",
+    "src/app/api/forms/[id]/appearance/route.ts",
+    "src/app/api/public/forms/[slug]/media/[token]/route.ts",
+    "src/lib/media.ts",
+    "src/lib/public-dto.ts",
+    "tests/builder-media.test.mjs",
+    "tests/builder-field-decoration.test.mjs",
+    "tests/media-picker.test.mjs",
+    "tests/media-upload.test.mjs",
+    "tests/media-upload-trigger.test.mjs",
+    "tests/media-scope.test.mjs",
+    "tests/public-appearance-media.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-04A.json",
+    "src/components/mavenforms/media-picker.tsx",
+    "src/components/mavenforms/views/appearance-panel.tsx",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/components/mavenforms/builder/properties-panel.tsx",
+    "src/app/api/forms/[id]/media/route.ts",
+    "tests/form-ux-media-workflow.test.mjs"
+  ],
+  "acceptance": [
+    "Logo, header/background, form card, field decoration ve marka görünüm alanları ortak medya picker sözleşmesini kullanır; kullanıcı kapsam içi medya varlığını seçebilir veya bilgisayardan yükleyebilir",
+    "Upload input gerçek upload route'una bağlıdır; seçilen/yüklenen varlık thumbnail, dosya adı, türü ve aktif/bağlı durumu ile görünür; hata ve boş liste durumları görünürdür",
+    "Form medya GET/POST route'u global workspace medyasını form yüzeyine açmaz; başka formun varlığı da server scope kontrolü ile okunamaz veya bağlanamaz",
+    "Public renderer yalnız yayınlanmış snapshot'ın imzalı medya URL'sini kullanır; iç asset id/storage key veya private media endpoint'i anonim DTO'ya sızmaz",
+    "Hedef medya workflow testi, mevcut medya/builder regresyonları, TypeScript, production build ve readiness geçmeden faz PASS sayılmaz; ödeme/fatura, Paraşüt ve V4 kapsamı açılmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-media-workflow.test.mjs"],
+    ["bun", "tests/builder-media.test.mjs"],
+    ["bun", "tests/builder-field-decoration.test.mjs"],
+    ["bun", "tests/media-picker.test.mjs"],
+    ["bun", "tests/media-upload.test.mjs"],
+    ["bun", "tests/media-upload-trigger.test.mjs"],
+    ["bun", "tests/media-scope.test.mjs"],
+    ["bun", "tests/public-appearance-media.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

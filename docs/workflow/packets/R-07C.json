@@ -1,0 +1,13 @@
+{
+  "id": "R-07C",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Production session cookie için Secure niteliğini server-side olarak zorunlu kılmak ve local HTTP istisnası ile HSTS deployment kapısını açıkça belgelemek",
+  "rollback": "Bu paketin auth cookie/test/dokümantasyon değişikliklerini geri al; session kayıtlarını silme",
+  "previous": ["R-07B"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "src/lib/auth.ts", "src/middleware.ts", "docs/SESSION-POLICY.md", "tests/policy.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/R-07C.json", "src/lib/auth.ts", "src/middleware.ts", "docs/SESSION-POLICY.md", "tests/session-cookie-security.test.mjs", "STATUS.md", "docs/superpowers/plans/2026-09-02-mavenforms-e-belge-15-dakikalik-uygulama-paketleri.md"],
+  "acceptance": ["Production session cookie Secure=true olur; local development HTTP istisnası yalnız NODE_ENV production dışındadır", "Production HSTS header uygulama katmanında yalnız production response'larında set edilir ve deployment HTTPS gereği belgelenir", "Cookie security testleri production/local ayrımını ve HSTS sözleşmesini doğrular", "Hedef security/auth testleri, tam regresyon, TypeScript, production build, /api/ready ve workflow verify PASS olur"],
+  "preflight": [["node", "scripts/local-ready.mjs"], ["bun", "tests/session-cookie-security.test.mjs"]],
+  "checks": [["bun", "tests/session-cookie-security.test.mjs"], ["bun", "tests/payment-invoice-security-boundary.test.mjs"], ["node", "scripts/run-tests.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

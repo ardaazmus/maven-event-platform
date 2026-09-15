@@ -1,0 +1,55 @@
+{
+  "id": "FORM-UX-06",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yayınlanmış public form, authenticated draft preview, iframe/embed script ve WordPress yüzeylerinin gerçek route/action sözleşmesini smoke test ile doğrulamak; anonim kullanıcıya kritik app bilgisi sızmadığını ve responsive embed yüksekliğinin çalıştığını kanıtlamak",
+  "rollback": "Yalnız FORM-UX-06 packetini, hedef public/embed smoke testini ve izin verilen public/embed kaynaklarındaki en küçük düzeltmeyi geri al; publish snapshot, yanıt, medya, ödeme, fatura veya tenant verisi silme/değiştirme",
+  "previous": ["FORM-UX-05B"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/app/forms/[slug]/page.tsx",
+    "src/app/api/public/forms/[slug]/route.ts",
+    "src/app/api/public/forms/[slug]/media/[token]/route.ts",
+    "src/app/api/forms/[id]/embed-script/route.ts",
+    "src/components/mavenforms/public-form-renderer.tsx",
+    "src/components/mavenforms/views/wordpress-embed-panel.tsx",
+    "src/lib/public-dto.ts",
+    "src/lib/public-media-token.ts",
+    "tests/public-form-layout.test.mjs",
+    "tests/public-appearance-media.test.mjs",
+    "tests/wordpress.test.mjs",
+    "tests/form-ux-builder-wiring.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-06.json",
+    "src/app/forms/[slug]/page.tsx",
+    "src/app/api/public/forms/[slug]/route.ts",
+    "src/app/api/public/forms/[slug]/media/[token]/route.ts",
+    "src/app/api/forms/[id]/embed-script/route.ts",
+    "src/components/mavenforms/public-form-renderer.tsx",
+    "src/components/mavenforms/views/wordpress-embed-panel.tsx",
+    "src/lib/public-dto.ts",
+    "tests/form-ux-public-embed.test.mjs"
+  ],
+  "acceptance": [
+    "Anonim public GET yalnız published snapshot ve allowlist DTO döndürür; draft preview session/workspace auth olmadan açılamaz ve internal id/storage/secret/credential alanları sızmaz",
+    "Public form submit gerçek public route'a bağlıdır; form status, response limit, validation, rate limit ve idempotency davranışları korunur",
+    "Embed script ve WordPress paneli gerçek public slug/URL, iframe veya script çıktısı ve responsive height mesajlaşması üretir; placeholder/uydurma bağlantı PASS sayılmaz",
+    "Public media yalnız imzalı token ve yayınlanmış forma ait clean asset ile açılır; private media endpoint'i anonymous renderer tarafından kullanılmaz",
+    "Hedef public/embed smoke testi, mevcut public/layout/WordPress regresyonları, TypeScript, production build ve readiness geçmeden faz PASS sayılmaz; ödeme/fatura, Paraşüt ve V4 kapsamı açılmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-public-embed.test.mjs"],
+    ["bun", "tests/public-form-layout.test.mjs"],
+    ["bun", "tests/public-appearance-media.test.mjs"],
+    ["bun", "tests/wordpress.test.mjs"],
+    ["bun", "tests/form-ux-builder-wiring.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

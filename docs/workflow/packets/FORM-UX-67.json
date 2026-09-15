@@ -1,0 +1,40 @@
+{
+  "id": "FORM-UX-67",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "E-posta şablonu ve medya kaynağı bileşenlerindeki effect kaynaklı gereksiz render döngülerini kaldırmak.",
+  "rollback": "Effect-state refactor, template editor remount wiring, focused test, packet ve durum satırını geri al; e-posta gönderimi, medya API'si, ödeme, fatura, R-10 ve V4 kapılarını değiştirme.",
+  "previous": [],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/email-template-editor.tsx",
+    "src/components/mavenforms/media-source-field.tsx",
+    "src/components/mavenforms/views/settings-view.tsx",
+    "tests/email-template-editor-wiring.test.mjs",
+    "tests/appearance-picker.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-67.json",
+    "src/components/mavenforms/email-template-editor.tsx",
+    "src/components/mavenforms/media-source-field.tsx",
+    "src/components/mavenforms/views/settings-view.tsx",
+    "tests/form-ux-effect-state.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "E-posta şablonu ve medya kaynağı bileşenlerinde effect içinden senkron setState çağrısı kalmayacak.",
+    "Şablon değiştiğinde editör anahtarıyla yeni taslak değerleri yüklenir; mevcut taslak düzenleme ve önizleme davranışı korunur.",
+    "Medya kaynağı, seçili asset veya harici URL ile kontrollü biçimde doğru sekmeyi gösterir; seçim değişimi korunur.",
+    "Focused wiring testi, ESLint, TypeScript ve context-check geçer; ödeme, fatura, R-10 ve V4 değişmez."
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/form-ux-effect-state.test.mjs"],
+    ["bun", "x", "eslint", "src/components/mavenforms/email-template-editor.tsx", "src/components/mavenforms/media-source-field.tsx", "src/components/mavenforms/views/settings-view.tsx"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

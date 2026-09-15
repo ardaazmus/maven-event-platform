@@ -1,0 +1,35 @@
+{
+  "id": "FORM-UX-42",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Sonuclar ekranindaki form seciciyi gercek buton, secili durum ve erisilebilir adlandirma ile guclendirmek",
+  "rollback": "Yalniz FORM-UX-42 packetini, submissions form secici niteliklerini, regression testini ve STATUS kaydini geri al",
+  "previous": ["FORM-UX-41"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/submissions-view.tsx"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-42.json",
+    "src/components/mavenforms/views/submissions-view.tsx",
+    "tests/form-ux-submissions-selector.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Form secici ogeleri type=button olarak calisir",
+    "Secili form aria-current ile ve gorunur sinifla ayirt edilir",
+    "Secici form degistirme, sayfa sifirlama ve mevcut veri yukleme akisini korur",
+    "Regression, TypeScript, build, readiness, context-check ve workflow verify basarili olur"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-submissions-selector.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

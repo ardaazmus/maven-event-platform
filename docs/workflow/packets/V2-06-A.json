@@ -1,0 +1,13 @@
+{
+  "id": "V2-06-A",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "V2-06 fatura hazırlama intent davranışını önceki receipt’i koruyarak STATUS güncellemesi sonrası yeniden doğrulamak",
+  "rollback": "Yalnız V2-06-A doğrulama izini geri al; fatura kesme, Paraşüt çağrısı veya otomatik gönderim açma",
+  "previous": ["V2-04C-B"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "RELEASE-DECISION.md", "docs/workflow/README.md", "docs/acceptance/v2-deferred-provider-decision.md", "src/lib/payment-invoice-preparation-intent.ts", "src/lib/email-policy.ts", "tests/v2-invoice-preparation-intent.test.mjs", "tests/payment-invoice-snapshot.test.mjs", "tests/payment-invoice-snapshot-source.test.mjs", "tests/payment-invoice-webhook-handoff.test.mjs", "tests/invoice-email.test.mjs", "tests/email-policy.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/V2-06-A.json", "docs/acceptance/v2-deferred-provider-decision.md", "STATUS.md"],
+  "acceptance": ["V2-06 davranışı önceki receipt ile tutarlı olmalıdır", "Sadece succeeded ödeme için transactional invoice_preparation intent’i korunmalıdır", "Belge linki/eki, issued/document_ready, Paraşüt ve otomatik/toplu dispatch açılmamalıdır", "Gerçek provider mutation ve hassas veri kullanılmamalıdır"],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["bun", "tests/v2-invoice-preparation-intent.test.mjs"], ["bun", "tests/payment-invoice-snapshot.test.mjs"], ["bun", "tests/payment-invoice-snapshot-source.test.mjs"], ["bun", "tests/payment-invoice-webhook-handoff.test.mjs"], ["bun", "tests/invoice-email.test.mjs"], ["bun", "tests/email-policy.test.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

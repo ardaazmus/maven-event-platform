@@ -1,0 +1,32 @@
+{
+  "id": "FORM-UX-59",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Synchronize the canonical STATUS summary with the completed FORM-UX-57 and FORM-UX-58 receipts so the next agent cannot receive a stale phase range.",
+  "rollback": "Revert only the FORM-UX summary text and this packet receipt metadata; do not alter application code or historical receipt files.",
+  "previous": ["FORM-UX-58"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "artifacts/workflow/FORM-UX-57/verified.json",
+    "artifacts/workflow/FORM-UX-58/verified.json"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-59.json",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "The canonical FORM-UX summary names the completed range through FORM-UX-58.",
+    "FORM-UX-57 and FORM-UX-58 remain individually recorded as LOCAL_PASS.",
+    "R-10, V2/V3/V4 ordering, and release status are unchanged.",
+    "Context and workflow verification pass with an immutable LOCAL_PASS receipt."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"]
+  ],
+  "checks": [
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

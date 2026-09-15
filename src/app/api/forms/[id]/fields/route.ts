@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getSessionFromCookie } from '@/lib/auth'
+import { can } from '@/lib/policy'
+import { normalizeFieldConfig } from '@/lib/form-document'
 import { z } from 'zod'
 
 interface RouteParams {
@@ -11,6 +13,8 @@ interface RouteParams {
 export async function GET(req: NextRequest, { params }: RouteParams) {
   const ctx = await getSessionFromCookie()
   if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const _auth = can.readForms(ctx as any)
+  if (!_auth.allowed) return NextResponse.json({ error: _auth.error }, { status: _auth.status })
 
   const { id } = await params
   const form = await db.form.findFirst({ where: { id, workspaceId: ctx.workspace.id } })
@@ -24,7 +28,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
   return NextResponse.json({
     data: fields.map((f) => ({
       ...f,
-      config: JSON.parse(f.configJson || '{}'),
+      config: normalizeFieldConfig(JSON.parse(f.configJson || '{}')),
     })),
   })
 }
@@ -50,6 +54,8 @@ const createFieldSchema = z.object({
 export async function POST(req: NextRequest, { params }: RouteParams) {
   const ctx = await getSessionFromCookie()
   if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const _auth = can.writeForms(ctx as any)
+  if (!_auth.allowed) return NextResponse.json({ error: _auth.error }, { status: _auth.status })
 
   const { id } = await params
   const form = await db.form.findFirst({ where: { id, workspaceId: ctx.workspace.id, deletedAt: null } })
@@ -82,18 +88,20 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
       adminOnly: parsed.data.adminOnly,
       encrypted: parsed.data.encrypted,
       defaultValue: parsed.data.defaultValue ?? null,
-      configJson: JSON.stringify(parsed.data.config || {}),
+      configJson: JSON.stringify(normalizeFieldConfig(parsed.data.config)),
       sortOrder: parsed.data.sortOrder ?? (maxSort._max.sortOrder ?? 0) + 1,
     },
   })
 
-  return NextResponse.json({ data: { ...field, config: JSON.parse(field.configJson || '{}') } })
+  return NextResponse.json({ data: { ...field, config: normalizeFieldConfig(JSON.parse(field.configJson || '{}')) } })
 }
 
 // Reorder fields
 export async function PATCH(req: NextRequest, { params }: RouteParams) {
   const ctx = await getSessionFromCookie()
   if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const _auth = can.writeForms(ctx as any)
+  if (!_auth.allowed) return NextResponse.json({ error: _auth.error }, { status: _auth.status })
 
   const { id } = await params
   const form = await db.form.findFirst({ where: { id, workspaceId: ctx.workspace.id, deletedAt: null } })
@@ -115,7 +123,7 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
       if (rest.readOnly !== undefined) data.readOnly = rest.readOnly
       if (rest.adminOnly !== undefined) data.adminOnly = rest.adminOnly
       if (rest.defaultValue !== undefined) data.defaultValue = rest.defaultValue
-      if (rest.config !== undefined) data.configJson = JSON.stringify(rest.config)
+      if (rest.config !== undefined) data.configJson = JSON.stringify(normalizeFieldConfig(rest.config))
       if (rest.fieldKey !== undefined) data.fieldKey = rest.fieldKey
       if (rest.type !== undefined) data.type = rest.type
 

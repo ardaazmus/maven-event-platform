@@ -1,0 +1,13 @@
+{
+  "id": "V2-02",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Maven first-party için iyzico hosted checkout sözleşmesini server-created PaymentOrder ve opaque callback/retrieve sınırlarıyla bağlamak; live mutation açmamak",
+  "rollback": "Yalnız V2-02 checkout route/orchestration/test değişikliklerini geri al; provider secret, merchant hesabı veya live mutation oluşturma",
+  "previous": ["V2-01"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "RELEASE-DECISION.md", "docs/workflow/README.md", "docs/superpowers/plans/2026-09-06-mavenforms-release-modules-first-party-saas-roadmap.md", "docs/OzelAPP_Derin_Arastirma_2026-09-03/02_iyzico.md", "docs/OzelAPP_Derin_Arastirma_2026-09-03/04_PCI_DSS_ve_Odeme_Guvenligi.md", "src/lib/iyzico-checkout-client.ts", "src/lib/iyzico-checkout-orchestration.ts", "src/lib/iyzico-checkout-request.ts", "src/lib/payment-order-checkout-persistence.ts", "src/app/api/public/forms/[slug]/payment-intents/route.ts", "src/app/api/public/forms/[slug]/payment-callback/route.ts", "tests/iyzico-checkout-client.test.mjs", "tests/iyzico-checkout-orchestration.test.mjs", "tests/payment-order-checkout-persistence.test.mjs", "tests/public-payment-intent-route.test.mjs", "tests/public-payment-callback-route.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/V2-02.json", "src/lib/iyzico-checkout-client.ts", "src/lib/iyzico-checkout-orchestration.ts", "src/app/api/public/forms/[slug]/payment-intents/route.ts", "tests/v2-iyzico-hpp-flow.test.mjs", "STATUS.md"],
+  "acceptance": ["Tutar ve currency yalnız yayınlanmış server snapshot'ından üretilir", "Hosted checkout response yalnız opaque kısa ömürlü checkout bilgisi taşır; secret, token ve kart verisi taşınmaz", "Callback tek başına succeeded yazmaz; retrieve/webhook ve PaymentOrder correlation beklenir", "Maven first-party scope ve active connection sınırı korunur; SaaS/public scope override kabul edilmez", "Gerçek provider sandbox kanıtı olmadan live mutation veya production eligibility açılmaz"],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["bun", "tests/v2-iyzico-hpp-flow.test.mjs"], ["bun", "tests/iyzico-checkout-client.test.mjs"], ["bun", "tests/iyzico-checkout-orchestration.test.mjs"], ["bun", "tests/payment-order-checkout-persistence.test.mjs"], ["bun", "tests/public-payment-intent-route.test.mjs"], ["bun", "tests/public-payment-callback-route.test.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

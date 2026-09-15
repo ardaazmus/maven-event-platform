@@ -1,0 +1,150 @@
+{
+  "version": 2,
+  "phases": [
+    {
+      "id": "M00.1",
+      "previous": [],
+      "allowedFiles": ["phase-manifest.v2.json", "docs/superpowers/plans/**"],
+      "requiredCommands": ["bun run lint", "bunx tsc --noEmit"],
+      "requiredEvidence": ["preflight", "test", "scope", "redaction", "review"],
+      "acceptanceIds": ["AC-BASELINE-01"]
+    },
+    {
+      "id": "M00.2",
+      "previous": ["M00.1"],
+      "allowedFiles": ["package.json", "bun.lock", "next.config.*", "src/**", "scripts/**", "tests/**"],
+      "requiredCommands": ["bun run lint", "bunx tsc --noEmit", "bun run build"],
+      "requiredEvidence": ["preflight", "test", "scope", "redaction", "review"],
+      "acceptanceIds": ["AC-BASELINE-02"]
+    },
+    {
+      "id": "M00.3",
+      "previous": ["M00.2"],
+      "allowedFiles": ["phase-manifest.v2.json", "scripts/phase-gate.mjs", "scripts/phase-evidence.mjs", "tests/phase-gate.test.mjs"],
+      "requiredCommands": ["bun run lint", "bunx tsc --noEmit", "node tests/phase-gate.test.mjs"],
+      "requiredEvidence": ["preflight", "test", "scope", "redaction", "review"],
+      "acceptanceIds": ["AC-GATE-01", "AC-GATE-02", "AC-GATE-03"]
+    },
+    {
+      "id": "M00.4",
+      "previous": ["M00.3"],
+      "allowedFiles": ["package.json", "scripts/**", "tests/**", "docs/superpowers/plans/**"],
+      "requiredCommands": ["bun run lint", "bunx tsc --noEmit", "node scripts/run-tests.mjs"],
+      "requiredEvidence": ["preflight", "test", "scope", "redaction", "review"],
+      "acceptanceIds": ["AC-TEST-01"]
+    },
+    {
+      "id": "M00.5",
+      "previous": ["M00.4"],
+      "allowedFiles": ["src/app/api/**", "src/lib/**", "tests/**", "docs/superpowers/plans/**"],
+      "requiredCommands": ["bun run lint", "bunx tsc --noEmit", "bun run build"],
+      "requiredEvidence": ["preflight", "test", "scope", "redaction", "review"],
+      "acceptanceIds": ["AC-SEC-01"]
+    },
+    {
+      "id": "M00.6",
+      "previous": ["M00.5"],
+      "allowedFiles": ["src/components/**", "src/app/**", "tests/**", "docs/superpowers/plans/**"],
+      "requiredCommands": ["bun run lint", "bunx tsc --noEmit", "bun run build"],
+      "requiredEvidence": ["preflight", "test", "scope", "redaction", "review"],
+      "acceptanceIds": ["AC-RESP-01"]
+    },
+    {
+      "id": "M01",
+      "previous": ["M00.6"],
+      "allowedFiles": ["prisma/**", "src/lib/**", "src/app/api/**", "tests/**", "docs/superpowers/plans/**"],
+      "requiredCommands": ["bun run lint", "bunx tsc --noEmit", "bun run build"],
+      "requiredEvidence": ["preflight", "test", "scope", "redaction", "review"],
+      "acceptanceIds": ["AC-CONTRACT-01"]
+    },
+    {
+      "id": "M02",
+      "previous": ["M01"],
+      "allowedFiles": ["src/lib/public-dto.ts", "src/app/api/public/**", "tests/**"],
+      "requiredCommands": ["bun run lint", "bunx tsc --noEmit", "bun run build"],
+      "requiredEvidence": ["preflight", "test", "scope", "redaction", "review"],
+      "acceptanceIds": ["AC-PUBLIC-01"]
+    },
+    {
+      "id": "M03",
+      "previous": ["M02"],
+      "allowedFiles": ["src/lib/media.ts", "src/lib/public-media-token.ts", "src/app/api/forms/**/media/**", "src/app/api/public/**/media/**", "src/components/**", "tests/**"],
+      "requiredCommands": ["bun run lint", "bunx tsc --noEmit", "bun run build"],
+      "requiredEvidence": ["preflight", "test", "scope", "redaction", "review"],
+      "acceptanceIds": ["AC-MEDIA-01"]
+    },
+    {
+      "id": "M04",
+      "previous": ["M03"],
+      "allowedFiles": ["src/components/**", "src/lib/**", "src/app/api/forms/**", "tests/**"],
+      "requiredCommands": ["bun run lint", "bunx tsc --noEmit", "bun run build"],
+      "requiredEvidence": ["preflight", "test", "scope", "redaction", "review"],
+      "acceptanceIds": ["AC-BUILDER-01"]
+    },
+    {
+      "id": "M05",
+      "previous": ["M04"],
+      "allowedFiles": ["src/components/**", "src/app/api/**", "tests/**"],
+      "requiredCommands": ["bun run lint", "bunx tsc --noEmit", "bun run build"],
+      "requiredEvidence": ["preflight", "test", "scope", "redaction", "review"],
+      "acceptanceIds": ["AC-DASHBOARD-01"]
+    },
+    {
+      "id": "M06",
+      "previous": ["M05"],
+      "allowedFiles": ["src/app/api/**", "src/lib/**", "src/components/**", "tests/**"],
+      "requiredCommands": ["bun run lint", "bunx tsc --noEmit", "bun run build"],
+      "requiredEvidence": ["preflight", "test", "scope", "redaction", "review"],
+      "acceptanceIds": ["AC-SUBMISSIONS-01", "AC-EXPORT-01"]
+    },
+    {
+      "id": "M07",
+      "previous": ["M06"],
+      "allowedFiles": ["src/lib/outbox-worker.ts", "src/app/api/**", "prisma/**", "tests/**"],
+      "requiredCommands": ["bun run lint", "bunx tsc --noEmit", "bun run build"],
+      "requiredEvidence": ["preflight", "test", "scope", "redaction", "review"],
+      "acceptanceIds": ["AC-OUTBOX-01"]
+    },
+    {
+      "id": "M08",
+      "previous": ["M07"],
+      "allowedFiles": ["src/app/api/public/**", "src/components/**", "src/lib/**", "wordpress/**", "tests/**"],
+      "requiredCommands": ["bun run lint", "bunx tsc --noEmit", "bun run build"],
+      "requiredEvidence": ["preflight", "test", "scope", "redaction", "review"],
+      "acceptanceIds": ["AC-EMBED-01", "AC-WP-01"]
+    },
+    {
+      "id": "M09",
+      "previous": ["M08"],
+      "allowedFiles": ["src/components/**", "src/app/**", "tests/**"],
+      "requiredCommands": ["bun run lint", "bunx tsc --noEmit", "bun run build"],
+      "requiredEvidence": ["preflight", "test", "scope", "redaction", "review"],
+      "acceptanceIds": ["AC-A11Y-01"]
+    },
+    {
+      "id": "M10",
+      "previous": ["M09"],
+      "allowedFiles": ["src/components/**", "src/app/**", "tests/**", "docs/superpowers/plans/**"],
+      "requiredCommands": ["bun run lint", "bunx tsc --noEmit", "bun run build"],
+      "requiredEvidence": ["preflight", "test", "scope", "redaction", "review"],
+      "acceptanceIds": ["AC-RESP-02"]
+    },
+    {
+      "id": "M11",
+      "previous": ["M10"],
+      "allowedFiles": ["scripts/**", "src/**", "tests/**", "docs/superpowers/plans/**"],
+      "requiredCommands": ["bun run lint", "bunx tsc --noEmit", "bun run build"],
+      "requiredEvidence": ["preflight", "test", "scope", "redaction", "review"],
+      "acceptanceIds": ["AC-RECOVERY-01"]
+    },
+    {
+      "id": "M12",
+      "previous": ["M11"],
+      "allowedFiles": ["RELEASE-DECISION.md", "tests/**", "scripts/**", "docs/**"],
+      "requiredCommands": ["bun run lint", "bunx tsc --noEmit", "bun run build"],
+      "requiredEvidence": ["preflight", "test", "scope", "redaction", "review"],
+      "acceptanceIds": ["AC-RELEASE-01"]
+    }
+  ],
+  "checksum": ""
+}

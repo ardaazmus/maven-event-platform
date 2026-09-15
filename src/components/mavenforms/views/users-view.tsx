@@ -40,6 +40,7 @@ const users = [
 const roleConfig: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   owner: { label: 'Owner', color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-500/10', icon: Crown },
   admin: { label: 'Admin', color: 'text-violet-600 dark:text-violet-400', bg: 'bg-violet-500/10', icon: Shield },
+  accounting: { label: 'Accounting', color: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-500/10', icon: FileText },
   form_manager: { label: 'Form Manager', color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-500/10', icon: FileText },
   analyst: { label: 'Analyst', color: 'text-cyan-600 dark:text-cyan-400', bg: 'bg-cyan-500/10', icon: BarChart3 },
   reviewer: { label: 'Reviewer', color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500/10', icon: Activity },
@@ -60,13 +61,23 @@ export function UsersView() {
           <h2 className="text-xl font-bold mb-1">Kullanıcılar</h2>
           <p className="text-sm text-muted-foreground">Workspace üyelerini ve rollerini yönetin</p>
         </div>
-        <Button className="gap-2">
-          <UserPlus className="w-4 h-4" /> Kullanıcı Davet Et
+        <Button type="button" className="gap-2" disabled aria-label="Kullanıcı daveti (yakında)" title="Kullanıcı daveti henüz bağlı değil">
+          <UserPlus className="w-4 h-4" /> Kullanıcı Davet Et (yakında)
         </Button>
       </div>
 
-      {/* Role Matrix */}
-      <Card className="p-5">
+      <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm text-amber-800 dark:text-amber-200" role="status">
+        Bu ekrandaki kullanıcılar ve rol matrisi örnek veridir; üyelik API’si bağlanana kadar davet ve rol değişiklikleri kaydedilmez.
+      </div>
+
+      {/* Role Matrix: secondary reference, kept collapsed so the member list is the primary task. */}
+      <details className="rounded-lg border border-border bg-background">
+        <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-3 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+          <Shield className="w-4 h-4 text-primary" />
+          <span>Rol izinlerini incele</span>
+          <span className="ml-auto text-xs font-normal text-muted-foreground">Rol Yetki Matrisi</span>
+        </summary>
+        <Card className="rounded-t-none border-0 border-t p-5 shadow-none">
         <h3 className="font-semibold mb-4 flex items-center gap-2">
           <Shield className="w-4 h-4 text-primary" />
           Rol Yetki Matrisi
@@ -96,6 +107,7 @@ export function UsersView() {
                 { perm: 'Yanıtları görüntüle', roles: ['owner', 'admin', 'form_manager', 'analyst', 'reviewer'] },
                 { perm: 'Yanıt onayla', roles: ['owner', 'admin', 'reviewer'] },
                 { perm: 'Raporları görüntüle', roles: ['owner', 'admin', 'analyst'] },
+                { perm: 'Fatura PII görüntüle', roles: ['owner', 'admin', 'accounting'] },
                 { perm: 'Kullanıcı yönet', roles: ['owner', 'admin'] },
                 { perm: 'Sistem ayarları', roles: ['owner'] },
               ].map((row, i) => (
@@ -115,7 +127,8 @@ export function UsersView() {
             </tbody>
           </table>
         </div>
-      </Card>
+        </Card>
+      </details>
 
       {/* Users List */}
       <Card className="overflow-hidden">
@@ -187,7 +200,14 @@ export function UsersView() {
                     </div>
                   </div>
 
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    disabled
+                    aria-label={`${u.name} işlemleri (yakında)`}
+                    title="Kullanıcı işlemleri (yakında)"
+                  >
                     <MoreVertical className="w-4 h-4" />
                   </Button>
                 </div>

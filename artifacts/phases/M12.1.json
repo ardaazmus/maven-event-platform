@@ -1,0 +1,40 @@
+{
+  "id": "M12.1",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "0ac8205e481ba0b0",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "e2e.test PASS",
+    "scope": {
+      "changedFiles": [
+        "tests/e2e.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "no PII, login/me/public/submit 200",
+    "acceptanceIds": [
+      "AC-E2E-01"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/e2e.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-02T03:44:39.044Z"
+}

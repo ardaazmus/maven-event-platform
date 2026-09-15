@@ -1,0 +1,13 @@
+{
+  "id": "FORM-UX-32",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Public form regression testini mevcut güvenli draft-preview sanitization helper'ına hizalamak",
+  "rollback": "Yalnız regression testi, packet ve STATUS kaydını geri al; public preview sınırını değiştirme",
+  "previous": ["FORM-UX-31"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/app/forms/[slug]/page.tsx", "src/lib/public-dto.ts", "tests/form-ux-public-embed.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-32.json", "tests/form-ux-public-embed.test.mjs", "STATUS.md"],
+  "acceptance": ["Draft preview test sanitizePublicForm kullanımını helper içinde doğrular", "Authenticated preview ve anonymous published-only sınırları gevşetilmez", "Test ve context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["bun", "tests/form-ux-public-embed.test.mjs"], ["bun", "tests/form-ux-final-gate.test.mjs"], ["node", "scripts/context-check.mjs"]]
+}

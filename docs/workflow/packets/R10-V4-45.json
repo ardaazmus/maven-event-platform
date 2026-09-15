@@ -1,0 +1,34 @@
+{
+  "id": "R10-V4-45",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yeni anonim R-10/V4 production readiness raporunu kaynak kanıtı olarak normalize etmek ve araştırma kaynağını gerçek dış kanıt veya release onayı olarak yorumlamayan çalışma durumunu sabitlemek",
+  "rollback": "Yeni kaynak receipt'i, packet'i ve durum notunu geri al; provider, production, DNS, secret, backup, müşteri verisi veya release flag mutation'ına dokunma",
+  "previous": ["R10-V4-44"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/runbooks/r10-external-evidence-guide.md",
+    "docs/research-sources/2026-09-11-ozelapp-r10-v4-guvenli-entegrasyon-research-receipt.md",
+    "docs/research-sources/2026-09-11-r10-v4-final-local-evidence-report.md",
+    "docs/workflow/status-history.md",
+    "docs/research-sources/2026-09-15-anonim-r10-v4-production-live-readiness-research-receipt.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-45.json",
+    "docs/research-sources/2026-09-15-anonim-r10-v4-production-live-readiness-research-receipt.md",
+    "docs/workflow/status-history.md",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Yeni raporun SHA-256'sı ve kapsamı kaynak receipt'inde kaydedilir",
+    "Araştırma önerileri, yerel kanıt ve gerçek dış kanıt ayrı sınıflarda tutulur",
+    "R-10 production ve V4 live kapıları rapor nedeniyle açılmaz; productionMutationAllowed=false ve NO-GO/BLOCKED açıkça korunur",
+    "Raporun sağlayabileceği güvenli yerel devam alanları ve sağlayamayacağı dış kanıtlar somut biçimde listelenir",
+    "Kaynak receipt'i secret, token, PAN/CVV, PII, raw provider payload veya canlı erişim bilgisi içermez"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]]
+}

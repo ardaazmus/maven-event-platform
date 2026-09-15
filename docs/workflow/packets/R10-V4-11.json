@@ -1,0 +1,44 @@
+{
+  "id": "R10-V4-11",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Payment, invoice, mail ve media bağlantı amaçlarını ortak ve tenant-scoped provider-neutral DTO ile ayırmak",
+  "rollback": "Connection purpose sözleşmesini ve testini geri al; mevcut provider modelleri ve route'ları değiştirme",
+  "previous": ["R10-V4-10"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/lib/payment-provider-contract.ts",
+    "src/lib/tenant-payment-connection.ts",
+    "src/lib/email-sender-profile.ts",
+    "prisma/schema.prisma",
+    "tests/payment-provider-contract.test.mjs",
+    "tests/v4-tenant-boundary.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-11.json",
+    "src/lib/connection-purpose-contract.ts",
+    "tests/connection-purpose-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Payment, invoice, mail ve media amaçları tek bir allowlist üzerinden normalize edilir",
+    "Connection DTO tenant/workspace scope, environment ve lifecycle state taşır; secret veya provider payload taşımaz",
+    "Geçersiz purpose, environment, state veya tenant/workspace uyuşmazlığı fail-closed reddedilir",
+    "Bu faz mevcut payment/email/Paraşüt bağlantı modellerini migrate etmez ve canlı bağlantı açmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/connection-purpose-contract.test.mjs"],
+    ["bun", "tests/payment-provider-contract.test.mjs"],
+    ["bun", "tests/v4-tenant-boundary.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

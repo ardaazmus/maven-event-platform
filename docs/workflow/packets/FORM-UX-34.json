@@ -1,0 +1,41 @@
+{
+  "id": "FORM-UX-34",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Form builder içindeki kayıt kontrollerinin kapsamını görünür adlandırmak; form metadata kaydı ile görünüm kaydını endpoint birleştirmeden ayırmak",
+  "rollback": "Yalnız FORM-UX-34 packetini, kayıt butonu metinlerini, regression testini ve STATUS kaydını geri al; form, görünüm, medya, yayın veya yanıt verisini silme/değiştirme",
+  "previous": ["FORM-UX-33"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/components/mavenforms/views/appearance-panel.tsx",
+    "tests/form-ux-final-gate.test.mjs",
+    "tests/form-settings-preview.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-34.json",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/components/mavenforms/views/appearance-panel.tsx",
+    "tests/form-ux-save-scope.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Form builder ana kaydetme kontrolü Formu kaydet kapsamını açıkça gösterir",
+    "Görünüm paneli kaydetme kontrolü Görünümü kaydet kapsamını açıkça gösterir",
+    "Form ve görünüm endpoint'leri birleştirilmez; mevcut kayıt davranışı korunur",
+    "Regression, TypeScript, build, readiness, context-check ve workflow verify geçer"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-save-scope.test.mjs"],
+    ["bun", "tests/form-ux-final-gate.test.mjs"],
+    ["bun", "tests/form-settings-preview.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

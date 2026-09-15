@@ -1,0 +1,43 @@
+{
+  "id": "BADGE-33",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Hazır tekil badge PDF'lerini seçili/tümü export için tek birleşik PDF ve tekil dosyalarla ZIP manifestine dönüştürmek.",
+  "rollback": "Badge export adapter, focused test, packet ve BADGE-33 durum satırını geri al; UI action, matbaa API, e-posta, ödeme, fatura, provider ve R-10 kapılarını açma.",
+  "previous": ["BADGE-32"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/badge-export-contract.ts",
+    "src/lib/badge-artifact-storage.ts",
+    "src/lib/badge-artifact-delivery-contract.ts",
+    "src/lib/badge-batch-contract.ts",
+    "tests/badge-export-contract.test.mjs",
+    "tests/badge-batch-contract.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-33.json",
+    "src/lib/badge-export-package.ts",
+    "tests/badge-export-package.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Yalnız READY, checksum doğrulanabilir ve aynı workspace/form scope'undaki PDF artifact'leri export edilir; karantina/blocked çıktı reddedilir.",
+    "Tekil PDF'ler metadata manifestiyle ZIP'e eklenir; aynı girdiler face mode'a göre combined-front.pdf veya combined-duplex.pdf olarak birleştirilir.",
+    "ZIP üretimi deterministik, path traversal'sız ve private output olarak bellekte yapılır; disk yazımı yalnız önceki artifact storage katmanındadır.",
+    "Mevcut filename collision, submission duplicate, max batch ve face/page kuralları korunur; PII public URL'e taşınmaz.",
+    "Focused export testi, TypeScript ve context-check geçer; UI, download route action wiring ve production/matbaa entegrasyonu sonraki faza kalır."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"]
+  ],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-export-package.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/badge-export-contract.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/badge-batch-contract.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

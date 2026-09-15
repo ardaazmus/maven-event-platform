@@ -1,0 +1,45 @@
+{
+  "id": "R10-V4-19",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Disposable test DB/object-storage/mail-sink profilini dış ortama çıkışı engelleyen provider-neutral sözleşmeye almak",
+  "rollback": "Disposable test profili sözleşmesini ve testini geri al; local-ready, gerçek DB, object storage ve mail worker davranışlarını değiştirme",
+  "previous": ["R10-V4-18"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "scripts/local-ready.mjs",
+    "src/lib/email-delivery-guard.ts",
+    "src/lib/email-queue.ts",
+    "src/lib/invoice-document-storage.ts",
+    "tests/email-delivery-guard.test.mjs",
+    "tests/email-queue.test.mjs",
+    "tests/storage.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-19.json",
+    "src/lib/disposable-test-profile.ts",
+    "tests/disposable-test-profile.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Test profili disposable DB, disposable object storage ve sink mail transportunu açıkça belirtir",
+    "Mail yalnız test.invalid alıcı alanına ve sink transportuna izin verir; SMTP/provider/external delivery kapalıdır",
+    "Profil üretimi secret, credential, PII, production veya bilinmeyen alanları fail-closed reddeder",
+    "Bu faz gerçek DB reseti, object-storage silmesi, mail gönderimi veya R-10 production kararını açmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/disposable-test-profile.test.mjs"],
+    ["bun", "tests/email-delivery-guard.test.mjs"],
+    ["bun", "tests/email-queue.test.mjs"],
+    ["bun", "tests/storage.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

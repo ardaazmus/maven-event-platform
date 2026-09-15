@@ -1,0 +1,42 @@
+{
+  "id": "M10.2",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "d6310eda308f7a37",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "outbox-prisma.test PASS + migrate deploy",
+    "scope": {
+      "changedFiles": [
+        "prisma/schema.prisma",
+        "prisma/migrations/20260902033224_add_outbox/migration.sql",
+        "tests/outbox-prisma.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "OutboxEvent with workspace/form, status index",
+    "acceptanceIds": [
+      "AC-OUTBOX-01"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/outbox-prisma.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-02T03:33:20.471Z"
+}

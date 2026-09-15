@@ -1,0 +1,53 @@
+{
+  "id": "FORM-UX-64",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Clarify the boundary between form appearance, form theme, and the application theme across the builder, form management menu, and workspace settings, while wiring the existing form theme panel into its real route.",
+  "rollback": "Revert only the taxonomy labels, contextual explanations, theme-panel route wiring, and related regression assertions; do not change theme data, APIs, permissions, or public snapshot behavior.",
+  "previous": ["FORM-UX-63"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/components/mavenforms/views/appearance-panel.tsx",
+    "src/components/mavenforms/views/forms-list-view.tsx",
+    "src/components/mavenforms/views/settings-view.tsx",
+    "tests/form-ux-theme-override-scope.test.mjs",
+    "tests/form-ux-settings-navigation.test.mjs",
+    "tests/theme-panel.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-64.json",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/components/mavenforms/views/forms-list-view.tsx",
+    "src/components/mavenforms/views/settings-view.tsx",
+    "tests/form-ux-settings-taxonomy.test.mjs",
+    "tests/form-ux-theme-override-scope.test.mjs",
+    "tests/theme-panel.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Form appearance and form theme are grouped under a single design category but remain explicitly differentiated by scope.",
+    "The existing form ThemePanel is rendered when the form theme tab is selected and keeps its existing API and draft-save behavior.",
+    "Workspace settings identify the application theme separately from the selected form theme.",
+    "All existing form navigation routes, theme persistence, appearance overrides, public rendering, and release/provider gates remain unchanged.",
+    "Focused tests, TypeScript, build, readiness, context, and workflow verification pass."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/form-ux-settings-taxonomy.test.mjs"],
+    ["bun", "tests/form-ux-theme-override-scope.test.mjs"],
+    ["bun", "tests/theme-panel.test.mjs"],
+    ["bun", "tests/form-ux-settings-navigation.test.mjs"],
+    ["bun", "tests/form-ux-builder-controls.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

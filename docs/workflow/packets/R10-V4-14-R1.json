@@ -1,0 +1,33 @@
+{
+  "id": "R10-V4-14-R1",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "R10-V4-14 lifecycle kanıtından sonra değişen bootstrap STATUS hash’ini yeniden doğrulamak",
+  "rollback": "Yalnız STATUS revalidation satırını geri al; lifecycle sözleşmesi, worker ve credential kayıtlarına dokunma",
+  "previous": [],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/connection-lifecycle-contract.ts",
+    "tests/connection-lifecycle-contract.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-14-R1.json",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "STATUS, R10-V4-14 lifecycle sonucunu ve sonraki PKCE fazını kısa bootstrap kaydıyla gösterir",
+    "Bu revalidation yalnız kanıt zincirini sabitler; ürün kodu, veri, worker ve canlı provider mutasyonu yapmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/connection-lifecycle-contract.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "id": "R10-V4-17",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Fake provider success/timeout/429/5xx sonuçlarını gerçek ağa çıkmadan deterministik normalize etmek",
+  "rollback": "Fake adapter sözleşmesini ve testini geri al; gerçek provider adapter ve ödeme kayıtlarını değiştirme",
+  "previous": ["R10-V4-16"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/payment-provider-contract.ts",
+    "src/lib/payment-connection-gate.ts",
+    "src/lib/payment-retrieve-failure.ts",
+    "tests/payment-provider-contract.test.mjs",
+    "tests/payment-retrieve-failure.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-17.json",
+    "src/lib/fake-provider-adapter.ts",
+    "tests/fake-provider-adapter.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Success, timeout, 429 ve 5xx senaryoları tek normalized sonuç sözleşmesiyle deterministic döner",
+    "Unknown scenario, unsafe request id ve secret içeren input fail-closed reddedilir; raw provider payload dönmez",
+    "Adapter gerçek network/fetch, credential çözme veya DB mutation yapmaz ve retry edilebilirlik açıkça belirtilir",
+    "Bu faz R-10 production kararını ve gerçek ödeme sağlayıcılarını açmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/fake-provider-adapter.test.mjs"],
+    ["bun", "tests/payment-provider-contract.test.mjs"],
+    ["bun", "tests/payment-retrieve-failure.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

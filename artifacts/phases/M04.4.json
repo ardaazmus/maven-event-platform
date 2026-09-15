@@ -1,0 +1,42 @@
+{
+  "id": "M04.4",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "5b6665ba6d6dd294",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "media-abuse.test PASS",
+    "scope": {
+      "changedFiles": [
+        "src/lib/rate-limit.ts",
+        "src/app/api/forms/[id]/media/route.ts",
+        "tests/media-abuse.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "429/409 quota, rate limit",
+    "acceptanceIds": [
+      "AC-MEDIA-ABUSE-01"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/media-abuse.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-01T23:16:45.071Z"
+}

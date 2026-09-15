@@ -1,0 +1,19 @@
+{
+  "id": "FORM-UX-57",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Kanonik STATUS icinde son FORM-UX receipt listesini ve sonraki kapinin durumunu guncellemek",
+  "rollback": "FORM-UX-57 packet ve STATUS kanit ozetindeki yalniz bu faz degisikligini geri al",
+  "previous": ["FORM-UX-56"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "artifacts/workflow/FORM-UX-56/verified.json"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-57.json", "STATUS.md"],
+  "acceptance": [
+    "STATUS son FORM-UX receipt listesini FORM-UX-53..56 ile guncel tutar",
+    "FORM-UX son durum ve V4 hold bilgisi birbiriyle celismez",
+    "Sonraki faz icin kullanilabilir durum ve kanit yolu acik kalir",
+    "Kaynak kod, database, auth/policy, public form ve provider davranisi degismez",
+    "Context-check ve workflow verify basarili olur"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["node", "scripts/context-check.mjs"]]
+}

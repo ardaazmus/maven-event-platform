@@ -1,0 +1,43 @@
+{
+  "id": "R10-V4-40",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "R-10 P0 dış kanıt kapılarını bounded registry ile toplamak ve eksik tek kapıda production NO-GO kararını korumak",
+  "rollback": "P0 registry sözleşmesi ve testini geri al; release flag, provider, database veya deployment mutation'ına dokunma",
+  "previous": ["R10-V4-39"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "RELEASE-DECISION.md",
+    "src/lib/r10-scope-gate.ts",
+    "docs/runbooks/r10-external-evidence-guide.md",
+    "tests/final-release-gate.test.mjs",
+    "tests/r10-live-mutation-guard.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-40.json",
+    "src/lib/r10-p0-gate-registry.ts",
+    "tests/r10-p0-gate-registry.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Provider/merchant, webhook-reconciliation, accounting-legal, document scan, sender domain, staging backup-restore ve independent review P0 kapıları tek registry'de zorunludur",
+    "Eksik, expired, blocked veya unverified tek bir P0 production kararını NO-GO yapar; eksik kapılar bounded ID olarak görünür",
+    "Registry secret, token, PAN/CVV, PII veya raw provider payload kabul etmez; production mutation'ı kendisi açmaz",
+    "Sözleşme pure olur ve R-10 dış kanıtları gelmeden mevcut NO-GO durumunu değiştirmez"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/r10-p0-gate-registry.test.mjs"],
+    ["bun", "tests/final-release-gate.test.mjs"],
+    ["bun", "tests/r10-live-mutation-guard.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "id": "M03.2",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "fb2d880860dc870d",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "media-asset.test PASS + prisma validate + migrate deploy",
+    "scope": {
+      "changedFiles": [
+        "prisma/schema.prisma",
+        "prisma/migrations/20260901224053_add_media_asset/migration.sql",
+        "src/lib/media.ts",
+        "tests/media-asset.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "no PII, storageKey unique, workspace+form index",
+    "acceptanceIds": [
+      "AC-MEDIA-DB-01"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/media-asset.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-01T22:42:13.928Z"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "FORM-UX-31",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Responsive UI regression testini builder kök sınıf sırasına dayanıklı hale getirmek",
+  "rollback": "Yalnız regression testi, packet ve STATUS kaydını geri al; uygulama davranışını değiştirme",
+  "previous": ["FORM-UX-30-R1"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "tests/form-ux-responsive-a11y.test.mjs", "src/components/mavenforms/views/form-builder-view.tsx"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-31.json", "tests/form-ux-responsive-a11y.test.mjs", "STATUS.md"],
+  "acceptance": ["Responsive regression testi geçerli builder sınıf sırasını kabul eder", "Yanlış layout veya erişilebilirlik assertion'ları gevşetilmez", "Test ve context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["bun", "tests/form-ux-responsive-a11y.test.mjs"], ["bun", "tests/form-ux-final-gate.test.mjs"], ["node", "scripts/context-check.mjs"]]
+}

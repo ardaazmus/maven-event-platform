@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getSessionFromCookie } from '@/lib/auth'
+import { can } from '@/lib/policy'
 
 interface RouteParams {
   params: Promise<{ id: string }>
@@ -9,6 +10,8 @@ interface RouteParams {
 export async function GET(req: Request, { params }: RouteParams) {
   const ctx = await getSessionFromCookie()
   if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const _auth = can.readReports(ctx as any)
+  if (!_auth.allowed) return NextResponse.json({ error: _auth.error }, { status: _auth.status })
 
   const { id } = await params
   const form = await db.form.findFirst({ where: { id, workspaceId: ctx.workspace.id } })
@@ -33,7 +36,7 @@ export async function GET(req: Request, { params }: RouteParams) {
   })
 
   // Daily trend
-  const trend = []
+  const trend: Array<{ date: string; label: string; count: number }> = []
   for (let i = days - 1; i >= 0; i--) {
     const dayStart = new Date()
     dayStart.setDate(dayStart.getDate() - i)
@@ -55,7 +58,7 @@ export async function GET(req: Request, { params }: RouteParams) {
     where: { formId: id, type: { in: ['select', 'radio', 'checkbox'] } },
   })
   
-  const fieldDistributions = []
+  const fieldDistributions: Array<{ fieldId: string; fieldKey: string; label: string; type: string; distribution: Array<{ value: string; count: number }> }> = []
   for (const field of fields) {
     const values = await db.submissionValue.findMany({
       where: { fieldId: field.id, submission: { formId: id } },
@@ -79,7 +82,7 @@ export async function GET(req: Request, { params }: RouteParams) {
   const ratingFields = await db.formField.findMany({
     where: { formId: id, type: 'rating' },
   })
-  const ratingAverages = []
+  const ratingAverages: Array<{ fieldId: string; fieldKey: string; label: string; average: number; count: number }> = []
   for (const field of ratingFields) {
     const values = await db.submissionValue.findMany({
       where: { fieldId: field.id, submission: { formId: id } },

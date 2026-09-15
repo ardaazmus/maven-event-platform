@@ -1,0 +1,48 @@
+{
+  "id": "R10-V4-34",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Secret redaction ve erişim audit çıktısı için response/log/export sızıntı canary sözleşmesi oluşturmak",
+  "rollback": "Secret canary sözleşmesi ve testini geri al; mevcut route, audit ve credential persistence davranışına mutation ekleme",
+  "previous": ["R10-V4-33"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/lib/audit-redaction.ts",
+    "src/lib/secret-metadata-contract.ts",
+    "src/lib/connection-verification-contract.ts",
+    "src/app/api/audit/route.ts",
+    "tests/audit-read-redaction.test.mjs",
+    "tests/secret-metadata-contract.test.mjs",
+    "tests/connection-verification-contract.test.mjs",
+    "tests/capability-evidence-checklist.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-34.json",
+    "src/lib/secret-output-canary.ts",
+    "tests/secret-output-canary.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Secret, token, API key, password, credential envelope, raw provider response ve PII alanları response/log/export audit metadata'sına giremez",
+    "Canary yalnız güvenli kimlik ve durum metadatasını kabul eder; gizli anahtar tespitinde fail-closed olur",
+    "Audit çıktısı bounded ve raw değerlerden bağımsızdır; aynı güvenli sonuç deterministik olarak üretilir",
+    "Sözleşme pure olur; network, DB, dosya, provider veya gerçek veri mutation yapmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/secret-output-canary.test.mjs"],
+    ["bun", "tests/audit-read-redaction.test.mjs"],
+    ["bun", "tests/secret-metadata-contract.test.mjs"],
+    ["bun", "tests/connection-verification-contract.test.mjs"],
+    ["bun", "tests/capability-evidence-checklist.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "id": "MAIL-03-02",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "E-posta şablonu editörüne gerçek gönderimden ayrı güvenli örnek veri önizlemesi eklemek",
+  "rollback": "Yalnız MAIL-03-02 packetini, email template editor preview değişikliğini, preview wiring testini ve STATUS kaydını geri al; provider, SMTP credential veya gerçek alıcı verisini değiştirme",
+  "previous": ["MAIL-03-01"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/workflow/packets/MAIL-03-01.json",
+    "artifacts/workflow/MAIL-03-01/verified.json",
+    "src/components/mavenforms/email-template-editor.tsx",
+    "src/components/ui/button.tsx",
+    "src/lib/email-template-content.ts",
+    "tests/email-template-editor-tags.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/MAIL-03-02.json",
+    "src/components/mavenforms/email-template-editor.tsx",
+    "tests/email-template-editor-preview.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Önizleme canonical renderEmailTemplateContent ve sentetik örnek değerlerle çalışır; gerçek submission veya PII kullanmaz",
+    "Subject, text body ve render hatası görünür; hatalı/boş içerik gerçek gönderim gibi ele alınmaz",
+    "Önizleme yalnız local editör state'ini değiştirir; provider, SMTP, outbox ve kalıcı API açılmaz",
+    "Preview wiring testi, önceki tag/content testleri, TypeScript ve readiness geçmeden faz tamamlanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/email-template-editor-preview.test.mjs"],
+    ["bun", "tests/email-template-editor-tags.test.mjs"],
+    ["bun", "tests/email-template-content.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "id": "R10-V4-44",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "R-10/V4 bağımsız inceleme hazırlığını kanıt kapsamı, tehdit/restore kontrolü ve açık dış bağımlılıklarla sınırlı checklist olarak sabitlemek",
+  "rollback": "İnceleme hazırlık belgesini ve tarihçe kaydını geri al; review erişimi, provider, production, backup veya release mutation'ına dokunma",
+  "previous": ["R10-V4-43"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "docs/runbooks/r10-external-evidence-guide.md",
+    "docs/runbooks/worker-restart-restore.md",
+    "docs/research-sources/2026-09-11-r10-v4-final-local-evidence-report.md",
+    "artifacts/workflow/R10-V4-40/verified.json",
+    "artifacts/workflow/R10-V4-41/verified.json",
+    "artifacts/workflow/R10-V4-42/verified.json",
+    "artifacts/workflow/R10-V4-43/verified.json",
+    "docs/workflow/status-history.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-44.json",
+    "docs/runbooks/r10-independent-review-prep.md",
+    "docs/workflow/status-history.md",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Bağımsız review kapsamı V1/V2/V3 ortak R-10 sınırı ve V4 tenant sınırıyla açıkça tanımlanır",
+    "Threat model, tenant boundary, upload, callback/webhook, queue/replay, document, secret, restore ve production guard kontrol başlıkları kanıt referanslarıyla listelenir",
+    "Her kontrol PASS/OPEN/EXTERNAL_DEPENDENCY/NOT_APPLICABLE durumlarından biriyle ve owner/evidence beklentisiyle ayrılır; local receipt review imzası sayılmaz",
+    "Review paketi secret, token, PAN/CVV, PII, raw provider payload, backup içeriği veya canlı erişim bilgisi içermez; release NO-GO korunur"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

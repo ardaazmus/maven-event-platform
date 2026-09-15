@@ -1,0 +1,31 @@
+{
+  "id": "FORM-UX-62",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Synchronize the canonical recent FORM-UX evidence list with the completed receipts through FORM-UX-61 without changing product behavior.",
+  "rollback": "Revert only the recent FORM-UX evidence list and this packet receipt metadata; preserve application code and all historical receipts.",
+  "previous": ["FORM-UX-61"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "artifacts/workflow/FORM-UX-61/verified.json"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-62.json",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "The recent FORM-UX evidence list includes the completed receipts through FORM-UX-61.",
+    "Individual FORM-UX LOCAL_PASS records and the 00..60 summary remain intact.",
+    "R-10, V2/V3/V4 ordering, provider status, and release gates are unchanged.",
+    "Context and workflow verification pass with an immutable LOCAL_PASS receipt."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"]
+  ],
+  "checks": [
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

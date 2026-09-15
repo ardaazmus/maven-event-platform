@@ -14,38 +14,43 @@ datasource db {
 // ============ AUTH & IDENTITY ============
 
 model User {
-  id            String   @id @default(cuid())
-  email         String   @unique
-  name          String?
-  passwordHash  String
-  avatarUrl     String?
-  status        String   @default("active") // active, suspended, invited
-  mfaEnabled    Boolean  @default(false)
-  mfaSecret     String?
-  lastLoginAt   DateTime?
-  locale        String   @default("tr")
-  timezone      String   @default("Europe/Istanbul")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String?
+  passwordHash String
+  avatarUrl    String?
+  status       String    @default("active") // active, suspended, invited
+  mfaEnabled   Boolean   @default(false)
+  mfaSecret    String?
+  lastLoginAt  DateTime?
+  locale       String    @default("tr")
+  timezone     String    @default("Europe/Istanbul")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
-  memberships   WorkspaceMember[]
-  sessions      Session[]
-  ownedForms    Form[]       @relation("FormOwner")
-  createdForms  Form[]       @relation("FormCreator")
-  submissions   Submission[] @relation("SubmissionCreator")
-  refreshTokens RefreshToken[]
-  auditActions  AuditLog[]   @relation("AuditActor")
+  memberships               WorkspaceMember[]
+  sessions                  Session[]
+  ownedForms                Form[]                     @relation("FormOwner")
+  createdForms              Form[]                     @relation("FormCreator")
+  submissions               Submission[]               @relation("SubmissionCreator")
+  refreshTokens             RefreshToken[]
+  auditActions              AuditLog[]                 @relation("AuditActor")
+  mediaAssets               MediaAsset[]
+  invoiceImportBatches      InvoiceImportBatch[]       @relation("InvoiceImportUploader")
+  dangerousActionChallenges DangerousActionChallenge[]
+  parasutOAuthTransactions ParasutOAuthTransaction[]
+  invoiceDocumentDecisions InvoiceDocumentDecision[] @relation("InvoiceDocumentDecisionApprover")
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  userId       String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  token        String   @unique
-  userAgent    String?
-  ip           String?
-  expiresAt    DateTime
-  createdAt    DateTime @default(now())
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  userAgent String?
+  ip        String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 
   @@index([userId])
 }
@@ -65,65 +70,103 @@ model RefreshToken {
 // ============ WORKSPACE & RBAC ============
 
 model Workspace {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  locale      String   @default("tr")
-  timezone    String   @default("Europe/Istanbul")
-  plan        String   @default("free") // free, pro, business, enterprise
-  status      String   @default("active")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  locale    String   @default("tr")
+  timezone  String   @default("Europe/Istanbul")
+  plan      String   @default("free") // free, pro, business, enterprise
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  members       WorkspaceMember[]
-  folders       Folder[]
-  tags          Tag[]
-  forms         Form[]
-  themes        Theme[]
-  auditLogs     AuditLog[]
-  integrations  Integration[]
-  branding      WorkspaceBranding?
+  members                    WorkspaceMember[]
+  folders                    Folder[]
+  tags                       Tag[]
+  forms                      Form[]
+  themes                     Theme[]
+  auditLogs                  AuditLog[]
+  integrations               Integration[]
+  branding                   WorkspaceBranding?
+  mediaAssets                MediaAsset[]
+  outboxEvents               OutboxEvent[]
+  paymentOrders              PaymentOrder[]
+  invoiceRecipientSnapshots  InvoiceRecipientSnapshot[]
+  invoiceRecords              InvoiceRecord[]
+  invoiceBatches              InvoiceBatch[]
+  invoiceImportBatches         InvoiceImportBatch[]
+  invoiceImportApplications   InvoiceImportApplication[]
+  invoiceDocumentDecisions    InvoiceDocumentDecision[]
+  paymentProviderConnections PaymentProviderConnection[]
+  paymentConfigs             FormPaymentConfig[]
+  paymentWebhookEvents       PaymentWebhookEvent[]
+  emailProviderEvents        EmailProviderEvent[]
+  emailProviderConnections   EmailProviderConnection[]
+  emailPreferences           EmailPreference[]
+  emailSuppressions          EmailSuppression[]
+  emailProtection            WorkspaceEmailProtection?
+  dangerousActionChallenges  DangerousActionChallenge[]
+  parasutConnections         ParasutConnection[]
+  parasutOAuthTransactions   ParasutOAuthTransaction[]
 }
 
 model WorkspaceMember {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   workspaceId String
   userId      String
-  role        String   @default("viewer") // owner, admin, form_manager, analyst, reviewer, viewer
-  status      String   @default("active") // active, invited, suspended
+  role        String    @default("viewer") // owner, admin, accounting, form_manager, analyst, reviewer, viewer
+  status      String    @default("active") // active, invited, suspended
   invitedAt   DateTime?
-  joinedAt    DateTime @default(now())
+  joinedAt    DateTime  @default(now())
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([workspaceId, userId])
   @@index([userId])
 }
 
+model DangerousActionChallenge {
+  id           String    @id @default(cuid())
+  workspaceId  String
+  userId       String
+  action       String
+  codeHash     String
+  attemptCount Int       @default(0)
+  expiresAt    DateTime
+  consumedAt   DateTime?
+  createdAt    DateTime  @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, userId, action, createdAt])
+  @@index([expiresAt, consumedAt])
+}
+
 // ============ FOLDERS & TAGS ============
 
 model Folder {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   workspaceId String
   parentId    String?
   name        String
-  color       String   @default("#64748b")
-  sortOrder   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  color       String    @default("#64748b")
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  parent      Folder?  @relation("FolderTree", fields: [parentId], references: [id])
-  children    Folder[] @relation("FolderTree")
+  parent      Folder?   @relation("FolderTree", fields: [parentId], references: [id])
+  children    Folder[]  @relation("FolderTree")
   forms       Form[]
 
   @@index([workspaceId])
 }
 
 model Tag {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   workspaceId String
   name        String
-  color       String   @default("#10b981")
+  color       String    @default("#10b981")
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   forms       FormTag[]
 
@@ -134,8 +177,8 @@ model Tag {
 model FormTag {
   formId String
   tagId  String
-  form   Form @relation(fields: [formId], references: [id], onDelete: Cascade)
-  tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  form   Form   @relation(fields: [formId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([formId, tagId])
 }
@@ -143,81 +186,109 @@ model FormTag {
 // ============ FORMS & VERSIONS ============
 
 model Form {
-  id                  String   @id @default(cuid())
-  workspaceId         String
-  folderId            String?
-  ownerId             String
-  createdById         String
-  title               String
-  description         String?
-  slug                String   @unique
-  status              String   @default("draft") // draft, published, paused, archived
-  settingsJson        String   @default("{}")
-  publishedVersionId  String?
-  submissionCount     Int      @default(0)
-  todaySubmissionCount Int     @default(0)
-  responseLimit       Int?
-  startDate           DateTime?
-  endDate             DateTime?
-  closedMessage       String?
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-  deletedAt           DateTime?
+  id                   String    @id @default(cuid())
+  workspaceId          String
+  folderId             String?
+  ownerId              String
+  createdById          String
+  title                String
+  description          String?
+  slug                 String    @unique
+  status               String    @default("draft") // draft, published, paused, archived
+  settingsJson         String    @default("{}")
+  publishedVersionId   String?
+  submissionCount      Int       @default(0)
+  todaySubmissionCount Int       @default(0)
+  responseLimit        Int?
+  startDate            DateTime?
+  endDate              DateTime?
+  closedMessage        String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  deletedAt            DateTime?
 
-  workspace           Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  folder              Folder?   @relation(fields: [folderId], references: [id])
-  owner               User      @relation("FormOwner", fields: [ownerId], references: [id])
-  creator             User      @relation("FormCreator", fields: [createdById], references: [id])
-  versions            FormVersion[]
-  fields              FormField[]
-  submissions         Submission[]
-  themes              Theme[]
-  notifications       Notification[]
-  logicRules          LogicRule[]
-  tags                FormTag[]
-  reports             Report[]
-  appearance          FormAppearance?
+  workspace     Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  folder        Folder?         @relation(fields: [folderId], references: [id])
+  owner         User            @relation("FormOwner", fields: [ownerId], references: [id])
+  creator       User            @relation("FormCreator", fields: [createdById], references: [id])
+  versions      FormVersion[]
+  fields        FormField[]
+  submissions   Submission[]
+  themes        Theme[]
+  notifications Notification[]
+  logicRules    LogicRule[]
+  tags          FormTag[]
+  reports       Report[]
+  appearance    FormAppearance?
+  mediaAssets   MediaAsset[]
+  outboxEvents  OutboxEvent[]
+  paymentOrders PaymentOrder[]
+  paymentConfig FormPaymentConfig?
 
   @@index([workspaceId, status])
   @@index([workspaceId, deletedAt])
 }
 
 model FormVersion {
-  id           String   @id @default(cuid())
-  formId       String
-  versionNo    Int
-  schemaJson   String   @default("{}")
-  checksum     String
-  status       String   @default("draft") // draft, published, archived
-  publishedAt  DateTime?
-  createdAt    DateTime @default(now())
-  form         Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  id          String    @id @default(cuid())
+  formId      String
+  versionNo   Int
+  schemaJson  String    @default("{}")
+  checksum    String
+  status      String    @default("draft") // draft, published, archived
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  form        Form      @relation(fields: [formId], references: [id], onDelete: Cascade)
 
   @@index([formId])
 }
 
+// ============ FORM PAYMENT CONFIGURATION (PAY-06D-01) ============
+// Form-level public payment policy is separate from workspace provider
+// credentials. This model never stores card data or provider secrets.
+
+model FormPaymentConfig {
+  id                String    @id @default(cuid())
+  workspaceId       String
+  formId            String    @unique
+  connectionId      String?
+  provider          String    @default("stripe") // stripe, iyzico
+  mode              String    @default("test") // test, live
+  enabled           Boolean   @default(false)
+  pricingPolicyJson String    @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  workspace  Workspace                  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  form       Form                       @relation(fields: [formId], references: [id], onDelete: Cascade)
+  connection PaymentProviderConnection? @relation(fields: [connectionId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, enabled])
+  @@index([workspaceId, provider, mode])
+}
+
 model FormField {
-  id           String   @id @default(cuid())
+  id           String            @id @default(cuid())
   formId       String
   fieldKey     String
-  type         String   // text, paragraph, email, phone, number, date, time, checkbox, radio, select, dropdown, file, address, signature, rating, price, matrix, section, page_break, media, hidden, captcha
+  type         String // text, paragraph, email, phone, number, date, time, checkbox, radio, select, dropdown, file, address, signature, rating, price, matrix, section, page_break, media, hidden, captcha
   label        String
   description  String?
   placeholder  String?
   helpText     String?
-  required     Boolean  @default(false)
-  unique       Boolean  @default(false)
-  readOnly     Boolean  @default(false)
-  hidden       Boolean  @default(false)
-  adminOnly    Boolean  @default(false)
-  encrypted    Boolean  @default(false)
+  required     Boolean           @default(false)
+  unique       Boolean           @default(false)
+  readOnly     Boolean           @default(false)
+  hidden       Boolean           @default(false)
+  adminOnly    Boolean           @default(false)
+  encrypted    Boolean           @default(false)
   defaultValue String?
-  configJson   String   @default("{}") // validation, options, conditional logic, etc.
-  sortOrder    Int      @default(0)
-  pageSize     Int      @default(1)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  form         Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  configJson   String            @default("{}") // validation, options, conditional logic, etc.
+  sortOrder    Int               @default(0)
+  pageSize     Int               @default(1)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  form         Form              @relation(fields: [formId], references: [id], onDelete: Cascade)
   values       SubmissionValue[]
 
   @@index([formId, sortOrder])
@@ -226,19 +297,19 @@ model FormField {
 // ============ THEMES ============
 
 model Theme {
-  id           String   @id @default(cuid())
-  workspaceId  String
-  formId       String?
-  name         String
-  tokensJson   String   @default("{}") // primary, background, text, error, success, etc.
-  customCss    String?
-  font         String   @default("Inter")
-  radius       Float    @default(0.625)
-  version      Int      @default(1)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  workspace    Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  form         Form?     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  id          String    @id @default(cuid())
+  workspaceId String
+  formId      String?
+  name        String
+  tokensJson  String    @default("{}") // primary, background, text, error, success, etc.
+  customCss   String?
+  font        String    @default("Inter")
+  radius      Float     @default(0.625)
+  version     Int       @default(1)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  form        Form?     @relation(fields: [formId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId])
 }
@@ -254,28 +325,494 @@ model Submission {
   source        String   @default("web") // web, embed, api, import
   ipHash        String?
   userAgentHash String?
-  paymentStatus String?  // pending, authorized, paid, failed, refunded
+  paymentStatus String? // pending, authorized, paid, failed, refunded
   submittedById String?
   submittedAt   DateTime @default(now())
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  form          Form      @relation(fields: [formId], references: [id], onDelete: Cascade)
-  submitter     User?     @relation("SubmissionCreator", fields: [submittedById], references: [id])
+  form          Form              @relation(fields: [formId], references: [id], onDelete: Cascade)
+  submitter     User?             @relation("SubmissionCreator", fields: [submittedById], references: [id])
   values        SubmissionValue[]
   files         SubmissionFile[]
+  paymentOrders PaymentOrder[]
+  invoiceRecipientSnapshots InvoiceRecipientSnapshot[]
 
   @@index([formId, submittedAt])
   @@index([formId, status])
 }
 
-model SubmissionValue {
+// ============ PAYMENT ORDER FOUNDATION (PAY-02A) ============
+// Provider-neutral internal payment records. Provider credentials, webhooks,
+// and payout/split records are intentionally modeled in later payment phases.
+
+model PaymentOrder {
+  id                 String   @id @default(cuid())
+  publicKey          String   @unique
+  workspaceId        String
+  formId             String
+  submissionId       String?
+  provider           String
+  mode               String   @default("test") // test, live
+  providerOrderId    String?
+  idempotencyKey     String
+  currency           String
+  amountMinor        Int
+  status             String    @default("created") // created, requires_action, processing, succeeded, failed, canceled, refunded, partially_refunded, disputed
+  publishedVersionId String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  workspace     Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  form          Form                  @relation(fields: [formId], references: [id], onDelete: Cascade)
+  submission    Submission?           @relation(fields: [submissionId], references: [id], onDelete: SetNull)
+  attempts      PaymentAttempt[]
+  webhookEvents PaymentWebhookEvent[]
+  recipientSnapshot InvoiceRecipientSnapshot?
+  invoiceRecord InvoiceRecord?
+
+  @@unique([workspaceId, idempotencyKey])
+  @@index([workspaceId, formId, createdAt])
+  @@index([submissionId])
+  @@index([status, createdAt])
+  @@index([provider, mode, providerOrderId])
+}
+
+// ============ INVOICE RECIPIENT SNAPSHOT (INV/F M-00) ============
+// Financial recipient data is captured once for an invoice workflow. PII is
+// represented as encrypted values; plaintext recipient data is not a public
+// DTO, payment payload, provider response, log or export default.
+
+model InvoiceRecipientSnapshot {
+  id                      String    @id @default(cuid())
+  workspaceId             String
+  paymentOrderId          String    @unique
+  submissionId            String?
+  recipientType           String
+  legalNameEncrypted      String?
+  taxNumberEncrypted      String?
+  taxOfficeEncrypted      String?
+  identityNumberEncrypted String?
+  emailEncrypted          String?
+  billingAddressEncrypted String?
+  countryCode             String?
+  source                  String
+  noticeVersion           String?
+  createdAt               DateTime  @default(now())
+
+  workspace    Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  paymentOrder PaymentOrder @relation(fields: [paymentOrderId], references: [id], onDelete: Cascade)
+  submission   Submission?  @relation(fields: [submissionId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, createdAt])
+  @@index([workspaceId, recipientType])
+}
+
+// ============ INVOICE RECORD FOUNDATION (INV/F M-01) ============
+// One authoritative invoice workflow record belongs to one PaymentOrder.
+// Provider identifiers remain nullable until the external accounting/provider
+// system creates them; the workspace/provider scope prevents cross-tenant reuse.
+
+model InvoiceRecord {
+  id                    String    @id @default(cuid())
+  workspaceId           String
+  paymentOrderId        String    @unique
+  provider              String
+  documentType          String
+  amountMinor           Int
+  taxAmountMinor        Int?
+  taxRateBps            Int?
+  currency              String
+  providerInvoiceId     String?
+  providerJobId         String?
+  providerJobCreatedAt  DateTime?
+  invoiceNumber         String?
+  invoiceUuid           String?
+  state                 String    @default("not_started")
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  workspace    Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  paymentOrder PaymentOrder @relation(fields: [paymentOrderId], references: [id], onDelete: Cascade)
+  lines        InvoiceLineSnapshot[]
+  documents    InvoiceDocument[]
+  deliveries   InvoiceDeliveryIntent[]
+  documentDecisions InvoiceDocumentDecision[]
+
+  @@unique([workspaceId, provider, providerInvoiceId])
+  @@index([workspaceId, state, createdAt])
+  @@index([workspaceId, providerJobId])
+  @@index([workspaceId, state, providerJobCreatedAt])
+}
+
+// ============ INVOICE LINE SNAPSHOT (INV/F M-02) ============
+// Quantity is a canonical decimal string to avoid floating-point drift in
+// SQLite and across provider/accounting adapters. Monetary values use minor
+// units; the line total is stored as the already-approved calculation snapshot.
+
+model InvoiceLineSnapshot {
+  id                 String   @id @default(cuid())
+  invoiceRecordId    String
+  lineNumber         Int
+  description        String
+  quantity           String
+  unitPriceMinor     Int
+  taxRateBps         Int?
+  taxAmountMinor     Int?
+  discountAmountMinor Int?
+  lineTotalMinor     Int
+  currency           String
+  createdAt          DateTime @default(now())
+
+  invoiceRecord InvoiceRecord @relation(fields: [invoiceRecordId], references: [id], onDelete: Cascade)
+
+  @@unique([invoiceRecordId, lineNumber])
+  @@index([invoiceRecordId, createdAt])
+}
+
+// ============ INVOICE BATCH/IMPORT FOUNDATION (INV/F M-03) ============
+// A batch records the complete selection intent and the payment-order IDs
+// selected at execution time. Raw spreadsheet/PII payloads are intentionally
+// outside this model and are handled by later quarantine/import phases.
+
+model InvoiceBatch {
+  id                   String   @id @default(cuid())
+  workspaceId          String
+  operation            String
+  selectionFilterJson  String
+  selectionSnapshotHash String
+  formatVersion        String
+  status               String   @default("created")
+  createdAt            DateTime @default(now())
+  completedAt          DateTime?
+
+  workspace Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  rows      InvoiceBatchRow[]
+
+  @@index([workspaceId, createdAt])
+  @@index([workspaceId, status, createdAt])
+}
+
+model InvoiceBatchRow {
+  id                    String   @id @default(cuid())
+  batchId               String
+  rowNumber             Int
+  paymentOrderIdSnapshot String
+  resultStatus          String   @default("pending")
+  resultCode            String?
+  sourceRowHash         String?
+  createdAt             DateTime @default(now())
+
+  batch InvoiceBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+
+  @@unique([batchId, rowNumber])
+  @@index([batchId, resultStatus])
+  @@index([paymentOrderIdSnapshot])
+}
+
+// Import files are private, tenant-scoped and quarantined before any parser or
+// accounting state transition is allowed to inspect their bytes.
+model InvoiceImportBatch {
+  id               String   @id @default(cuid())
+  workspaceId      String
+  uploadedById     String
+  source           String   @default("accounting_upload")
+  storageKey       String   @unique
+  originalFilename String
+  mime             String
+  size             Int
+  sha256           String
+  scanStatus       String   @default("quarantined")
+  state            String   @default("quarantined")
+  quarantineReason String?
+  createdAt        DateTime @default(now())
+
+  workspace  Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  uploadedBy User      @relation("InvoiceImportUploader", fields: [uploadedById], references: [id])
+  applications InvoiceImportApplication[]
+
+  @@unique([workspaceId, sha256])
+  @@index([workspaceId, state, createdAt])
+}
+
+// One durable journal row per approved import row. This is the replay fence:
+// a retried batch cannot create another invoice or delivery side effect.
+model InvoiceImportApplication {
   id             String   @id @default(cuid())
+  workspaceId    String
+  importBatchId  String
+  rowNumber      Int
+  approvedById   String
+  idempotencyKey String
+  candidateId    String
+  status         String
+  resultCode     String?
+  createdAt      DateTime @default(now())
+
+  workspace   Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  importBatch InvoiceImportBatch @relation(fields: [importBatchId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, idempotencyKey])
+  @@unique([importBatchId, rowNumber])
+  @@index([workspaceId, status, createdAt])
+}
+
+// ============ INVOICE DOCUMENT/DELIVERY FOUNDATION (INV/F M-04) ============
+// The original artifact is private, content-addressed and quarantined until
+// scanning succeeds. Delivery is a separate durable intent and never implies
+// that the provider accepted or delivered the message.
+
+model InvoiceDocument {
+  id             String    @id @default(cuid())
+  invoiceRecordId String
+  artifactKind   String
+  storageKey     String    @unique
+  mime           String
+  size           Int
+  sha256         String
+  scanStatus     String    @default("pending")
+  visibility     String    @default("private")
+  state          String    @default("quarantined")
+  quarantineReason String?
+  createdAt      DateTime  @default(now())
+  readyAt        DateTime?
+
+  invoiceRecord InvoiceRecord          @relation(fields: [invoiceRecordId], references: [id], onDelete: Cascade)
+  deliveries    InvoiceDeliveryIntent[]
+  decision      InvoiceDocumentDecision?
+
+  @@unique([invoiceRecordId, artifactKind, sha256])
+  @@index([invoiceRecordId, state, createdAt])
+  @@index([sha256])
+}
+
+// A single immutable decision fence for each private invoice artifact. It
+// records only workflow metadata; recipient PII and provider credentials stay
+// in their existing protected stores and are never copied here.
+model InvoiceDocumentDecision {
+  id                    String    @id @default(cuid())
+  workspaceId           String
+  invoiceDocumentId     String    @unique
+  invoiceRecordId       String
+  matchStatus           String
+  matchStrategy         String?
+  matchedInvoiceRecordId String?
+  approvalStatus        String
+  approvedById           String?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  workspace       Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  invoiceDocument InvoiceDocument @relation(fields: [invoiceDocumentId], references: [id], onDelete: Cascade)
+  invoiceRecord   InvoiceRecord  @relation(fields: [invoiceRecordId], references: [id], onDelete: Cascade)
+  approvedBy      User?          @relation("InvoiceDocumentDecisionApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, approvalStatus, createdAt])
+  @@index([invoiceRecordId, matchStatus])
+}
+
+model InvoiceDeliveryIntent {
+  id                String    @id @default(cuid())
+  invoiceRecordId   String
+  documentId        String?
+  channel           String
+  idempotencyKey    String
+  status            String    @default("queued")
+  provider          String?
+  providerMessageId String?
+  attemptCount      Int       @default(0)
+  availableAt       DateTime  @default(now())
+  lastError         String?
+  createdAt         DateTime  @default(now())
+  sentAt            DateTime?
+  outboxEventId     String?   @unique
+
+  invoiceRecord InvoiceRecord @relation(fields: [invoiceRecordId], references: [id], onDelete: Cascade)
+  document     InvoiceDocument? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  outboxEvent  OutboxEvent?   @relation(fields: [outboxEventId], references: [id], onDelete: SetNull)
+
+  @@unique([invoiceRecordId, channel, idempotencyKey])
+  @@index([invoiceRecordId, status, availableAt])
+}
+
+// ============ PAYMENT PROVIDER CONNECTION FOUNDATION (PAY-04A) ============
+// A workspace-scoped provider connection. Credentials are stored only as an
+// authenticated encrypted envelope; payment card data and raw provider tokens
+// are never valid fields in this model.
+
+model PaymentProviderConnection {
+  id                  String    @id @default(cuid())
+  workspaceId        String
+  provider            String
+  mode                String    @default("test") // test, live
+  displayName         String
+  publicConfigJson   String    @default("{}") // allowlisted non-secret display/config values only
+  credentialsEnvelope String?
+  credentialKeyId     String?
+  status              String    @default("draft") // draft, pending_verification, active, error, revoked
+  lastVerifiedAt      DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  workspace     Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  webhookEvents PaymentWebhookEvent[]
+  formPaymentConfigs FormPaymentConfig[]
+
+  @@unique([workspaceId, provider, mode])
+  @@index([workspaceId, status])
+}
+
+// ============ PARASUT OAUTH CONNECTION (P-01B) ============
+// Provider tokens are stored only as an authenticated encrypted envelope.
+// Company scope is selected and verified by the later P-02 health-check phase.
+
+model ParasutConnection {
+  id                  String    @id @default(cuid())
+  workspaceId         String    @unique
+  companyId           String?
+  credentialsEnvelope String?
+  credentialKeyId     String?
+  credentialVersion   Int       @default(1)
+  status              String    @default("pending") // pending, connected_pending_company, active, error, revoked
+  lastVerifiedAt      DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, status])
+}
+
+model ParasutOAuthTransaction {
+  id          String    @id @default(cuid())
+  workspaceId String
+  userId      String
+  stateHash   String    @unique
+  bindingHash String
+  redirectUri String
+  status      String    @default("pending") // pending, consumed, failed, expired
+  expiresAt   DateTime
+  consumedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, status, expiresAt])
+  @@index([userId, status, expiresAt])
+}
+
+// No customer PII is stored here. The fingerprint is an idempotency fence for
+// an explicitly approved provider contact-create command; sourceReference
+// points back to the private invoice/recipient snapshot at execution time.
+model ParasutContactCommand {
+  id                 String   @id @default(cuid())
+  workspaceId        String
+  connectionId       String
+  companyId          String
+  sourceReference    String
+  requestFingerprint String
+  status             String   @default("pending_approval") // pending_approval, approved, submitted, confirmed, reconciliation_required, failed
+  approvedById       String?
+  providerContactId  String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@unique([workspaceId, requestFingerprint])
+  @@index([workspaceId, companyId, status])
+  @@index([connectionId, status])
+}
+
+// No product PII is stored here. The fingerprint is an idempotency fence for
+// an explicitly approved provider product-create command; sourceReference
+// points back to the private invoice line snapshot at execution time.
+model ParasutProductCommand {
+  id                 String   @id @default(cuid())
+  workspaceId        String
+  connectionId       String
+  companyId          String
+  sourceReference    String
+  lookupFingerprint  String
+  requestFingerprint String
+  status             String   @default("pending_approval") // pending_approval, approved, submitted, confirmed, reconciliation_required, failed
+  approvedById       String?
+  providerProductId  String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@unique([workspaceId, requestFingerprint])
+  @@index([workspaceId, companyId, status])
+  @@index([connectionId, status])
+}
+
+// ============ PAYMENT WEBHOOK INBOX FOUNDATION (PAY-05A) ============
+// Store only verified event metadata and a payload hash. Raw provider payloads
+// are intentionally not persisted because they may contain sensitive data.
+
+model PaymentWebhookEvent {
+  id                String    @id @default(cuid())
+  workspaceId       String
+  connectionId      String?
+  paymentOrderId    String?
+  provider          String
+  externalEventId   String
+  eventType         String
+  providerStatus    String?
+  providerPaymentId String?
+  amountMinor       Int?
+  currency          String?
+  payloadHash       String
+  signatureVerified   Boolean   @default(false)
+  processingStatus  String    @default("received") // received, processing, processed, ignored, failed
+  attemptCount      Int       @default(0)
+  failureCode       String?
+  lockedUntil       DateTime?
+  lockedBy          String?
+  receivedAt        DateTime  @default(now())
+  processedAt       DateTime?
+
+  workspace    Workspace                  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  connection   PaymentProviderConnection? @relation(fields: [connectionId], references: [id], onDelete: SetNull)
+  paymentOrder PaymentOrder?              @relation(fields: [paymentOrderId], references: [id], onDelete: SetNull)
+
+  @@unique([workspaceId, provider, externalEventId])
+  @@index([workspaceId, receivedAt])
+  @@index([connectionId, receivedAt])
+  @@index([paymentOrderId])
+  @@index([connectionId, providerPaymentId])
+  @@index([processingStatus, lockedUntil])
+}
+
+model PaymentAttempt {
+  id                String   @id @default(cuid())
+  paymentOrderId    String
+  provider          String
+  providerPaymentId String?
+  status            String   @default("created") // created, requires_action, processing, succeeded, failed, canceled
+  errorCode         String?
+  errorCategory     String?
+  retrieveAttemptCount Int      @default(0)
+  retrieveLockedUntil DateTime?
+  retrieveLockedBy    String?
+  retrieveNextAttemptAt DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  paymentOrder PaymentOrder @relation(fields: [paymentOrderId], references: [id], onDelete: Cascade)
+
+  @@index([paymentOrderId, createdAt])
+  @@index([provider, providerPaymentId])
+  @@index([status, retrieveLockedUntil])
+  @@index([status, retrieveNextAttemptAt])
+}
+
+model SubmissionValue {
+  id             String     @id @default(cuid())
   submissionId   String
   fieldId        String
-  valueJson      String   @default("{}")
+  valueJson      String     @default("{}")
   normalizedText String?
-  createdAt      DateTime @default(now())
+  createdAt      DateTime   @default(now())
   submission     Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
   field          FormField  @relation(fields: [fieldId], references: [id], onDelete: Cascade)
 
@@ -284,7 +821,7 @@ model SubmissionValue {
 }
 
 model SubmissionFile {
-  id           String   @id @default(cuid())
+  id           String     @id @default(cuid())
   submissionId String
   fieldId      String
   storageKey   String
@@ -292,8 +829,8 @@ model SubmissionFile {
   mime         String
   size         Int
   checksum     String?
-  scanStatus   String   @default("pending") // pending, clean, infected
-  createdAt    DateTime @default(now())
+  scanStatus   String     @default("pending") // pending, clean, infected
+  createdAt    DateTime   @default(now())
   submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
 
   @@index([submissionId])
@@ -302,30 +839,30 @@ model SubmissionFile {
 // ============ LOGIC & NOTIFICATIONS ============
 
 model LogicRule {
-  id            String   @id @default(cuid())
-  formId        String
-  name          String?
-  priority      Int      @default(0)
-  conditionsJson String  @default("{}")
-  actionsJson   String   @default("{}")
-  enabled       Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  form          Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  id             String   @id @default(cuid())
+  formId         String
+  name           String?
+  priority       Int      @default(0)
+  conditionsJson String   @default("{}")
+  actionsJson    String   @default("{}")
+  enabled        Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  form           Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
 
   @@index([formId])
 }
 
 model Notification {
-  id            String   @id @default(cuid())
-  formId        String
-  name          String
-  type          String   // admin, user_confirmation, webhook
-  enabled       Boolean  @default(true)
-  configJson    String   @default("{}") // recipients, cc, bcc, subject, body, condition
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  form          Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  id         String   @id @default(cuid())
+  formId     String
+  name       String
+  type       String // admin, user_confirmation, webhook
+  enabled    Boolean  @default(true)
+  configJson String   @default("{}") // recipients, cc, bcc, subject, body, condition
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  form       Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
 
   @@index([formId])
 }
@@ -351,14 +888,14 @@ model Report {
 // ============ INTEGRATIONS ============
 
 model Integration {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   workspaceId String
-  provider    String   // stripe, paypal, mailchimp, zapier, slack, google_sheets
+  provider    String // stripe, paypal, mailchimp, zapier, slack, google_sheets
   name        String
-  configJson  String   @default("{}")
-  status      String   @default("disconnected") // connected, disconnected, error
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  configJson  String    @default("{}")
+  status      String    @default("disconnected") // connected, disconnected, error
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId])
@@ -367,18 +904,18 @@ model Integration {
 // ============ AUDIT LOG ============
 
 model AuditLog {
-  id            String   @id @default(cuid())
-  workspaceId   String?
-  actorId       String?
-  action        String   // form.create, form.update, form.delete, submission.update, etc.
-  resourceType  String
-  resourceId    String
-  beforeJson    String?
-  afterJson     String?
-  ipHash        String?
-  createdAt     DateTime @default(now())
-  workspace     Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  actor         User?      @relation("AuditActor", fields: [actorId], references: [id])
+  id           String     @id @default(cuid())
+  workspaceId  String?
+  actorId      String?
+  action       String // form.create, form.update, form.delete, submission.update, etc.
+  resourceType String
+  resourceId   String
+  beforeJson   String?
+  afterJson    String?
+  ipHash       String?
+  createdAt    DateTime   @default(now())
+  workspace    Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  actor        User?      @relation("AuditActor", fields: [actorId], references: [id])
 
   @@index([workspaceId, createdAt])
   @@index([resourceType, resourceId])
@@ -387,77 +924,246 @@ model AuditLog {
 // ============ FORM APPEARANCE (Header/Footer) ============
 
 model FormAppearance {
-  id              String   @id @default(cuid())
-  formId          String   @unique
+  id                  String   @id @default(cuid())
+  formId              String   @unique
   // Header config
-  headerEnabled   Boolean  @default(true)
-  headerLogoUrl   String?
-  headerLogoAlt   String?
-  headerLogoWidth Int?     // in px, null = auto
-  headerTitle     String?
-  headerSubtitle  String?
-  headerDescription String? // rich text / multiline
-  headerBgColor   String   @default("#ffffff")
-  headerBgImage   String?
-  headerTextColor String   @default("#1a1a1a")
-  headerAlign     String   @default("center") // left, center, right
-  headerPadding   Int      @default(32)
+  headerEnabled       Boolean  @default(true)
+  headerLogoMediaId   String?
+  headerLogoUrl       String?
+  headerLogoAlt       String?
+  headerLogoWidth     Int? // in px, null = auto
+  headerTitle         String?
+  headerSubtitle      String?
+  headerDescription   String? // rich text / multiline
+  headerBgColor       String   @default("#ffffff")
+  headerBgMediaId     String?
+  headerBgImage       String?
+  headerTextColor     String   @default("#1a1a1a")
+  headerAlign         String   @default("center") // left, center, right
+  headerPadding       Int      @default(32)
   // Contact bar
-  contactBarEnabled Boolean @default(false)
-  contactBarBgColor String  @default("#e31e24")
-  contactBarTextColor String @default("#ffffff")
-  contactEmail    String?
-  contactPhone    String?
-  contactAddress  String?
+  contactBarEnabled   Boolean  @default(false)
+  contactBarBgColor   String   @default("#e31e24")
+  contactBarTextColor String   @default("#ffffff")
+  contactEmail        String?
+  contactPhone        String?
+  contactAddress      String?
   // Social media
-  socialInstagram String?
-  socialLinkedin  String?
-  socialTwitter   String?
-  socialFacebook  String?
-  socialYoutube   String?
+  socialInstagram     String?
+  socialLinkedin      String?
+  socialTwitter       String?
+  socialFacebook      String?
+  socialYoutube       String?
   // Footer config
-  footerEnabled   Boolean  @default(true)
-  footerLogoUrl   String?
-  footerText      String?  // copyright or description
-  footerBgColor   String   @default("#1a1a1a")
-  footerTextColor String   @default("#ffffff")
-  footerLinks     String?  // JSON array of {label, url}
-  footerPadding   Int      @default(24)
+  footerEnabled       Boolean  @default(true)
+  footerLogoMediaId   String?
+  footerLogoUrl       String?
+  footerText          String? // copyright or description
+  footerBgColor       String   @default("#1a1a1a")
+  footerTextColor     String   @default("#ffffff")
+  footerLinks         String? // JSON array of {label, url}
+  footerPadding       Int      @default(24)
   // Custom CSS (scoped under .mavenforms-embed)
-  customCss       String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  form            Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  customCss           String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  form                Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
 
   @@index([formId])
+}
+
+// ============ MEDIA ASSET (M03.2) ============
+
+model MediaAsset {
+  id           String   @id @default(cuid())
+  workspaceId  String
+  formId       String?
+  storageKey   String   @unique
+  publicUrl    String?
+  originalName String
+  mime         String
+  size         Int
+  width        Int?
+  height       Int?
+  checksum     String
+  altText      String?
+  scanStatus   String   @default("pending") // pending, clean, infected, failed
+  visibility   String   @default("private") // private, published
+  createdById  String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  form      Form?     @relation(fields: [formId], references: [id], onDelete: SetNull)
+  creator   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, formId])
+  @@index([checksum])
+}
+
+// ============ OUTBOX EVENT (M10.2) ============
+
+model OutboxEvent {
+  id                String    @id @default(cuid())
+  workspaceId       String
+  formId            String
+  submissionId      String
+  type              String // email, webhook
+  provider          String?
+  providerMessageId String?
+  queueClass        String? // transactional, notification, marketing; null for non-email events
+  deliveryStatus String? // delivered, bounced, rejected, complained; null until provider evidence exists
+  priority          Int       @default(50)
+  payloadJson       String    @default("{}")
+  status            String    @default("queued") // queued, sending, sent, failed, dead
+  attemptCount      Int       @default(0)
+  availableAt       DateTime  @default(now())
+  lockedUntil       DateTime?
+  lockedBy          String?
+  lastError         String?
+  createdAt         DateTime  @default(now())
+  sentAt            DateTime?
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  form      Form      @relation(fields: [formId], references: [id], onDelete: Cascade)
+  invoiceDeliveryIntent InvoiceDeliveryIntent?
+
+  @@index([status, availableAt])
+  @@index([queueClass, priority, status, availableAt])
+  @@index([workspaceId, formId])
+  @@index([workspaceId, provider, providerMessageId])
+}
+
+// ============ EMAIL PROVIDER EVENT INBOX (MAIL-06) ============
+
+model EmailProviderEvent {
+  id                String    @id @default(cuid())
+  workspaceId       String
+  provider          String
+  externalEventId   String
+  eventType         String
+  providerMessageId String?
+  recipientEmail    String?
+  payloadHash       String
+  signatureVerified Boolean   @default(false)
+  processingStatus  String    @default("received") // received, processing, processed, ignored, failed
+  attemptCount      Int       @default(0)
+  failureCode       String?
+  lockedUntil       DateTime?
+  lockedBy          String?
+  receivedAt        DateTime  @default(now())
+  processedAt       DateTime?
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, provider, externalEventId])
+  @@index([workspaceId, receivedAt])
+  @@index([processingStatus, lockedUntil])
+  @@index([recipientEmail, provider])
+  @@index([workspaceId, provider, providerMessageId])
+}
+
+// ============ EMAIL PROVIDER CONNECTION (MAIL-13B) ============
+// Workspace-scoped provider metadata. Secret values are authenticated
+// encrypted envelopes; plaintext API/webhook secrets are never modeled.
+
+model EmailProviderConnection {
+  id                    String    @id @default(cuid())
+  workspaceId           String
+  provider              String
+  publicConfigJson      String    @default("{}")
+  credentialsEnvelope   String?
+  webhookSecretEnvelope String?
+  status                String    @default("draft") // draft, pending_verification, active, error, revoked
+  lastVerifiedAt        DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, provider])
+  @@index([workspaceId, status])
+}
+
+// ============ EMAIL PREFERENCES (MAIL-10) ============
+
+model EmailPreference {
+  id              String   @id @default(cuid())
+  workspaceId     String
+  recipientHash   String
+  marketingOptOut Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, recipientHash])
+  @@index([workspaceId, marketingOptOut])
+}
+
+// ============ EMAIL PROTECTION (MAIL-14A) ============
+
+model EmailSuppression {
+  id             String   @id @default(cuid())
+  workspaceId    String
+  recipientHash  String
+  reason         String // hard_bounce, complaint, unsubscribe, manual_block
+  scope          String // all, marketing
+  sourceProvider String
+  sourceEventId  String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, recipientHash, scope])
+  @@index([workspaceId, reason])
+  @@index([workspaceId, sourceProvider, sourceEventId])
+}
+
+model WorkspaceEmailProtection {
+  id              String    @id @default(cuid())
+  workspaceId     String
+  marketingPaused Boolean   @default(false)
+  pauseReason     String?
+  pausedAt        DateTime?
+  updatedAt       DateTime  @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId])
 }
 
 // ============ WORKSPACE BRANDING (White-label) ============
 
 model WorkspaceBranding {
-  id              String   @id @default(cuid())
-  workspaceId     String   @unique
+  id                String    @id @default(cuid())
+  workspaceId       String    @unique
   // App branding
-  appName         String   @default("MavenForms")
-  appTagline      String   @default("FORM PLATFORM")
-  logoUrl         String?  // custom logo image URL
-  logoDarkUrl     String?  // logo for dark mode
-  faviconUrl      String?
-  primaryColor    String   @default("#10b981")
+  appName           String    @default("MavenForms")
+  appTagline        String    @default("FORM PLATFORM")
+  logoMediaId       String?
+  logoUrl           String? // optional external logo image URL
+  logoDarkMediaId   String?
+  logoDarkUrl       String? // optional external logo image URL for dark mode
+  faviconMediaId    String?
+  faviconUrl        String? // optional external favicon URL
+  primaryColor      String    @default("#10b981")
   // Login page branding
-  loginTitle      String   @default("Formlarınızı tasarlayın, yanıtları otomatikleştirin.")
-  loginSubtitle   String   @default("Modern, mobil öncelikli form platformu. Tasarla → yayınla → topla → raporla zincirinde tek çalışma alanı.")
-  loginHeroImage  String?  // hero image URL for login left panel
-  loginBgColor    String   @default("#10b981")
-  loginShowFeatures Boolean @default(true)
+  loginTitle        String    @default("Formlarınızı tasarlayın, yanıtları otomatikleştirin.")
+  loginSubtitle     String    @default("Modern, mobil öncelikli form platformu. Tasarla → yayınla → topla → raporla zincirinde tek çalışma alanı.")
+  loginHeroMediaId  String?
+  loginHeroImage    String? // optional external hero image URL for login left panel
+  loginBgColor      String    @default("#10b981")
+  loginShowFeatures Boolean   @default(true)
   // Footer
-  footerText      String   @default("© 2026 MavenForms. Tüm hakları saklıdır.")
-  footerLinks     String?  // JSON array
+  footerText        String    @default("© 2026 MavenForms. Tüm hakları saklıdır.")
+  footerLinks       String? // JSON array
   // Custom domain
-  customDomain    String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customDomain      String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  workspace         Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId])
 }

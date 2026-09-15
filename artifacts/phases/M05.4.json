@@ -1,0 +1,41 @@
+{
+  "id": "M05.4",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "c800951b709ff91c",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "builder-media.test PASS",
+    "scope": {
+      "changedFiles": [
+        "src/components/mavenforms/builder/canvas.tsx",
+        "tests/builder-media.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "no PII, mediaAssetId private",
+    "acceptanceIds": [
+      "AC-MEDIA-BUILDER-01"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/builder-media.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-01T23:23:15.653Z"
+}

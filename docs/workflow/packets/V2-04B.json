@@ -1,0 +1,13 @@
+{
+  "id": "V2-04B",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Stripe hosted checkout adapter sözleşmesini server-only credential, mode, amount/currency, idempotency, URL ve opaque response sınırlarıyla kilitlemek; route wiring ve live mutation açmamak",
+  "rollback": "Yalnız V2-04B Stripe checkout contract/test değişikliklerini geri al; provider hesabı, secret veya live mutation oluşturma",
+  "previous": ["V2-04A"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "RELEASE-DECISION.md", "docs/workflow/README.md", "docs/superpowers/plans/2026-09-06-mavenforms-release-modules-first-party-saas-roadmap.md", "docs/Anonim_Teknik_Mimari_API_ve_Uygulama_Sozlesmesi.md", "docs/OzelAPP_Anonim_Entegrasyon_ve_Release_Arastirmasi.md", "src/lib/stripe-checkout.ts", "src/lib/payment-checkout-contract.ts", "src/lib/payment-provider-contract.ts", "tests/stripe-checkout.test.mjs", "tests/payment-checkout-contract.test.mjs", "tests/payment-provider-contract.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/V2-04B.json", "src/lib/stripe-checkout.ts", "src/lib/payment-checkout-contract.ts", "tests/v2-stripe-hosted-checkout-contract.test.mjs", "STATUS.md"],
+  "acceptance": ["Stripe test/live secret key mode ile eşleşmezse request provider'a gitmeden fail-closed olur", "Amount/currency/idempotency/product/return URL değerleri server contract sınırında doğrulanır; HTTPS zorunluluğu production ve test local istisnası ayrıdır", "Provider response yalnız allowlisted opaque sessionId/url/status döndürür; secret, raw response, client secret, card data ve PII dışarı çıkmaz", "Hosted checkout dışı kart alanı veya direct PAN/CVV işleme eklenmez; gerçek Stripe account/sandbox mutation ve production eligibility açılmaz", "Testlerde secret, token, PAN/CVV, raw provider response ve gerçek kişi verisi bulunmaz"],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["bun", "tests/v2-stripe-hosted-checkout-contract.test.mjs"], ["bun", "tests/stripe-checkout.test.mjs"], ["bun", "tests/payment-checkout-contract.test.mjs"], ["bun", "tests/payment-provider-contract.test.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

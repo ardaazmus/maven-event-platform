@@ -1,0 +1,45 @@
+{
+  "id": "CONTEXT-00B",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Tüm READY packetlerdeki tarihsel ve artık var olmayan read/test yollarını mevcut kanonik dosyalara bağlamak; context-check ve ilerideki phase discovery zincirini tekrar çalışır hale getirmek",
+  "rollback": "Yalnız CONTEXT-00B metadata değişikliklerini geri al; uygulama, ödeme, fatura, form, yanıt, tenant veya geçmiş receipt verisini silme/değiştirme",
+  "previous": ["FORM-UX-08"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "scripts/context-check.mjs",
+    "docs/workflow/packets/R-04.json",
+    "docs/workflow/packets/V2-09.json",
+    "docs/workflow/packets/V4-00.json",
+    "tests/policy.test.mjs",
+    "tests/final-release-gate.test.mjs",
+    "tests/v2-release-gate.test.mjs",
+    "src/lib/public-dto.ts",
+    "src/app/api/invoices/[id]/documents/[documentId]/route.ts",
+    "src/lib/payment-provider-public-config.ts",
+    "tests/public-forbidden.test.mjs",
+    "tests/public-snapshot-defense.test.mjs",
+    "tests/invoice-document-retrieval-route.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/CONTEXT-00B.json",
+    "docs/workflow/packets/R-04.json",
+    "docs/workflow/packets/V2-09.json",
+    "docs/workflow/packets/V4-00.json",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "R-04, V2-09 ve V4-00 içindeki artık var olmayan read yolları mevcut kanonik kaynak/test dosyalarıyla eşleştirilir; yeni veya uydurma test dosyası oluşturulmaz",
+    "İlgili packetlerin mevcut kontrolleri metadata değişikliğiyle tutarlı kalır; R-10 NO-GO ve V4 held kararı değişmez",
+    "context-check tüm READY packet read yollarında PASS verir",
+    "Kod, veri, provider, ödeme, fatura, mail ve public/private davranış sözleşmeleri değişmez"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

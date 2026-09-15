@@ -40,7 +40,7 @@ export function WordPressEmbedPanel({ form }: WordPressEmbedPanelProps) {
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
   const formUrl = `${origin}/forms/${form.slug}`
   const embedScriptUrl = `${origin}/api/forms/${form.id}/embed-script?slug=${form.slug}`
-  const iframeCode = `<iframe src="${formUrl}?embed=1" width="100%" height="600" frameborder="0" title="${form.title}" loading="lazy" sandbox="allow-scripts allow-forms allow-same-origin allow-popups"></iframe>`
+  const iframeCode = `<iframe src="${formUrl}?embed=1" width="100%" height="600" frameborder="0" title="${form.title}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-forms allow-same-origin allow-popups"></iframe>`
   const jsEmbedCode = `<!-- MavenForms Embed -->
 <div data-mavenforms="${form.slug}" data-height="600"></div>
 <script src="${embedScriptUrl}" async></script>`
@@ -52,114 +52,6 @@ export function WordPressEmbedPanel({ form }: WordPressEmbedPanelProps) {
     setCopied(id)
     toast({ title: 'Kopyalandı!', description: 'Panoya kopyalandı' })
     setTimeout(() => setCopied(null), 2000)
-  }
-
-  const downloadPlugin = () => {
-    const php = generateWordPressPlugin()
-    const blob = new Blob([php], { type: 'application/x-php' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `mavenforms-${form.slug}.php`
-    a.click()
-    URL.revokeObjectURL(url)
-    toast({ title: 'Plugin indirildi', description: 'mavenforms-' + form.slug + '.php' })
-  }
-
-  const generateWordPressPlugin = () => {
-    return `<?php
-/**
- * Plugin Name: MavenForms Embed - ${form.title}
- * Description: ${form.slug} formunu WordPress'e gömer
- * Version: 1.0.0
- * Author: MavenForms
- */
-
-if (!defined('ABSPATH')) exit;
-
-class MavenForms_Embed {
-
-    private $form_slug = '${form.slug}';
-    private $form_id = '${form.id}';
-    private $embed_url = '${origin}';
-
-    public function __construct() {
-        add_shortcode('mavenforms', array($this, 'render_shortcode'));
-        add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
-        add_action('rest_api_init', array($this, 'register_oembed'));
-    }
-
-    public function render_shortcode($atts) {
-        $atts = shortcode_atts(array(
-            'id' => $this->form_slug,
-            'height' => '600',
-            'theme' => 'light',
-        ), $atts, 'mavenforms');
-
-        $slug = sanitize_title($atts['id']);
-        $height = intval($atts['height']);
-
-        ob_start();
-        ?>
-        <div class="mavenforms-embed-container" 
-             data-mavenforms="<?php echo esc_attr($slug); ?>" 
-             data-height="<?php echo esc_attr($height); ?>"
-             data-theme="<?php echo esc_attr($atts['theme']); ?>"
-             style="width:100%;max-width:100%;margin:20px auto;">
-            <div class="mavenforms-loading" style="padding:40px;text-align:center;color:#666;font-family:sans-serif;">
-                Form yükleniyor...
-            </div>
-        </div>
-        <script>
-        (function(){
-            function initMavenForms(){
-                var containers = document.querySelectorAll('.mavenforms-embed-container:not([data-initialized])');
-                containers.forEach(function(c){
-                    c.setAttribute('data-initialized','true');
-                    var slug = c.getAttribute('data-mavenforms');
-                    var h = c.getAttribute('data-height') || 600;
-                    var iframe = document.createElement('iframe');
-                    iframe.src = '${origin}/forms/' + slug + '?embed=1';
-                    iframe.style.cssText = 'width:100%;border:0;min-height:' + h + 'px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.08);';
-                    iframe.setAttribute('loading','lazy');
-                    iframe.setAttribute('sandbox','allow-scripts allow-forms allow-same-origin allow-popups');
-                    iframe.title = '${form.title}';
-                    c.innerHTML = '';
-                    c.appendChild(iframe);
-                    window.addEventListener('message', function(e){
-                        if(e.origin !== '${origin}') return;
-                        if(e.data && e.data.mavenforms && e.data.type === 'resize'){
-                            iframe.style.height = e.data.height + 'px';
-                        }
-                    });
-                });
-            }
-            if(document.readyState === 'loading'){
-                document.addEventListener('DOMContentLoaded', initMavenForms);
-            } else {
-                initMavenForms();
-            }
-        })();
-        </script>
-        <?php
-        return ob_get_clean();
-    }
-
-    public function enqueue_scripts() {
-        // Self-contained, no external dependencies
-    }
-
-    public function register_oembed() {
-        register_oembed_provider(
-            '${origin}/api/public/forms/*',
-            '${origin}/api/oembed',
-            array('discover' => true)
-        );
-    }
-}
-
-new MavenForms_Embed();
-`
   }
 
   return (
@@ -309,16 +201,17 @@ new MavenForms_Embed();
                 </div>
               </div>
 
-              <Button onClick={downloadPlugin} className="w-full gap-2">
+              <Button disabled variant="outline" className="w-full gap-2">
                 <Download className="w-4 h-4" />
-                Plugin'i İndir (mavenforms-{form.slug}.php)
+                Üretim ZIP paketi yayın öncesi hazırlanacak
               </Button>
 
               <div className="rounded-lg bg-amber-500/5 border border-amber-500/20 p-3 text-xs">
                 <div className="flex items-start gap-2">
                   <Info className="w-3.5 h-3.5 text-amber-600 mt-0.5 shrink-0" />
                   <div className="text-amber-900 dark:text-amber-100">
-                    <strong>Kurulum adımları:</strong>
+                    <strong>Not:</strong> Forma özel tek PHP dosyası üretmek güvenli ve sürdürülebilir bir WordPress dağıtımı değildir. Son paket; sürümlü, kurulabilir ZIP olarak hazırlanacaktır.
+                    <br /><br /><strong>Kurulum adımları:</strong>
                     <ol className="list-decimal list-inside mt-1 space-y-0.5">
                       <li>İndirilen <code>.php</code> dosyasını <code>/wp-content/plugins/mavenforms/</code> klasörüne yükleyin</li>
                       <li>WordPress admin &rarr; Eklentiler &rarr; MavenForms Embed'i etkinleştirin</li>

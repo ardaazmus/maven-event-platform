@@ -1,0 +1,13 @@
+{
+  "id": "V2-06",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Doğrulanmış succeeded iyzico ödeme sonrasında fatura kesildi iddiası oluşturmadan, server-side allowlist snapshot ve ayrı transactional 'faturanız hazırlanıyor' niyetini üretmek",
+  "rollback": "Yalnız V2-06 fatura hazırlama intent ve email classification değişikliklerini geri al; fatura kesme, Paraşüt çağrısı veya otomatik gönderim açma",
+  "previous": ["V2-04C-B"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "RELEASE-DECISION.md", "docs/workflow/README.md", "docs/acceptance/v2-deferred-provider-decision.md", "docs/superpowers/plans/2026-09-06-mavenforms-release-modules-first-party-saas-roadmap.md", "src/lib/payment-invoice-snapshot.ts", "src/lib/payment-invoice-snapshot-source.ts", "src/lib/payment-invoice-webhook-handoff.ts", "src/lib/email-policy.ts", "src/lib/invoice-email.ts", "tests/payment-invoice-snapshot.test.mjs", "tests/payment-invoice-snapshot-source.test.mjs", "tests/payment-invoice-webhook-handoff.test.mjs", "tests/invoice-email.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/V2-06.json", "STATUS.md", "src/lib/payment-invoice-preparation-intent.ts", "src/lib/email-policy.ts", "tests/v2-invoice-preparation-intent.test.mjs"],
+  "acceptance": ["Payment status succeeded değilse intent üretilmez", "Form başlığı, kayıt yöntemi, ücret aşaması, amountMinor, currency ve taxRateBps yalnız server-owned allowlist snapshot alanları olarak taşınır", "Intent messageClass transactional ve eventKind invoice_preparation olur; document URL, attachment, invoice number veya issued/document_ready iddiası taşımaz", "Recipient email yalnız server caller input’udur; public request override sözleşmesi bu fazda açılmaz", "Paraşüt, Stripe, banka Sanal POS, Google Pay ve otomatik/toplu invoice dispatch çağrısı yapılmaz", "Testlerde secret, token, PAN/CVV, raw provider response ve gerçek kişi verisi bulunmaz"],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["bun", "tests/v2-invoice-preparation-intent.test.mjs"], ["bun", "tests/payment-invoice-snapshot.test.mjs"], ["bun", "tests/payment-invoice-snapshot-source.test.mjs"], ["bun", "tests/payment-invoice-webhook-handoff.test.mjs"], ["bun", "tests/invoice-email.test.mjs"], ["bun", "tests/email-policy.test.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

@@ -2,19 +2,22 @@
 
 import { useEffect, useState } from 'react'
 import { api } from '@/lib/api-client'
-import type { FormListItem, Folder, Tag } from '@/lib/types'
+import type { FormListItem, Folder, Tag, Submission } from '@/lib/types'
 import { useApp } from '@/lib/store'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
   DialogTrigger,
 } from '@/components/ui/dialog'
@@ -24,6 +27,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu'
 import {
   Select,
@@ -60,14 +64,72 @@ import {
   Filter,
   Download,
   ArrowUpDown,
+  Palette,
+  GitBranch,
+  Bell,
+  CreditCard,
+  Plug,
+  BarChart3,
+  BadgeCheck,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { InvoiceCenterView } from '@/components/mavenforms/views/invoice-center-view'
 
 const statusConfig: Record<string, { label: string; color: string; bg: string; dot: string }> = {
   draft: { label: 'Taslak', color: 'text-gray-600 dark:text-gray-400', bg: 'bg-gray-500/10', dot: 'bg-gray-400' },
   published: { label: 'Yayında', color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500/10', dot: 'bg-emerald-500' },
   paused: { label: 'Durduruldu', color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-500/10', dot: 'bg-amber-500' },
   archived: { label: 'Arşiv', color: 'text-gray-600 dark:text-gray-400', bg: 'bg-gray-500/10', dot: 'bg-gray-300' },
+}
+
+const responseStatusConfig: Record<string, { label: string; color: string; bg: string }> = {
+  new: { label: 'Yeni', color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-500/10' },
+  reviewing: { label: 'İnceleniyor', color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-500/10' },
+  approved: { label: 'Onaylandı', color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500/10' },
+  rejected: { label: 'Reddedildi', color: 'text-red-600 dark:text-red-400', bg: 'bg-red-500/10' },
+  spam: { label: 'Spam', color: 'text-gray-600 dark:text-gray-400', bg: 'bg-gray-500/10' },
+  archived: { label: 'Arşiv', color: 'text-gray-600 dark:text-gray-400', bg: 'bg-gray-500/10' },
+}
+
+const formSettingsGroups = [
+  {
+    id: 'configuration',
+    label: 'Yapılandırma',
+    items: [
+      { id: 'settings', label: 'Genel ayarlar', icon: Settings },
+      { id: 'logic', label: 'Mantık', icon: GitBranch },
+      { id: 'notifications', label: 'Bildirimler', icon: Bell },
+    ],
+  },
+  {
+    id: 'design',
+    label: 'Tasarım',
+    items: [
+      { id: 'appearance', label: 'Görünüm ve tema', icon: Palette },
+    ],
+  },
+  {
+    id: 'delivery',
+    label: 'Paylaşım ve bağlantılar',
+    items: [
+      { id: 'embed', label: 'WordPress / Embed', icon: Code2 },
+      { id: 'payment', label: 'Ödeme', icon: CreditCard },
+      { id: 'integrations', label: 'Entegrasyonlar', icon: Plug },
+    ],
+  },
+    {
+      id: 'insights',
+      label: 'Sonuçlar',
+      items: [
+        { id: 'reports', label: 'Raporlar', icon: BarChart3 },
+        { id: 'submissions', label: 'Yanıtlar', icon: Inbox },
+        { id: 'badge', label: 'Yaka kartı', icon: BadgeCheck },
+      ],
+  },
+] as const
+
+type FocusedFormSummary = Pick<FormListItem, 'id' | 'title' | 'slug' | 'status' | 'submissionCount'> & {
+  fieldCount: number
 }
 
 function slugify(text: string): string {
@@ -89,11 +151,16 @@ export function FormsListView() {
   const [view, setViewMode] = useState<'grid' | 'table'>('grid')
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [sortBy, setSortBy] = useState<'updated' | 'created' | 'title' | 'responses'>('updated')
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null)
+  const [smartFilter, setSmartFilter] = useState<'today' | 'active' | null>(null)
   const [newFormOpen, setNewFormOpen] = useState(false)
-  const [newForm, setNewForm] = useState({ title: '', description: '', slug: '', folderId: '' })
+  const [newForm, setNewForm] = useState({ title: '', description: '', slug: '', folderId: '', enableUserConfirmation: false })
   const [creating, setCreating] = useState(false)
-  const { selectForm, setView, setFolders: setStoreFolders, setTags: setStoreTags } = useApp()
+  const { selectedFormId, selectForm, setView, setFolders: setStoreFolders, setTags: setStoreTags } = useApp()
+  const [focusedSummary, setFocusedSummary] = useState<FocusedFormSummary | null>(null)
+  const [focusedSubmissions, setFocusedSubmissions] = useState<Submission[]>([])
+  const [focusedLoading, setFocusedLoading] = useState(false)
   const { toast } = useToast()
 
   const loadForms = async () => {
@@ -131,6 +198,50 @@ export function FormsListView() {
     return () => clearTimeout(t)
   }, [search, statusFilter, selectedFolder])
 
+  const displayForms = forms.filter((form) => {
+    if (smartFilter === 'today') return form.todaySubmissionCount > 0
+    if (smartFilter === 'active') return form.submissionCount >= 10
+    return true
+  }).sort((a, b) => {
+    if (sortBy === 'title') return a.title.localeCompare(b.title, 'tr', { sensitivity: 'base' })
+    if (sortBy === 'responses') return b.submissionCount - a.submissionCount || b.updatedAt.localeCompare(a.updatedAt)
+    const field = sortBy === 'created' ? 'createdAt' : 'updatedAt'
+    return b[field].localeCompare(a[field])
+  })
+
+  const focusedForm = forms.find((form) => form.id === selectedFormId)
+    || forms.find((form) => form.status === 'published')
+    || forms[0]
+    || null
+
+  useEffect(() => {
+    if (!focusedForm) {
+      setFocusedSummary(null)
+      setFocusedSubmissions([])
+      return
+    }
+    let active = true
+    setFocusedLoading(true)
+    Promise.all([
+      api<FocusedFormSummary>(`/api/forms/${focusedForm.id}/summary`),
+      api<Submission[]>(`/api/forms/${focusedForm.id}/submissions?page=1&pageSize=4`),
+    ])
+      .then(([summary, submissions]) => {
+        if (!active) return
+        setFocusedSummary(summary)
+        setFocusedSubmissions(Array.isArray(submissions) ? submissions : [])
+      })
+      .catch(() => {
+        if (!active) return
+        setFocusedSummary(null)
+        setFocusedSubmissions([])
+      })
+      .finally(() => {
+        if (active) setFocusedLoading(false)
+      })
+    return () => { active = false }
+  }, [focusedForm?.id])
+
   // Listen for new form events
   useEffect(() => {
     const handler = () => setNewFormOpen(true)
@@ -158,11 +269,12 @@ export function FormsListView() {
           description: newForm.description || null,
           slug,
           folderId: newForm.folderId || null,
+          enableUserConfirmation: newForm.enableUserConfirmation,
         }),
       })
       toast({ title: 'Form oluşturuldu', description: 'Builder açılıyor...' })
       setNewFormOpen(false)
-      setNewForm({ title: '', description: '', slug: '', folderId: '' })
+      setNewForm({ title: '', description: '', slug: '', folderId: '', enableUserConfirmation: false })
       selectForm(created.id, 'fields')
       setView('builder')
     } catch (err: any) {
@@ -176,6 +288,12 @@ export function FormsListView() {
     try {
       if (action === 'edit') {
         selectForm(form.id, 'fields')
+        setView('builder')
+      } else if (action.startsWith('settings:')) {
+        selectForm(form.id, action.slice('settings:'.length))
+        setView('builder')
+      } else if (action === 'settings') {
+        selectForm(form.id, 'settings')
         setView('builder')
       } else if (action === 'submissions') {
         selectForm(form.id, 'submissions')
@@ -228,17 +346,13 @@ export function FormsListView() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-4rem)]">
+    <div className="flex min-w-0 h-[calc(100vh-4rem)]">
       {/* Folder sidebar */}
       <div className="hidden lg:flex w-60 shrink-0 border-r border-border bg-muted/20 flex-col">
-        <div className="p-4 border-b border-border">
-          <Button className="w-full gap-2" onClick={() => setNewFormOpen(true)}>
-            <Plus className="w-4 h-4" />
-            Yeni Form
-          </Button>
-        </div>
         <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
           <button
+            type="button"
+            aria-current={!selectedFolder ? 'page' : undefined}
             onClick={() => setSelectedFolder(null)}
             className={cn(
               'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors',
@@ -252,6 +366,8 @@ export function FormsListView() {
           {folders.map((folder) => (
             <button
               key={folder.id}
+              type="button"
+              aria-current={selectedFolder === folder.id ? 'page' : undefined}
               onClick={() => setSelectedFolder(folder.id)}
               className={cn(
                 'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors',
@@ -272,7 +388,7 @@ export function FormsListView() {
               {tags.map((tag) => (
                 <span
                   key={tag.id}
-                  className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[11px] font-medium border cursor-pointer hover:scale-105 transition-transform"
+                  className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[11px] font-medium border"
                   style={{
                     backgroundColor: `${tag.color}15`,
                     color: tag.color,
@@ -290,25 +406,35 @@ export function FormsListView() {
             <div className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               Akıllı Klasörler
             </div>
-            {[
-              { name: 'Bugün yanıt alanlar', icon: Clock, color: 'text-blue-500' },
-              { name: 'Ücretli formlar', icon: TrendingUp, color: 'text-emerald-500' },
-              { name: 'Çok aktif', icon: TrendingUp, color: 'text-amber-500' },
-            ].map((sf, i) => (
-              <button
-                key={i}
-                className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-              >
-                <sf.icon className={cn('w-3.5 h-3.5', sf.color)} />
-                {sf.name}
-              </button>
-            ))}
+            <button
+              type="button"
+              aria-pressed={smartFilter === 'today'}
+              onClick={() => setSmartFilter((current) => current === 'today' ? null : 'today')}
+              className={cn('w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors', smartFilter === 'today' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground')}
+            >
+              <Clock className="w-3.5 h-3.5 text-blue-500" />
+              Bugün yanıt alanlar
+            </button>
+            <div className="flex items-center gap-2 px-3 py-1.5 text-xs text-muted-foreground" aria-disabled="true">
+              <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
+              <span>Ücretli formlar</span>
+              <span className="ml-auto text-[10px]">Kurulum bekliyor</span>
+            </div>
+            <button
+              type="button"
+              aria-pressed={smartFilter === 'active'}
+              onClick={() => setSmartFilter((current) => current === 'active' ? null : 'active')}
+              className={cn('w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors', smartFilter === 'active' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground')}
+            >
+              <TrendingUp className="w-3.5 h-3.5 text-amber-500" />
+              Çok aktif
+            </button>
           </div>
         </div>
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="min-w-0 flex-1 flex flex-col overflow-hidden">
         {/* Toolbar */}
         <div className="p-4 border-b border-border space-y-3 bg-background/80 backdrop-blur">
           <div className="flex flex-col sm:flex-row gap-3">
@@ -357,15 +483,52 @@ export function FormsListView() {
           </div>
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>{loading ? 'Yükleniyor...' : `${forms.length} form bulundu`}</span>
-            <Button variant="ghost" size="sm" className="gap-1 h-7 text-xs">
-              <ArrowUpDown className="w-3 h-3" />
-              Sırala
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-1 h-7 text-xs" aria-label="Formları sırala">
+                  <ArrowUpDown className="w-3 h-3" />
+                  Sırala
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Formları sırala</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => setSortBy('updated')}>Güncelleme tarihi {sortBy === 'updated' ? '✓' : ''}</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortBy('created')}>Oluşturulma tarihi {sortBy === 'created' ? '✓' : ''}</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortBy('title')}>Başlık {sortBy === 'title' ? '✓' : ''}</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortBy('responses')}>Yanıt sayısı {sortBy === 'responses' ? '✓' : ''}</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
         {/* Forms */}
         <div className="flex-1 overflow-y-auto p-4 lg:p-6">
+          {focusedForm && (
+            <FocusedFormWorkspace
+              form={focusedForm}
+              summary={focusedSummary}
+              submissions={focusedSubmissions}
+              loading={focusedLoading}
+              onOpenResponses={() => {
+                selectForm(focusedForm.id, 'submissions')
+                setView('submissions')
+              }}
+              onSelectSettingsTab={(tab) => {
+                if (tab === 'edit') {
+                  handleAction(focusedForm, 'edit')
+                  return
+                }
+                if (tab === 'submissions') {
+                  selectForm(focusedForm.id, 'submissions')
+                  setView('submissions')
+                  return
+                }
+                handleAction(focusedForm, `settings:${tab}`)
+              }}
+            />
+          )}
+          {focusedForm && <InvoiceCenterView formId={focusedForm.id} />}
           {loading ? (
             <div className={view === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-2'}>
               {[...Array(6)].map((_, i) => (
@@ -390,7 +553,7 @@ export function FormsListView() {
             </div>
           ) : view === 'grid' ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {forms.map((form) => (
+              {displayForms.map((form) => (
                 <FormCard
                   key={form.id}
                   form={form}
@@ -416,7 +579,7 @@ export function FormsListView() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {forms.map((form) => {
+                  {displayForms.map((form) => {
                     const cfg = statusConfig[form.status] || statusConfig.draft
                     return (
                       <tr
@@ -486,6 +649,9 @@ export function FormsListView() {
               <Sparkles className="w-5 h-5 text-primary" />
               Yeni Form Oluştur
             </DialogTitle>
+            <DialogDescription>
+              Form türünü ve temel bilgileri seçerek yeni bir çalışma alanı oluşturun.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="grid grid-cols-3 gap-2">
@@ -572,6 +738,18 @@ export function FormsListView() {
                 </SelectContent>
               </Select>
             </div>
+
+            <div className="flex items-start gap-3 rounded-lg border border-border/70 p-3">
+              <Checkbox
+                id="form-user-confirmation"
+                checked={newForm.enableUserConfirmation}
+                onCheckedChange={(checked) => setNewForm({ ...newForm, enableUserConfirmation: checked === true })}
+              />
+              <div className="space-y-1">
+                <Label htmlFor="form-user-confirmation" className="cursor-pointer">Katılımcıya yanıt alındı e-postası gönder</Label>
+                <p className="text-xs text-muted-foreground">Form başlangıçta public zorunlu e-posta alanı ve kullanıcı onayı bildirimiyle oluşturulur. Gerçek gönderim mail sağlayıcısı açılınca çalışır.</p>
+              </div>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setNewFormOpen(false)}>
@@ -587,6 +765,188 @@ export function FormsListView() {
   )
 }
 
+function FocusedFormWorkspace({
+  form,
+  summary,
+  submissions,
+  loading,
+  onOpenResponses,
+  onSelectSettingsTab,
+}: {
+  form: FormListItem
+  summary: FocusedFormSummary | null
+  submissions: Submission[]
+  loading: boolean
+  onOpenResponses: () => void
+  onSelectSettingsTab: (tab: string) => void
+}) {
+  const cfg = statusConfig[form.status] || statusConfig.draft
+  const total = summary?.submissionCount ?? form.submissionCount
+  const displaySubmission = (submission: Submission) => {
+    const name = submission.submitter?.name
+      || submission.values.find((value) => ['full_name', 'name', 'ad_soyad'].includes(value.field.fieldKey))?.normalizedText
+      || 'Anonim'
+    const email = submission.submitter?.email
+      || submission.values.find((value) => value.field.type === 'email')?.normalizedText
+      || 'E-posta yok'
+    return { name, email }
+  }
+
+  return (
+    <Card className="mb-5 overflow-hidden border-primary/20 bg-gradient-to-br from-primary/[0.06] via-background to-background">
+      <div className="grid gap-4 p-4 xl:grid-cols-[minmax(0,1fr)_minmax(360px,0.9fr)] xl:p-5">
+        <div className="min-w-0">
+          <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span className="font-semibold uppercase tracking-wider text-primary">Öne çıkan form</span>
+            <span className={cn('inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-medium', cfg.bg, cfg.color)}>
+              <span className={cn('h-1.5 w-1.5 rounded-full', cfg.dot)} />
+              {cfg.label}
+            </span>
+          </div>
+          <h2 className="truncate text-lg font-semibold sm:text-xl">{form.title}</h2>
+          <p className="mt-1 truncate text-xs text-muted-foreground">/forms/{form.slug}</p>
+
+          <div className="mt-4 grid max-w-xl grid-cols-3 gap-2 sm:gap-3">
+            <div className="rounded-lg border border-border/70 bg-background/80 p-2.5">
+              <div className="text-lg font-semibold leading-none">{total}</div>
+              <div className="mt-1 text-[10px] text-muted-foreground">Toplam yanıt</div>
+            </div>
+            <div className="rounded-lg border border-border/70 bg-background/80 p-2.5">
+              <div className="text-lg font-semibold leading-none">{form.todaySubmissionCount}</div>
+              <div className="mt-1 text-[10px] text-muted-foreground">Bugünkü yanıt</div>
+            </div>
+            <div className="rounded-lg border border-border/70 bg-background/80 p-2.5">
+              <div className="text-lg font-semibold leading-none">{summary?.fieldCount ?? '—'}</div>
+              <div className="mt-1 text-[10px] text-muted-foreground">Form alanı</div>
+            </div>
+          </div>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Button type="button" size="sm" onClick={onOpenResponses} className="gap-2">
+              <Inbox className="h-3.5 w-3.5" />
+              Yanıtları aç
+            </Button>
+            <FormSettingsMenu form={form} buttonLabel="Formu yönet" onSelect={onSelectSettingsTab} />
+          </div>
+
+          {form.status === 'published' && (
+            <div className="mt-4 overflow-hidden rounded-xl border border-border/70 bg-background/80 shadow-sm">
+              <div className="border-b border-border/70 px-3 py-2">
+                <h3 className="text-xs font-semibold">Canlı form</h3>
+                <p className="text-[10px] text-muted-foreground">Katılımcının göreceği yayınlanmış görünüm</p>
+              </div>
+              <iframe
+                title={`${form.title} canlı form`}
+                src={`/forms/${encodeURIComponent(form.slug)}?embed=1`}
+                className="block h-[min(420px,55vh)] min-h-[260px] w-full border-0"
+                loading="lazy"
+                sandbox="allow-forms allow-scripts allow-same-origin allow-popups"
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="min-w-0 rounded-xl border border-border/70 bg-background/80 p-3">
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-semibold">Son yanıtlar</h3>
+              <p className="text-[11px] text-muted-foreground">Seçili formun en son kayıtları</p>
+            </div>
+            <Button type="button" variant="ghost" size="sm" onClick={onOpenResponses} className="h-7 shrink-0 px-2 text-xs">
+              Tümü
+            </Button>
+          </div>
+          {loading ? (
+            <div className="space-y-2" aria-label="Son yanıtlar yükleniyor">
+              {[1, 2, 3].map((item) => <div key={item} className="h-9 animate-pulse rounded-md bg-muted" />)}
+            </div>
+          ) : submissions.length === 0 ? (
+            <div className="rounded-lg border border-dashed border-border p-4 text-center text-xs text-muted-foreground">
+              Henüz yanıt yok.
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {submissions.slice(0, 4).map((submission) => {
+                const person = displaySubmission(submission)
+                const submissionCfg = responseStatusConfig[submission.status] || responseStatusConfig.new
+                return (
+                  <button
+                    type="button"
+                    key={submission.id}
+                    onClick={onOpenResponses}
+                    className="flex w-full min-w-0 items-center gap-2 rounded-lg p-2 text-left hover:bg-muted/70"
+                  >
+                    <Avatar className="h-7 w-7 shrink-0">
+                      <AvatarFallback className="text-[10px]">{person.name.slice(0, 1).toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-xs font-medium">{person.name}</span>
+                      <span className="block truncate text-[10px] text-muted-foreground">{person.email}</span>
+                    </span>
+                    <span className={cn('shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-medium', submissionCfg.bg, submissionCfg.color)}>
+                      {submissionCfg.label}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    </Card>
+  )
+}
+
+function FormSettingsMenu({
+  form,
+  buttonLabel = 'Ayarlar',
+  onSelect,
+}: {
+  form: FormListItem
+  buttonLabel?: string
+  onSelect: (tab: string) => void
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          aria-label={`${form.title} ayarlarını aç`}
+          className="h-8 gap-1.5 px-2.5 text-xs"
+          onClick={(event) => event.stopPropagation()}
+        >
+          <Settings className="h-3.5 w-3.5" />
+          <span>{buttonLabel}</span>
+          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="max-h-[min(70vh,32rem)] w-72 overflow-y-auto" onClick={(event) => event.stopPropagation()}>
+        <DropdownMenuLabel>{form.title} · Form ayarları ve yönetim</DropdownMenuLabel>
+        <DropdownMenuItem className="gap-2 text-sm" onClick={() => onSelect('edit')}>
+          <Edit3 className="h-4 w-4" />
+          Formu düzenle
+        </DropdownMenuItem>
+        {formSettingsGroups.map((group) => (
+          <div key={group.id}>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="px-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+              {group.label}
+            </DropdownMenuLabel>
+            {group.items.map(({ id, label, icon: Icon }) => (
+              <DropdownMenuItem key={id} className="gap-2 text-sm" onClick={() => onSelect(id)}>
+                <Icon className="h-4 w-4" />
+                {label}
+              </DropdownMenuItem>
+            ))}
+          </div>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
 function FormCard({
   form,
   onAction,
@@ -597,8 +957,23 @@ function FormCard({
   onOpen: () => void
 }) {
   const cfg = statusConfig[form.status] || statusConfig.draft
+  const coverMediaId = (form as any).coverMediaId as string | null
+  const coverUrl = (form as any).coverImageUrl as string | null
+  const coverAlt = (form as any).coverImageAlt || form.title
+  // M05.2: prefer coverMediaId (private media) over raw coverImageUrl, fallback deterministic
+  const coverSrc = coverMediaId ? `/api/media/${coverMediaId}?formId=${form.id}` : coverUrl
   return (
-    <Card className="p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer group relative" onClick={onOpen}>
+    <Card className="p-0 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer group relative" onClick={onOpen}>
+      <div className="form-card__media" style={{ aspectRatio: '16 / 9', overflow: 'hidden', background: '#f1f5f9' }}>
+        {coverSrc ? (
+          <img src={coverSrc} alt={coverAlt} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={(e) => ((e.currentTarget.style.display='none'))} />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-chart-3/10">
+            <FileText className="w-8 h-8 text-primary/40" />
+          </div>
+        )}
+      </div>
+      <div className="p-5">
       <div className="flex items-start justify-between mb-3">
         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/15 to-chart-3/10 flex items-center justify-center">
           <FileText className="w-5 h-5 text-primary" />
@@ -636,8 +1011,8 @@ function FormCard({
         )}
       </div>
 
-      <div className="flex items-center justify-between pt-3 border-t border-border">
-        <div className="flex items-center gap-3 text-xs">
+      <div className="flex flex-col gap-2 pt-3 border-t border-border">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-xs">
           <span className="flex items-center gap-1 text-muted-foreground">
             <Inbox className="w-3 h-3" />
             <span className="font-medium text-foreground">{form.submissionCount}</span>
@@ -650,13 +1025,16 @@ function FormCard({
             </span>
           )}
         </div>
-        <span className="text-[10px] text-muted-foreground">
-          {new Date(form.updatedAt).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short' })}
-        </span>
+        <div className="flex min-w-0 items-center justify-between gap-2">
+          <span className="text-[10px] text-muted-foreground">
+            {new Date(form.updatedAt).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short' })}
+          </span>
+          <FormSettingsMenu
+            form={form}
+            onSelect={(tab) => onAction(form, tab === 'edit' ? 'edit' : tab === 'submissions' ? 'submissions' : `settings:${tab}`)}
+          />
+        </div>
       </div>
-
-      <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
-        <FormActionMenu form={form} onAction={onAction} />
       </div>
     </Card>
   )

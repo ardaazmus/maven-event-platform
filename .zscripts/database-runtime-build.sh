@@ -18,10 +18,10 @@ else
     echo "ℹ️  未找到 Preview 数据库 db/custom.db，将初始化空的生产数据库"
 fi
 
-echo "🗄️  同步构建产物中的数据库结构..."
+echo "🗄️  同步构建产物中的数据库结构 (migrate deploy)..."
 (
     cd "$PROJECT_DIR"
-    DATABASE_URL="file:$TARGET_DB_PATH" bun run db:push
+    DATABASE_URL="file:$TARGET_DB_PATH" bunx prisma migrate deploy
 )
 
 if [ ! -f "$TARGET_DB_PATH" ]; then

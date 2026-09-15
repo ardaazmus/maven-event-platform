@@ -1,0 +1,13 @@
+{
+  "id": "V2-00A",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "V2 provider evidence matrixini gerçek proje test çalıştırma biçimiyle doğrulamak; live mutation açmamak",
+  "rollback": "Yalnız V2-00A matrix/test packetini geri al; payment provider secret, merchant hesabı veya live mutation oluşturma",
+  "previous": ["V1-05"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "RELEASE-DECISION.md", "docs/workflow/README.md", "docs/superpowers/plans/2026-09-06-mavenforms-release-modules-first-party-saas-roadmap.md", "docs/OzelAPP_Derin_Arastirma_2026-09-03/01_Stripe.md", "docs/OzelAPP_Derin_Arastirma_2026-09-03/02_iyzico.md", "docs/OzelAPP_Derin_Arastirma_2026-09-03/03_Google_Pay.md", "docs/OzelAPP_Derin_Arastirma_2026-09-03/04_PCI_DSS_ve_Odeme_Guvenligi.md"],
+  "allowedFiles": ["docs/workflow/packets/V2-00A.json", "docs/acceptance/v2-provider-evidence-matrix.md", "tests/v2-provider-matrix.test.mjs", "STATUS.md"],
+  "acceptance": ["iyzico hosted checkout, Stripe uygunluk ve Google Pay gateway/direct ayrımı evidence alanlarıyla yazılıdır", "production_eligible=no ve global R-10 NO-GO korunur", "Matrix ve test secret, token, PAN/CVV veya gerçek merchant kimliği içermez", "Provider testleri TypeScript path aliasını destekleyen Bun çalışma biçimiyle yürütülür", "Live payment mutation ve public payment açma bu fazda mümkün değildir"],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["bun", "tests/v2-provider-matrix.test.mjs"], ["bun", "tests/payment-provider-contract.test.mjs"], ["bun", "tests/payment-connection-gate.test.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

@@ -1,0 +1,41 @@
+{
+  "id": "BADGE-11",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı preflight sonucu ve proof-sheet gereksinimini export öncesi durum sözleşmesine bağlamak.",
+  "rollback": "Yalnız badge-preflight-contract modülü, sentetik focused testi, packet ve BADGE-11 durum satırını geri al; PDF/ZIP üretimi, medya, submission, ödeme, fatura ve e-posta verilerine dokunma.",
+  "previous": ["BADGE-10"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-09-mavenforms-badge-module-roadmap.md",
+    "docs/research-sources/2026-09-09-badge-qr-output-research-receipt.md",
+    "src/lib/badge-front-render-contract.ts",
+    "src/lib/badge-print-preview-contract.ts",
+    "src/lib/badge-export-contract.ts"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-11.json",
+    "src/lib/badge-preflight-contract.ts",
+    "tests/badge-preflight-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Her kontrol sonucu yalnız machine-readable code/status taşır; raw PDF, PII, ödeme ve ham yanıt rapora girmez.",
+    "Herhangi bir BLOCKED sonucu final export'u bloke eder.",
+    "WARN sonucu açık confirmation yoksa WARN_REQUIRES_CONFIRMATION kalır.",
+    "Baskı proof'u yoksa tüm teknik kontroller geçse bile PRINT_PROOF_REQUIRED döner.",
+    "Focused test, TypeScript ve context-check geçer; ödeme/fatura/V3/V4/R-10 davranışları değişmez."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-preflight-contract.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

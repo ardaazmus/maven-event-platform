@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getSessionFromCookie } from '@/lib/auth'
+import { can } from '@/lib/policy'
 
 interface RouteParams {
   params: Promise<{ id: string }>
@@ -10,6 +11,7 @@ interface RouteParams {
 function getDefaultAppearance() {
   return {
     headerEnabled: true,
+    headerLogoMediaId: null,
     headerLogoUrl: null,
     headerLogoAlt: null,
     headerLogoWidth: null,
@@ -17,6 +19,7 @@ function getDefaultAppearance() {
     headerSubtitle: null,
     headerDescription: null,
     headerBgColor: '#ffffff',
+    headerBgMediaId: null,
     headerBgImage: null,
     headerTextColor: '#1a1a1a',
     headerAlign: 'center',
@@ -33,6 +36,7 @@ function getDefaultAppearance() {
     socialFacebook: null,
     socialYoutube: null,
     footerEnabled: true,
+    footerLogoMediaId: null,
     footerLogoUrl: null,
     footerText: null,
     footerBgColor: '#1a1a1a',
@@ -46,6 +50,8 @@ function getDefaultAppearance() {
 export async function GET(req: NextRequest, { params }: RouteParams) {
   const ctx = await getSessionFromCookie()
   if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const _auth = can.readForms(ctx as any)
+  if (!_auth.allowed) return NextResponse.json({ error: _auth.error }, { status: _auth.status })
 
   const { id } = await params
   const form = await db.form.findFirst({ where: { id, workspaceId: ctx.workspace.id } })
@@ -75,6 +81,8 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 export async function PATCH(req: NextRequest, { params }: RouteParams) {
   const ctx = await getSessionFromCookie()
   if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const _auth = can.writeForms(ctx as any)
+  if (!_auth.allowed) return NextResponse.json({ error: _auth.error }, { status: _auth.status })
 
   const { id } = await params
   const form = await db.form.findFirst({ where: { id, workspaceId: ctx.workspace.id } })
@@ -84,13 +92,13 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
 
   // Whitelist allowed fields
   const allowedFields = [
-    'headerEnabled', 'headerLogoUrl', 'headerLogoAlt', 'headerLogoWidth',
+    'headerEnabled', 'headerLogoMediaId', 'headerLogoUrl', 'headerLogoAlt', 'headerLogoWidth',
     'headerTitle', 'headerSubtitle', 'headerDescription',
-    'headerBgColor', 'headerBgImage', 'headerTextColor', 'headerAlign', 'headerPadding',
+    'headerBgColor', 'headerBgMediaId', 'headerBgImage', 'headerTextColor', 'headerAlign', 'headerPadding',
     'contactBarEnabled', 'contactBarBgColor', 'contactBarTextColor',
     'contactEmail', 'contactPhone', 'contactAddress',
     'socialInstagram', 'socialLinkedin', 'socialTwitter', 'socialFacebook', 'socialYoutube',
-    'footerEnabled', 'footerLogoUrl', 'footerText',
+    'footerEnabled', 'footerLogoMediaId', 'footerLogoUrl', 'footerText',
     'footerBgColor', 'footerTextColor', 'footerPadding',
     'customCss',
   ]
@@ -99,6 +107,18 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
   for (const key of allowedFields) {
     if (body[key] !== undefined) {
       data[key] = body[key]
+    }
+  }
+
+  const mediaKeys = ['headerLogoMediaId', 'headerBgMediaId', 'footerLogoMediaId']
+  const mediaIds = mediaKeys.map((key) => data[key]).filter((value): value is string => typeof value === 'string' && value.length > 0)
+  if (mediaIds.length !== mediaKeys.filter((key) => data[key] !== undefined && data[key] !== null && data[key] !== '').length) {
+    return NextResponse.json({ error: 'Geçersiz medya kimliği' }, { status: 400 })
+  }
+  if (mediaIds.length > 0) {
+    const assets = await db.mediaAsset.findMany({ where: { id: { in: mediaIds }, workspaceId: ctx.workspace.id, formId: id }, select: { id: true } })
+    if (assets.length !== new Set(mediaIds).size) {
+      return NextResponse.json({ error: 'Medya bu forma ait değil' }, { status: 403 })
     }
   }
 

@@ -1,0 +1,40 @@
+{
+  "id": "M08.1",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "7c80261996cd5be6",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "public-url.test PASS",
+    "scope": {
+      "changedFiles": [
+        "tests/public-url.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "no PII, snapshot parity already verified",
+    "acceptanceIds": [
+      "AC-PUBLIC-01"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/public-url.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-02T03:09:06.523Z"
+}

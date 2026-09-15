@@ -1,0 +1,49 @@
+{
+  "id": "BADGE-40",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı PDF şablonlarını form kapsamında listelemek ve seçili sürümü güvenli biçimde form ayarına kaydetmek.",
+  "rollback": "BADGE-40 kataloğu/seçim route ve UI/test değişikliklerini geri al; generation, export, payment, invoice, provider, R-10 ve V4 kapılarını açma.",
+  "previous": ["BADGE-39"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/auth.ts",
+    "src/lib/policy.ts",
+    "src/lib/db.ts",
+    "src/lib/badge-template-storage.ts",
+    "src/app/api/forms/[id]/badges/templates/route.ts",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/badge-template-upload-route.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-40.json",
+    "src/lib/badge-template-catalog.ts",
+    "src/app/api/forms/[id]/badges/templates/catalog/route.ts",
+    "src/app/api/forms/[id]/badges/templates/selection/route.ts",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/badge-template-catalog.test.mjs",
+    "tests/badge-template-catalog-route.test.mjs",
+    "tests/badge-template-selection-route.test.mjs",
+    "tests/badge-ui-entry-wiring.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Yalnız authenticated forms.write kullanıcı, kendi workspace/form kapsamındaki doğrulanmış şablonları listeleyebilir.",
+    "Şablon seçimi yalnız katalogda bulunan aynı form sürümüne bağlanır ve form settingsJson içine server-side scope doğrulamasıyla yazılır.",
+    "Başka workspace/form şablonu seçilemez; public route ve public URL oluşturulmaz.",
+    "Builder panelinde yüklenen şablonlar görünür, seçili sürüm işaretlenir ve seçim gerçek API action ile kalıcılaşır.",
+    "Focused katalog/seçim/UI testleri, TypeScript ve context-check geçer."
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-template-catalog.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/badge-template-catalog-route.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/badge-template-selection-route.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/badge-ui-entry-wiring.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

@@ -1,12 +1,20 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { sanitizePublicForm } from '@/lib/public-dto'
+import { getSessionFromRequest } from '@/lib/auth'
+import { can } from '@/lib/policy'
 
 interface RouteParams {
   params: Promise<{ id: string }>
 }
 
-// Public preview - returns form data without auth (for embedded/preview)
-export async function GET(req: Request, { params }: RouteParams) {
+// Authenticated preview - requires workspace membership
+export async function GET(req: NextRequest, { params }: RouteParams) {
+  const ctx = await getSessionFromRequest(req)
+  if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const auth = can.readForms(ctx as any)
+  if (!auth.allowed) return NextResponse.json({ error: auth.error }, { status: auth.status })
+
   const { id } = await params
   const { searchParams } = new URL(req.url)
   const slug = searchParams.get('slug')
@@ -27,35 +35,11 @@ export async function GET(req: Request, { params }: RouteParams) {
   })
 
   if (!form) return NextResponse.json({ error: 'Form bulunamadı' }, { status: 404 })
-  if (form.status !== 'published' && !searchParams.get('preview')) {
-    return NextResponse.json({ error: 'Form yayında değil' }, { status: 403 })
+  if (form.workspaceId !== ctx.workspace.id) {
+    return NextResponse.json({ error: 'Form bulunamadı' }, { status: 404 })
   }
 
   return NextResponse.json({
-    data: {
-      id: form.id,
-      title: form.title,
-      description: form.description,
-      slug: form.slug,
-      status: form.status,
-      settings: JSON.parse(form.settingsJson || '{}'),
-      fields: form.fields.map(f => ({
-        id: f.id,
-        fieldKey: f.fieldKey,
-        type: f.type,
-        label: f.label,
-        description: f.description,
-        placeholder: f.placeholder,
-        helpText: f.helpText,
-        required: f.required,
-        readOnly: f.readOnly,
-        defaultValue: f.defaultValue,
-        config: JSON.parse(f.configJson || '{}'),
-      })),
-      theme: form.themes[0] ? {
-        ...form.themes[0],
-        tokens: JSON.parse(form.themes[0].tokensJson || '{}'),
-      } : null,
-    },
+    data: sanitizePublicForm(form),
   })
 }

@@ -1,0 +1,19 @@
+{
+  "id": "FORM-UX-54",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yayin oncesi baslik, etkinlik tarihi, gorsel ve public baglanti tutarliligini bloklamayan dogrulanabilir UI kontrolune donusturmek",
+  "rollback": "FORM-UX-54 kapsamindaki yayin tutarliligi yardimcisini, testini, packetini ve STATUS kaydini geri al",
+  "previous": ["FORM-UX-53"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/views/form-builder-view.tsx", "src/lib/types.ts", "src/app/api/forms/[id]/publish/route.ts", "tests/form-ux-publish-draft-status.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-54.json", "src/lib/publication-consistency.ts", "src/components/mavenforms/builder/publication-consistency-card.tsx", "src/components/mavenforms/views/form-builder-view.tsx", "tests/form-ux-publication-consistency.test.mjs", "STATUS.md"],
+  "acceptance": [
+    "Yayin oncesi kontrolu yalniz mevcut title, slug, alan sayisi, startDate ve gorsel metadata kanitlarini degerlendirir",
+    "Basliktaki yil ile mevcut startDate yili farkliysa uyarir; tarih yoksa etkinlik varsayimi yapmaz",
+    "Gorsel secili ve alt metin bos ise uyarir; gorsel yoksa sahte secili durumu gostermez",
+    "Kontrol bilgilendiricidir; public publish endpointi, snapshot, FormVersion ve slug davranisi degismez",
+    "Regression, TypeScript, build, readiness, context-check ve workflow verify basarili olur"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]],
+  "checks": [["bun", "tests/form-ux-publication-consistency.test.mjs"], ["bun", "tests/form-ux-publish-draft-status.test.mjs"], ["bun", "tests/form-ux-public-boundary-release.test.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"], ["node", "scripts/context-check.mjs"]]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "V1-01",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "V1 katılımcı kaydında manuel ödeme durumunu güvenli ve audit edilebilir server-side sözleşmeye bağlamak",
+  "rollback": "Yalnız V1-01 manual payment status sözleşmesi, hedef testi, packet ve durum notunu geri al; submission, payment provider veya invoice verisini silme/değiştirme",
+  "previous": ["V1-00A"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "docs/superpowers/plans/2026-09-06-mavenforms-release-modules-first-party-saas-roadmap.md", "src/lib/auth.ts", "src/lib/r10-scope-gate.ts", "src/app/api/forms/[id]/submissions/[subId]/route.ts", "tests/submission-update-validation.test.mjs", "tests/submissions-state.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/V1-01.json", "src/lib/manual-payment-status.ts", "tests/manual-payment-status.test.mjs", "src/app/api/forms/[id]/submissions/[subId]/route.ts", "STATUS.md"],
+  "acceptance": ["unpaid, paid, review ve refunded manuel durumları için açık state transition sözleşmesi vardır", "Yalnız yetkili accounting/admin/owner actor değişiklik yapabilir ve actor/time/audit metadata'sı korunur", "Workspace, actor, amount ve provider kimliği browser request body'den alınmaz", "Manuel paid durumu provider tarafından doğrulanmış online ödeme olarak sunulmaz", "Hedef durum testi, submission update regression, TypeScript, production build, /api/ready ve workflow verify geçer"],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["node", "tests/manual-payment-status.test.mjs"], ["node", "tests/submission-update-validation.test.mjs"], ["node", "tests/submissions-state.test.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "FORM-UX-50",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Kullanicilar ekraninda fixture veriyi acikca belirtmek ve bagli olmayan davet aksiyonunu basarisiz/etkisiz gorunmekten cikarmak",
+  "rollback": "Yalniz FORM-UX-50 packetini, users-view fixture durum metnini, davet kontrolunu, regression testini ve STATUS kaydini geri al",
+  "previous": ["FORM-UX-49"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/users-view.tsx"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-50.json",
+    "src/components/mavenforms/views/users-view.tsx",
+    "tests/form-ux-users-fixture.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Kullanicilar ekraninin gercek veri kaynagi olmadigi gorunur bir bilgi notuyla aciklanir",
+    "Bagli olmayan kullanici davet aksiyonu etkin ve etkisiz halde birakilmaz",
+    "Rol matrisi ve ornek kullanici listesi veri silmeden korunur",
+    "Regression, TypeScript, build, readiness, context-check ve workflow verify basarili olur"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-users-fixture.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

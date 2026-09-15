@@ -1,0 +1,35 @@
+{
+  "id": "FORM-UX-41",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Builderdaki 11 islevi kaybetmeden dort ana calisma alaninda gruplayarak bilgi mimarisini sadeleştirmek",
+  "rollback": "Yalniz FORM-UX-41 packetini, builder calisma alani navigasyonunu, regression testini ve STATUS kaydini geri al",
+  "previous": ["FORM-UX-40"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/form-builder-view.tsx"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-41.json",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/form-ux-workspace-navigation.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Düzenle, Yapılandır, Paylaş ve Sonuçlar ana çalışma alanları görünür ve klavye ile seçilebilir",
+    "Mevcut 11 sekme kimliği aynı içerikle bir alt navigasyonda erişilebilir kalır",
+    "Önizle üst aksiyonu ve formDetailTab ile gelen doğrudan sekme seçimi çalışmaya devam eder",
+    "Regression, TypeScript, build, readiness, context-check ve workflow verify basarili olur"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-workspace-navigation.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

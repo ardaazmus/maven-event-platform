@@ -1,0 +1,41 @@
+{
+  "id": "M07.1",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "37dcd4dbc83d858d",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "summary.test PASS",
+    "scope": {
+      "changedFiles": [
+        "src/app/api/forms/[id]/summary/route.ts",
+        "tests/summary.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "no PII leak beyond auth, tenant scoped",
+    "acceptanceIds": [
+      "AC-FORM-01"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/summary.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-01T23:26:57.956Z"
+}

@@ -1,0 +1,44 @@
+{
+  "id": "R10-V4-12",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Payment, mail ve Paraşüt sırları için plaintext içermeyen metadata, key version ve rotation sözleşmesi oluşturmak",
+  "rollback": "Secret metadata sözleşmesini ve testini geri al; mevcut credential şifreleme modüllerini değiştirme",
+  "previous": ["R10-V4-11"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/lib/payment-credentials.ts",
+    "src/lib/email-credentials.ts",
+    "src/lib/parasut-credentials.ts",
+    "src/lib/connection-purpose-contract.ts",
+    "tests/payment-credentials.test.mjs",
+    "tests/email-credentials.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-12.json",
+    "src/lib/secret-metadata-contract.ts",
+    "tests/secret-metadata-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Metadata yalnız connection/purpose/keyId/envelopeVersion/state ve zaman alanlarını taşır; plaintext secret/token kabul etmez",
+    "Geçersiz keyId, sürüm, state ve zaman sırası fail-closed reddedilir",
+    "Rotation yalnız yeni key metadata ile ifade edilir; eski değer silinmez veya yeni secret açılmaz",
+    "Bu faz mevcut credential şifreleme/decryption modüllerini ve canlı provider bağlantılarını değiştirmez"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/secret-metadata-contract.test.mjs"],
+    ["bun", "tests/payment-credentials.test.mjs"],
+    ["bun", "tests/email-credentials.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "id": "R10-V4-03",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Capability snapshot read modelinde module entitlement ile runtime/provider kanit durumunu ayirmak ve unknown/unsupported/blocked sonucunu gizlememek",
+  "rollback": "Capability status tipini, snapshot normalizerini ve yeni testleri geri al; mevcut V1 module kararlarini degistirme",
+  "previous": ["R10-V4-02"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/research-sources/2026-09-11-ozelapp-r10-v4-guvenli-entegrasyon-research-receipt.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/lib/release-module.ts",
+    "tests/release-module.test.mjs",
+    "tests/v4-release-gate.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-03.json",
+    "src/lib/release-module.ts",
+    "tests/release-capability-snapshot.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Capability snapshot statusu verified, unknown, unsupported veya blocked olmak zorunda ve gecersiz durum fail-closed reddedilir",
+    "Module enabled/entitlement ile runtime/provider capability statusu ayri alanlarda tutulur; unknown/unsupported/blocked gizlenmez",
+    "Snapshot normalizasyonu workspace/form/tenant scope sinirini ve bos aciklama reddini korur",
+    "Mevcut V1 module access sonucu ve R-10/V4 canli NO-GO karari degismez; canli provider veya wizard mutation acilmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"],
+    ["bun", "tests/release-module.test.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/release-capability-snapshot.test.mjs"],
+    ["bun", "tests/release-module.test.mjs"],
+    ["bun", "tests/v4-release-gate.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

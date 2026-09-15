@@ -1,0 +1,51 @@
+{
+  "id": "FORM-UX-69A",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yeni kanonik UI/UX, form değiştirme, public preview, e-posta kanal ayrımı ve V4 durum sözleşmeleriyle çelişen eski regresyon testlerini hizalamak.",
+  "rollback": "Focused regression contract testlerini, packet ve durum satırını geri al; uygulama kodu, API, ödeme, fatura, R-10 ve V4 kapılarına dokunma.",
+  "previous": ["FORM-UX-68"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/forms-list-view.tsx",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/components/mavenforms/views/submissions-view.tsx",
+    "src/app/forms/[slug]/page.tsx",
+    "tests/form-ux-forms-entry-actions.test.mjs",
+    "tests/form-ux-inventory-gate.test.mjs",
+    "tests/form-ux-submissions-form-switch.test.mjs",
+    "tests/form-ux-workspace-navigation.test.mjs",
+    "tests/public-appearance-media.test.mjs",
+    "tests/v2-invoice-delivery-manual.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-69A.json",
+    "tests/form-ux-forms-entry-actions.test.mjs",
+    "tests/form-ux-inventory-gate.test.mjs",
+    "tests/form-ux-submissions-form-switch.test.mjs",
+    "tests/form-ux-workspace-navigation.test.mjs",
+    "tests/public-appearance-media.test.mjs",
+    "tests/v2-invoice-delivery-manual.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Form girişleri ve builder testleri ayrı bir theme sekmesi aramaz; birleşik appearance yüzeyini ve legacy yönlendirmeyi doğrular.",
+    "Form değiştirme testi mevcut local state güncellemesini, public preview testi sanitizeDraftPreview akışını doğrular.",
+    "V4 durum testi güncel HELD_BY_R10_AND_PRODUCT_ORDER kararını, fatura testi form confirmation notification ve fatura transactional ayrımını doğrular.",
+    "Uygulama kodu, API, ödeme, fatura davranışı, R-10 ve V4 kapsamı değişmez; focused testler, TypeScript ve context-check geçer."
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/form-ux-forms-entry-actions.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/form-ux-inventory-gate.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/form-ux-submissions-form-switch.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/form-ux-workspace-navigation.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/public-appearance-media.test.mjs"],
+    ["bun", "tests/v2-invoice-delivery-manual.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getSessionFromCookie } from '@/lib/auth'
+import { can } from '@/lib/policy'
+import { containsForbiddenKeys, sanitizePublicForm } from '@/lib/public-dto'
 import { createHash } from 'crypto'
 
 interface RouteParams {
@@ -10,11 +12,18 @@ interface RouteParams {
 export async function POST(req: NextRequest, { params }: RouteParams) {
   const ctx = await getSessionFromCookie()
   if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const auth = can.writeForms(ctx as any)
+  if (!auth.allowed) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const { id } = await params
   const form = await db.form.findFirst({
     where: { id, workspaceId: ctx.workspace.id, deletedAt: null },
-    include: { fields: { orderBy: { sortOrder: 'asc' } } },
+    include: {
+      fields: { orderBy: { sortOrder: 'asc' } },
+      themes: { take: 1 },
+      appearance: true,
+      paymentConfig: { select: { enabled: true, provider: true, pricingPolicyJson: true } },
+    },
   })
   if (!form) return NextResponse.json({ error: 'Form bulunamadı' }, { status: 404 })
 
@@ -30,50 +39,46 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
   })
   const versionNo = (lastVersion?.versionNo ?? 0) + 1
 
-  // Snapshot schema
+  // Snapshot schema — single source via sanitizePublicForm + snapshot fields
+  const publicSnapshot = sanitizePublicForm(form)
   const schema = {
-    title: form.title,
-    description: form.description,
-    settings: JSON.parse(form.settingsJson || '{}'),
-    fields: form.fields.map(f => ({
-      fieldKey: f.fieldKey,
-      type: f.type,
-      label: f.label,
-      required: f.required,
-      config: JSON.parse(f.configJson || '{}'),
-    })),
+    ...publicSnapshot,
+    publishedAt: new Date().toISOString(),
+    versionNo,
   }
+  // Validate no internal leakage before store (AC-PUBLIC-03)
+  const leakedKeys = containsForbiddenKeys(schema)
+  if (leakedKeys.length > 0) throw new Error(`snapshot leakage: ${leakedKeys.join(', ')}`)
   const schemaJson = JSON.stringify(schema)
   const checksum = createHash('sha256').update(schemaJson).digest('hex')
 
-  const version = await db.formVersion.create({
-    data: {
-      formId: id,
-      versionNo,
-      schemaJson,
-      checksum,
-      status: 'published',
-      publishedAt: new Date(),
-    },
-  })
-
-  const updated = await db.form.update({
-    where: { id },
-    data: {
-      status: 'published',
-      publishedVersionId: version.id,
-    },
-  })
-
-  await db.auditLog.create({
-    data: {
-      workspaceId: ctx.workspace.id,
-      actorId: ctx.user.id,
-      action: 'form.publish',
-      resourceType: 'form',
-      resourceId: form.id,
-      afterJson: JSON.stringify({ version: versionNo, status: 'published' }),
-    },
+  // Atomic publish: version + archive previous + form + audit
+  const { version, updated } = await db.$transaction(async (tx) => {
+    const ver = await tx.formVersion.create({
+      data: { formId: id, versionNo, schemaJson, checksum, status: 'published', publishedAt: new Date() },
+    })
+    // Archive previous published version if exists
+    if (form.publishedVersionId) {
+      await tx.formVersion.updateMany({
+        where: { id: form.publishedVersionId, status: 'published' },
+        data: { status: 'archived' },
+      })
+    }
+    const upd = await tx.form.update({
+      where: { id },
+      data: { status: 'published', publishedVersionId: ver.id },
+    })
+    await tx.auditLog.create({
+      data: {
+        workspaceId: ctx.workspace.id,
+        actorId: ctx.user.id,
+        action: 'form.publish',
+        resourceType: 'form',
+        resourceId: form.id,
+        afterJson: JSON.stringify({ version: versionNo, status: 'published' }),
+      },
+    })
+    return { version: ver, updated: upd }
   })
 
   return NextResponse.json({ data: { form: updated, version } })

@@ -1,0 +1,44 @@
+{
+  "id": "R10-V4-22",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Ephemeral staging smoke profilinin live secret/provider, kalıcı veri ve dış mail çıkışını fail-closed sınırlamak",
+  "rollback": "Ephemeral staging profile sözleşmesini ve testini geri al; staging, DB, object storage ve mail sistemi üzerinde gerçek mutation yapma",
+  "previous": ["R10-V4-21"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "scripts/local-ready.mjs",
+    "src/lib/r10-scope-gate.ts",
+    "src/lib/env.ts",
+    "tests/r10-first-party-pilot-gate.test.mjs",
+    "tests/r10-live-mutation-guard.test.mjs",
+    "tests/worker-restart-restore.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-22.json",
+    "src/lib/ephemeral-staging-profile.ts",
+    "tests/ephemeral-staging-profile.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Profil yalnız staging, ephemeral DB/object storage, sink mail ve sandbox provider modlarını kabul eder",
+    "Production, live secret, SMTP/provider dış maili, gerçek alıcı domaini ve güvensiz namespace/deployment ID fail-closed reddedilir",
+    "Profil outbound network, production mutation ve persistent data durumlarını açıkça false olarak raporlar",
+    "Sözleşme yalnız bellekte çalışır; staging/DB/storage/mail mutation yapmaz ve R-10/V4 live kararını açmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/ephemeral-staging-profile.test.mjs"],
+    ["bun", "tests/r10-first-party-pilot-gate.test.mjs"],
+    ["bun", "tests/r10-live-mutation-guard.test.mjs"],
+    ["bun", "tests/worker-restart-restore.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

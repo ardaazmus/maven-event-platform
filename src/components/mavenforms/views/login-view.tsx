@@ -122,6 +122,15 @@ export function LoginView() {
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left brand panel */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary/10 via-background to-chart-3/10 relative overflow-hidden">
+        {branding?.loginHeroImage && (
+          <img
+            src={branding.loginHeroImage}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover opacity-15"
+            onError={(e) => { e.currentTarget.style.display = 'none' }}
+          />
+        )}
         <div className="absolute inset-0 grid-bg opacity-40" />
         <div className="absolute top-20 -left-20 w-96 h-96 rounded-full bg-primary/10 blur-3xl" />
         <div className="absolute bottom-20 -right-20 w-96 h-96 rounded-full bg-chart-3/10 blur-3xl" />

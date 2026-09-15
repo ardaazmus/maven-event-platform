@@ -1,0 +1,13 @@
+{
+  "id": "V2-04A",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Stripe first-party adapter kapasitesini merchant eligibility kanıtına koşullu tutmak; kanıt yokken provider'ı aktif göstermemek ve live mutation açmamak",
+  "rollback": "Yalnız V2-04A Stripe capability/public-config/test değişikliklerini geri al; provider hesabı, secret veya live mutation oluşturma",
+  "previous": ["V2-03C"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "RELEASE-DECISION.md", "docs/workflow/README.md", "docs/superpowers/plans/2026-09-06-mavenforms-release-modules-first-party-saas-roadmap.md", "docs/Anonim_Teknik_Mimari_API_ve_Uygulama_Sozlesmesi.md", "docs/OzelAPP_Anonim_Entegrasyon_ve_Release_Arastirmasi.md", "src/lib/payment-business-model.ts", "src/lib/payment-provider-public-config.ts", "src/lib/payment-provider-contract.ts", "src/lib/stripe-checkout.ts", "src/lib/stripe-retrieve.ts", "tests/payment-business-model.test.mjs", "tests/payment-provider-public-config.test.mjs", "tests/payment-provider-contract.test.mjs", "tests/stripe-checkout.test.mjs", "tests/stripe-retrieve.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/V2-04A.json", "src/lib/payment-business-model.ts", "src/lib/payment-provider-public-config.ts", "tests/v2-stripe-conditional-gate.test.mjs", "STATUS.md"],
+  "acceptance": ["Stripe eligibility kanıtı yoksa capability sonucu aktif/başlatılabilir dönmez; R-10 veya country/currency kanıtı browser request ile override edilemez", "Public provider config yalnız allowlist public alanlarını taşır; secret key, webhook secret, credentials envelope, token ve bilinmeyen alanlar dışarı çıkmaz", "Test adapter sözleşmesi provider ve mode ile eşleşir; live mutation için explicit capability ve global R-10 kanıtı yoktur", "Gerçek Stripe merchant hesabı, sandbox mutation veya production eligibility bu fazda açılmaz; provider evidence dış bağımlılık olarak kalır", "Testlerde secret, token, PAN/CVV, raw provider yanıtı ve PII bulunmaz"],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["bun", "tests/v2-stripe-conditional-gate.test.mjs"], ["bun", "tests/payment-business-model.test.mjs"], ["bun", "tests/payment-provider-public-config.test.mjs"], ["bun", "tests/payment-provider-contract.test.mjs"], ["bun", "tests/stripe-checkout.test.mjs"], ["bun", "tests/stripe-retrieve.test.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

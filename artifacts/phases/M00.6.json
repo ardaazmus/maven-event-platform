@@ -1,0 +1,46 @@
+{
+  "id": "M00.6",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "30793ae134cf9afa",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "phase-gate.test PASS 8 negatives",
+    "scope": {
+      "changedFiles": [
+        ".agents/mavenforms-phase-manifest.json",
+        "scripts/phase-gate.mjs",
+        "scripts/phase-evidence.mjs",
+        "tests/phase-gate.test.mjs",
+        "artifacts/phases/.gitkeep"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "no PII",
+    "acceptanceIds": [
+      "AC-GATE-01",
+      "AC-GATE-02",
+      "AC-GATE-03"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/phase-gate.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-01T21:34:39.468Z"
+}

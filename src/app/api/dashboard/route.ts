@@ -1,14 +1,39 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getSessionFromCookie } from '@/lib/auth'
+import { can } from '@/lib/policy'
+import { buildEmailDeliverabilityMetrics } from '@/lib/email-deliverability-metrics'
+
+function readSubmissionValue(valueJson: string | null): string | null {
+  try {
+    const parsed = JSON.parse(valueJson || '{}')
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed) || typeof parsed.value !== 'string') return null
+    return parsed.value.slice(0, 320)
+  } catch {
+    return null
+  }
+}
 
 export async function GET() {
   const ctx = await getSessionFromCookie()
   if (!ctx) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+  const _auth = can.readReports(ctx as any)
+  if (!_auth.allowed) return NextResponse.json({ error: _auth.error }, { status: _auth.status })
 
   const workspaceId = ctx.workspace.id
+
+  const [emailOutbox, emailProviderEvents, emailProtection] = await Promise.all([
+    db.outboxEvent.findMany({ where: { workspaceId, type: 'email' }, select: { status: true } }),
+    db.emailProviderEvent.findMany({ where: { workspaceId }, select: { eventType: true, processingStatus: true } }),
+    db.workspaceEmailProtection.findUnique({ where: { workspaceId }, select: { marketingPaused: true } }),
+  ])
+  const deliverability = buildEmailDeliverabilityMetrics({
+    outbox: emailOutbox,
+    providerEvents: emailProviderEvents,
+    marketingPaused: emailProtection?.marketingPaused === true,
+  })
 
   // Total forms
   const totalForms = await db.form.count({
@@ -38,34 +63,11 @@ export async function GET() {
     },
   })
 
-  // Failed notifications (mock - we don't track delivery status here)
-  const failedNotifications = 2
+  const failedNotifications = deliverability.failed
 
-  // Payment total this month
-  const monthStart = new Date()
-  monthStart.setDate(1)
-  monthStart.setHours(0, 0, 0, 0)
-  const paidSubmissions = await db.submission.findMany({
-    where: {
-      form: { workspaceId },
-      paymentStatus: 'paid',
-      submittedAt: { gte: monthStart },
-    },
-    select: { formId: true, values: { where: { field: { type: 'select' } } } },
-  })
-  // Estimate payment total - VIP=1500, Standard=500, Student=250
-  let paymentTotal = 0
-  for (const sub of paidSubmissions) {
-    const ticketField = sub.values.find(v => true)
-    if (ticketField) {
-      const val = JSON.parse(ticketField.valueJson || '{}').value
-      if (val === 'vip') paymentTotal += 1500
-      else if (val === 'standard') paymentTotal += 500
-      else if (val === 'student') paymentTotal += 250
-    } else {
-      paymentTotal += 500 // default
-    }
-  }
+  // PaymentOrder is not yet the authoritative source for dashboard totals.
+  // Do not derive money from submission labels or hardcoded ticket prices.
+  const paymentTotal = null
 
   // Recent forms (5)
   const recentForms = await db.form.findMany({
@@ -98,7 +100,7 @@ export async function GET() {
   })
 
   // 14-day submission trend
-  const trendDays = []
+  const trendDays: Array<{ date: string; label: string; count: number }> = []
   for (let i = 13; i >= 0; i--) {
     const dayStart = new Date()
     dayStart.setDate(dayStart.getDate() - i)
@@ -126,11 +128,9 @@ export async function GET() {
     _count: true,
   })
 
-  // System alerts (mock)
   const systemAlerts = [
-    { id: '1', level: 'warning', title: 'Stripe API anahtarı yakında sona erecek', description: 'Test modunda 7 gün kaldı', time: '2 saat önce' },
-    { id: '2', level: 'info', title: 'Yeni özellik: Çoklu dil desteği', description: 'Artık formlarınızı 3 dilde yayınlayabilirsiniz', time: '1 gün önce' },
-    { id: '3', level: 'success', title: 'Yedekleme tamamlandı', description: 'Tüm form verileri güvenle yedeklendi', time: '3 saat önce' },
+    ...(deliverability.marketingPaused ? [{ id: 'email-marketing-paused', level: 'warning' as const, title: 'Pazarlama gönderimleri duraklatıldı', description: 'Complaint koruması nedeniyle yeni marketing e-postaları gönderilmiyor.', time: 'Şimdi' }] : []),
+    ...(deliverability.failed > 0 ? [{ id: 'email-delivery-failures', level: 'error' as const, title: 'E-posta teslimat hataları var', description: `${deliverability.failed} e-posta kuyruğu kaydı başarısız veya durdurulmuş durumda.`, time: 'Şimdi' }] : []),
   ]
 
   return NextResponse.json({
@@ -143,6 +143,7 @@ export async function GET() {
         failedNotifications,
         paymentTotal,
       },
+      deliverability,
       recentForms: recentForms.map(f => ({
         id: f.id,
         title: f.title,
@@ -166,8 +167,8 @@ export async function GET() {
           submittedAt: s.submittedAt,
           source: s.source,
           form: s.form,
-          name: formField ? JSON.parse(formField.valueJson || '{}').value : 'Anonim',
-          email: emailField ? JSON.parse(emailField.valueJson || '{}').value : null,
+          name: formField ? readSubmissionValue(formField.valueJson) || 'Anonim' : 'Anonim',
+          email: emailField ? readSubmissionValue(emailField.valueJson) : null,
         }
       }),
       activityFeed: activityFeed.map(a => ({

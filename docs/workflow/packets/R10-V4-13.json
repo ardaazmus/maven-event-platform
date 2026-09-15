@@ -1,0 +1,42 @@
+{
+  "id": "R10-V4-13",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Bağlantı doğrulama kanıtı ve draft → verifying → verified → enabled durum geçişlerini secretsız, fail-closed sözleşmeye almak",
+  "rollback": "Doğrulama sözleşmesini ve testini geri al; mevcut provider bağlantılarını değiştirme",
+  "previous": ["R10-V4-12"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/connection-purpose-contract.ts",
+    "src/lib/payment-connection-gate.ts",
+    "src/lib/release-module.ts",
+    "tests/payment-provider-contract.test.mjs",
+    "tests/v4-tenant-boundary.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-13.json",
+    "src/lib/connection-verification-contract.ts",
+    "tests/connection-verification-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Durum geçişleri yalnız tanımlı sırada ilerler ve enabled için verified capability ile güncel kanıt gerekir",
+    "Kanıt yalnız bağlantı amacı, ortam, güvenli kimlik ve zaman gibi metadata taşır; secret/token/raw provider yanıtı kabul edilmez",
+    "Scope, ortam, zaman, kanıt sınıfı ve capability uyuşmazlıkları fail-closed reddedilir",
+    "Bu faz canlı provider bağlantısı, secret saklama ve R-10 production kararını açmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/connection-verification-contract.test.mjs"],
+    ["bun", "tests/payment-provider-contract.test.mjs"],
+    ["bun", "tests/v4-tenant-boundary.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

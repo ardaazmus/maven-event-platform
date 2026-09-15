@@ -1,0 +1,43 @@
+{
+  "id": "R10-V4-09",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Özel medya önizleme ve indirme token'larını süre, scope ve iptal listesiyle fail-closed yaşam döngüsüne bağlamak",
+  "rollback": "Token yaşam döngüsü sözleşmesini ve testini geri al; medya route ve DTO davranışını değiştirme",
+  "previous": ["R10-V4-08"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/lib/public-media-token.ts",
+    "src/app/api/public/forms/[slug]/media/[token]/route.ts",
+    "src/app/api/public/branding/media/[token]/route.ts",
+    "tests/branding-media.test.mjs",
+    "tests/form-ux-preview-media.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-09.json",
+    "src/lib/public-media-token.ts",
+    "tests/public-media-token-lifecycle.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Token payload'ı asset, scope, issued-at, expiry ve benzersiz token ID taşır; imza doğrulaması timing-safe kalır",
+    "Süresi geçmiş, bozuk, yanlış scope'lu veya iptal listesinde olan token fail-closed reddedilir",
+    "Mevcut public form ve branding çağrıları yeni token sözleşmesini kullanmaya devam eder",
+    "Bu faz yalnız provider-neutral yerel token sözleşmesi ve test üretir; kalıcı revocation store veya production erişim açılmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/public-media-token-lifecycle.test.mjs"],
+    ["bun", "tests/branding-media.test.mjs"],
+    ["bun", "tests/form-ux-preview-media.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "R-00-03",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Verified payment refund/chargeback state'ini invoice refund review persistence akışına server-side bağlamak",
+  "rollback": "Bu paketin payment-to-invoice reconciliation wiring ve testini geri al; payment, invoice, document veya delivery verisini silme veya resetleme",
+  "previous": ["R-00-02"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "src/lib/payment-retrieve-claimed-execution.ts", "src/lib/payment-retrieve-reducer.ts", "src/lib/payment-webhook-processing.ts", "src/lib/invoice-refund-reconciliation-persistence.ts", "src/lib/invoice-refund-reconciliation.ts", "src/lib/payment-state.ts", "tests/payment-retrieve-claimed-execution.test.mjs", "tests/payment-webhook-processing.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/R-00-03.json", "src/lib/payment-invoice-refund-handoff.ts", "tests/payment-invoice-refund-handoff.test.mjs", "STATUS.md", "docs/superpowers/plans/2026-09-02-mavenforms-e-belge-15-dakikalik-uygulama-paketleri.md"],
+  "acceptance": ["Only an already verified payment state can request invoice refund review", "Payment, invoice and workspace identifiers are server-derived and scope-bound", "Refund/chargeback handoff is idempotent and never deletes invoice/document or issues credit note automatically", "Unknown, contradictory or non-refund payment states fail closed"],
+  "preflight": [["node", "scripts/local-ready.mjs"], ["bun", "tests/invoice-refund-reconciliation-persistence.test.mjs"]],
+  "checks": [["bun", "tests/payment-invoice-refund-handoff.test.mjs"], ["node", "scripts/run-tests.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

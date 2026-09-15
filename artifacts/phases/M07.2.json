@@ -1,0 +1,41 @@
+{
+  "id": "M07.2",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "b846910f4042ed4b",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "submissions-state.test PASS",
+    "scope": {
+      "changedFiles": [
+        "src/components/mavenforms/views/submissions-view.tsx",
+        "tests/submissions-state.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "no PII, abort + page reset",
+    "acceptanceIds": [
+      "AC-FORM-02"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/submissions-state.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-01T23:32:07.872Z"
+}

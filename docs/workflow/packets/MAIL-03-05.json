@@ -1,0 +1,42 @@
+{
+  "id": "MAIL-03-05",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Hazır e-posta şablonunun orijinali değiştirmeden oturum içi taslak kopyasını oluşturmak",
+  "rollback": "Yalnız MAIL-03-05 packetini, editor/settings kopyalama değişikliğini, kopyalama testini ve STATUS kaydını geri al; provider, SMTP credential veya gerçek alıcı verisini değiştirme",
+  "previous": ["MAIL-03-04"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/workflow/packets/MAIL-03-04.json",
+    "artifacts/workflow/MAIL-03-04/verified.json",
+    "src/components/mavenforms/email-template-editor.tsx",
+    "src/components/mavenforms/views/settings-view.tsx",
+    "tests/email-template-editor-fallback.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/MAIL-03-05.json",
+    "src/components/mavenforms/email-template-editor.tsx",
+    "src/components/mavenforms/views/settings-view.tsx",
+    "tests/email-template-editor-copy.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Editör, mevcut şablonu güncellemeden konu, HTML gövde ve düz metin gövdesi ile oturum içi kopya oluşturma eylemi sunar",
+    "Ayarlar ekranı kopyayı benzersiz adla ekler; kaynak şablon ve rehber bilgileri korunur",
+    "Kopya açıkça oturum taslağı olarak belirtilir; kalıcı API, outbox, provider ve gerçek gönderim açılmaz",
+    "Kopyalama testi, önceki mail testleri, TypeScript, build ve readiness geçmeden faz tamamlanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/email-template-editor-copy.test.mjs"],
+    ["bun", "tests/email-template-editor-fallback.test.mjs"],
+    ["bun", "tests/email-template-editor-preview.test.mjs"],
+    ["bun", "tests/email-template-editor-context.test.mjs"],
+    ["bun", "tests/email-template-content.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

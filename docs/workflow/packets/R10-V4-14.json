@@ -1,0 +1,44 @@
+{
+  "id": "R10-V4-14",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Connection revoke/disable/pending durumlarını ve eski credential ile job başlatma kapısını provider-neutral sözleşmeye almak",
+  "rollback": "Lifecycle sözleşmesini ve testini geri al; mevcut provider, worker ve credential kayıtlarını değiştirme",
+  "previous": ["R10-V4-13"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/connection-purpose-contract.ts",
+    "src/lib/connection-verification-contract.ts",
+    "src/lib/payment-connection-gate.ts",
+    "src/lib/payment-retrieve-worker-gate.ts",
+    "src/lib/secret-metadata-contract.ts",
+    "tests/payment-connection-gate.test.mjs",
+    "tests/payment-retrieve-worker-gate.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-14.json",
+    "src/lib/connection-lifecycle-contract.ts",
+    "tests/connection-lifecycle-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "pending_verification, disabled ve revoked bağlantılar için yeni job fail-closed reddedilir",
+    "Job credential key id bağlantının güncel key id’siyle eşleşmezse stale job reddedilir",
+    "revoked terminal durumdur; disable edilmiş bağlantı yalnız açık bir reaktivasyon geçişiyle active olabilir",
+    "Bu faz worker mutasyonu, credential çözme, canlı provider ve R-10 production kararını açmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/connection-lifecycle-contract.test.mjs"],
+    ["bun", "tests/payment-connection-gate.test.mjs"],
+    ["bun", "tests/payment-retrieve-worker-gate.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

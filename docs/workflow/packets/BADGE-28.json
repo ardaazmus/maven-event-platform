@@ -1,0 +1,41 @@
+{
+  "id": "BADGE-28",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı generation job'unu doğrulanmış private template version ve yüz/sayfa sayısıyla bağlamak; gerçek template storage, PDF render ve export açmamak.",
+  "rollback": "Yalnız template binding sözleşmesini, focused testi, packet ve BADGE-28 durum satırını geri al; template upload/storage, PDF dependency, render execution, export action'ı, ödeme, fatura veya provider açma.",
+  "previous": ["BADGE-27"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/badge-template-contract.ts",
+    "src/lib/badge-generation-job-contract.ts",
+    "src/lib/badge-face-contract.ts",
+    "src/lib/badge-pdf-render-port.ts",
+    "tests/badge-template-contract.test.mjs",
+    "tests/badge-generation-job-contract.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-28.json",
+    "src/lib/badge-template-binding-contract.ts",
+    "tests/badge-template-binding-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Template binding yalnız aynı workspace/form ve generation job'un templateVersionId'siyle eşleşen private VALIDATED version için başarılı olur.",
+    "SINGLE_FACE yalnız 1, DUAL_FACE yalnız 2 template sayfası ile eşleşir; uyumsuz veya eksik version fail-closed reddedilir.",
+    "Çıktı yalnız templateVersionId, yüz modu ve sayfa metadata'sı taşır; PDF bytes, storage path/URL, PII, QR payload'ı veya provider verisi taşımaz.",
+    "Template binding gerçek upload/storage/render/export işlemi başlatmaz ve mevcut production/provider kapılarını açmaz.",
+    "Focused contract testi, TypeScript ve context-check geçer."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"]
+  ],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-template-binding-contract.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

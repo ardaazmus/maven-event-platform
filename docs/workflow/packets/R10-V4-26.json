@@ -1,0 +1,48 @@
+{
+  "id": "R10-V4-26",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Manuel fatura wizard’ını invoice center’a bağlayıp upload, eşleştirme, onay ve document-ready sırasını görünür kılmak",
+  "rollback": "Manuel fatura wizard bileşeni, invoice center bağlantısı ve testini geri al; fatura, belge, mail ve DB mutation yapma",
+  "previous": ["R10-V4-25"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/components/mavenforms/connection-wizard.tsx",
+    "src/components/mavenforms/views/invoice-center-view.tsx",
+    "src/lib/invoice-document-ready-transition.ts",
+    "src/lib/invoice-import-gate.ts",
+    "tests/invoice-document-ready-route.test.mjs",
+    "tests/invoice-import-gate.test.mjs",
+    "tests/invoice-export-route.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-26.json",
+    "src/components/mavenforms/manual-invoice-wizard.tsx",
+    "src/components/mavenforms/views/invoice-center-view.tsx",
+    "tests/manual-invoice-wizard.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Wizard invoice center’da upload → eşleştirme → yetkili onay → document-ready sırasını açıkça gösterir",
+    "Fatura ve belge durumları hazır olmadan gönderim/otomatik fatura iddiası gösterilmez",
+    "Mevcut muhasebeden import ve seçili export işlemleri korunur; rehber V2 manuel yolu ve Paraşüt ertelemesini belirtir",
+    "Bileşen provider, mail, DB veya gerçek belge mutation yapmaz; private/quarantine ve R-10 sınırı korunur"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/manual-invoice-wizard.test.mjs"],
+    ["bun", "tests/invoice-document-ready-route.test.mjs"],
+    ["bun", "tests/invoice-import-gate.test.mjs"],
+    ["bun", "tests/invoice-export-route.test.mjs"],
+    ["bun", "tests/payment-connection-wizard.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

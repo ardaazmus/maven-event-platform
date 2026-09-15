@@ -1,0 +1,13 @@
+{
+  "id": "P-12C-08",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Document-ready mutation'ını kalıcı ve aynı workspace kapsamındaki match/approval kararını zorunlu kılacak şekilde bağlamak",
+  "rollback": "Bu paketin ready wiring ve testini geri al; karar, belge, ödeme ve teslimat verisini silme veya resetleme",
+  "previous": ["P-12C-07"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "src/lib/invoice-document-decision-store.ts", "src/lib/invoice-document-ready-persistence.ts", "src/lib/invoice-document-ready-caller.ts", "src/app/api/invoices/[id]/documents/[documentId]/ready/route.ts", "prisma/schema.prisma"],
+  "allowedFiles": ["docs/workflow/packets/P-12C-08.json", "src/lib/invoice-document-ready-persistence.ts", "src/lib/invoice-document-ready-caller.ts", "src/app/api/invoices/[id]/documents/[documentId]/ready/route.ts", "tests/invoice-document-ready-persistence.test.mjs", "tests/invoice-document-ready-caller.test.mjs", "tests/invoice-document-ready-route.test.mjs", "STATUS.md", "docs/superpowers/plans/2026-09-02-mavenforms-e-belge-15-dakikalik-uygulama-paketleri.md"],
+  "acceptance": ["Ready mutation requires a durable decision row bound to the same workspace, document and invoice", "Request-body match/approval values cannot create or authorize ready without the durable decision", "Duplicate ready remains idempotent and decision conflict remains fail-closed", "No PII, provider secret or provider raw response is added to the decision or public route"],
+  "preflight": [["node", "scripts/local-ready.mjs"], ["bun", "tests/invoice-document-decision-store.test.mjs"]],
+  "checks": [["bun", "tests/invoice-document-ready-persistence.test.mjs"], ["bun", "tests/invoice-document-ready-caller.test.mjs"], ["bun", "tests/invoice-document-ready-route.test.mjs"], ["node", "scripts/run-tests.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

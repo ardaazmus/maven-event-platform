@@ -43,6 +43,12 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* System font fallback — offline build, no next/font/google (M00.2) */
+:root {
+  --font-geist-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-geist-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
 /* MavenForms Light Theme - Sophisticated emerald + warm slate */
 :root {
   --radius: 0.625rem;

@@ -1,0 +1,42 @@
+{
+  "id": "M08.4",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "b5be1e3067dcba96",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "wordpress.test PASS",
+    "scope": {
+      "changedFiles": [
+        "wordpress/mavenforms/block.js",
+        "wordpress/mavenforms/mavenforms.php",
+        "tests/wordpress.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "no secret, nonce, https, shortcode+block",
+    "acceptanceIds": [
+      "AC-PUBLIC-09"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/wordpress.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-02T03:13:35.464Z"
+}

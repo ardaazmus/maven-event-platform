@@ -1,0 +1,13 @@
+{
+  "id": "FORM-UX-26",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Form Builder entegrasyon katalog düğmesinin bağlantısız aktif görünmesini engellemek",
+  "rollback": "Yalnız katalog düğmesi disabled/erişilebilir açıklama/test/packet değişikliklerini geri al; entegrasyon sözleşmelerini değiştirme",
+  "previous": ["FORM-UX-25-R1"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/views/form-builder-view.tsx", "tests/form-ux-final-gate.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-26.json", "src/components/mavenforms/views/form-builder-view.tsx", "tests/form-ux-integrations-action.test.mjs", "STATUS.md"],
+  "acceptance": ["Entegrasyon Katalog düğmesi bağlantısızken disabled görünür", "Düğme erişilebilir olarak yakında bilgisini taşır", "Entegrasyon kartlarının planlandı durumu ve güvenlik sınırı değişmez", "Hedef regression ve context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["bun", "tests/form-ux-integrations-action.test.mjs"], ["bun", "tests/form-ux-final-gate.test.mjs"], ["node", "scripts/context-check.mjs"]]
+}

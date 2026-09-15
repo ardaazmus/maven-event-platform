@@ -1,0 +1,41 @@
+{
+  "id": "M11.1",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "c6a1b7639df06093",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "env.test PASS",
+    "scope": {
+      "changedFiles": [
+        "src/lib/env.ts",
+        "tests/env.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "no secret values, fail-fast",
+    "acceptanceIds": [
+      "AC-CLOUD-01"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/env.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-02T03:37:49.929Z"
+}

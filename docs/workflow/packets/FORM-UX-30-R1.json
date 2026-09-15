@@ -1,0 +1,14 @@
+{
+  "id": "FORM-UX-30-R1",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "FORM-UX-30 receipt'ini güncel STATUS kaydıyla eşitlemek",
+  "rollback": "Yalnız revalidation packet ve STATUS durum satırlarını geri al; uygulama ve kullanıcı verisini değiştirme",
+  "previous": [],
+  "revalidationReason": "FORM-UX-30 teknik ve canlı doğrulaması tamamlandı; sonraki faza doğru durum aktarılacak.",
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-30-R1.json", "STATUS.md"],
+  "acceptance": ["FORM-UX-30 STATUS satırı LOCAL_PASS olur", "FORM-UX-30-R1 receipt ve güncel STATUS eşleşir", "Context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["node", "scripts/context-check.mjs"]]
+}

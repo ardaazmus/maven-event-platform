@@ -1,0 +1,35 @@
+{
+  "id": "FORM-UX-45",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Audit log saklama ayarini Guvenlik ve veri saklama kapsaminda konumlandirmak ve dosya limit birimini aciklastirmak",
+  "rollback": "Yalniz FORM-UX-45 packetini, settings sahiplik yerlesimini, regression testini ve STATUS kaydini geri al",
+  "previous": ["FORM-UX-44"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/settings-view.tsx"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-45.json",
+    "src/components/mavenforms/views/settings-view.tsx",
+    "tests/form-ux-settings-ownership.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Audit log saklama kontrolu Guvenlik ekraninda Denetim ve veri saklama bolumunde gorunur",
+    "Varsayilan Form Ayarlari dosya limitini MB birimi ve acik etiketle gosterir",
+    "Ayar kontrolleri kaybolmaz ve mevcut API davranisi degistirilmez",
+    "Regression, TypeScript, build, readiness, context-check ve workflow verify basarili olur"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-settings-ownership.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

@@ -81,11 +81,11 @@ export function AppShell() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="mavenforms-app flex h-screen min-w-0 overflow-hidden bg-background">
       <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <TopBar />
-        <main className="flex-1 overflow-hidden">
+        <main className="min-h-0 min-w-0 flex-1 overflow-auto">
           {view === 'dashboard' && <DashboardView />}
           {view === 'forms' && <FormsListView />}
           {view === 'builder' && <FormBuilderView />}

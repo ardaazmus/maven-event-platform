@@ -1,0 +1,61 @@
+{
+  "id": "R-06",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Paraşüt API v4 ödeme sonrası faturalama zincirini provider çağrısı açmadan tek güvenli replay sözleşmesinde doğrulamak",
+  "rollback": "Bu paketin yalnız test/fixture değişikliklerini geri al; payment, invoice, document, delivery veya provider credential verisini silme",
+  "previous": ["R-05"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/lib/providers/parasut-v4.ts",
+    "src/lib/providers/parasut-v4-mappers.ts",
+    "src/lib/providers/parasut-v4-jobs.ts",
+    "src/lib/providers/parasut-contact.ts",
+    "src/lib/providers/parasut-product.ts",
+    "src/lib/parasut-sales-invoice-create.ts",
+    "src/lib/parasut-oauth.ts",
+    "src/lib/parasut-oauth-server.ts",
+    "src/lib/invoice-document-storage.ts",
+    "src/lib/invoice-document-ready-delivery.ts",
+    "src/lib/invoice-delivery-enqueue.ts",
+    "tests/parasut-v4-contract.test.mjs",
+    "tests/parasut-sales-invoice-mapper.test.mjs",
+    "tests/parasut-job-polling.test.mjs",
+    "tests/parasut-invoice-pdf.test.mjs",
+    "tests/parasut-oauth.test.mjs",
+    "tests/invoice-document-ready-delivery.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R-06.json",
+    "tests/parasut-release-chain.test.mjs",
+    "STATUS.md",
+    "docs/superpowers/plans/2026-09-02-mavenforms-e-belge-15-dakikalik-uygulama-paketleri.md"
+  ],
+  "acceptance": [
+    "Paraşüt sales invoice payload yalnız succeeded payment, paid_ready_for_invoicing, numeric contact/product ve tutar eşleşmesiyle hazırlanır",
+    "Trackable job yalnız numeric company/job scope ve bounded status sözleşmesiyle normalize edilir; pending/running/done/error ayrımı korunur",
+    "Provider URL/token/raw response/PDF geçici URL browser, durable test çıktısı veya delivery payload sınırına taşınmaz",
+    "Document-ready ve transactional delivery ancak issued + approved + clean quarantine koşulundan sonra mümkün olur"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"],
+    ["bun", "tests/parasut-v4-contract.test.mjs"],
+    ["bun", "tests/parasut-sales-invoice-mapper.test.mjs"],
+    ["bun", "tests/parasut-job-polling.test.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/parasut-release-chain.test.mjs"],
+    ["bun", "tests/parasut-v4-contract.test.mjs"],
+    ["bun", "tests/parasut-sales-invoice-mapper.test.mjs"],
+    ["bun", "tests/parasut-job-polling.test.mjs"],
+    ["bun", "tests/parasut-invoice-pdf.test.mjs"],
+    ["bun", "tests/parasut-oauth.test.mjs"],
+    ["bun", "tests/invoice-document-ready-delivery.test.mjs"],
+    ["node", "scripts/run-tests.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

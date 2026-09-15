@@ -1,0 +1,44 @@
+{
+  "id": "R10-V4-21",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Crash, timeout, duplicate, stale lease ve permanent failure için retry/DLQ karar matrisini deterministik doğrulamak",
+  "rollback": "Failure injection matrisi sözleşmesini ve testini geri al; worker, DB lease ve gerçek DLQ kayıtlarını değiştirme",
+  "previous": ["R10-V4-20"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/payment-retrieve-failure.ts",
+    "src/lib/invoice-delivery-retry.ts",
+    "src/lib/outbox-worker.ts",
+    "tests/payment-retrieve-failure.test.mjs",
+    "tests/invoice-delivery-retry.test.mjs",
+    "tests/worker-restart-restore.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-21.json",
+    "src/lib/failure-injection-matrix.ts",
+    "tests/failure-injection-matrix.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Success, timeout, crash, duplicate, stale lease ve permanent failure tek bir normalized action/retryable/terminal sözleşmesine alınır",
+    "Retry attempt sınırı ve stale lease koşulu fail-closed doğrulanır; permanent hata DLQ, duplicate deduplicate olur",
+    "Unknown scenario, geçersiz sayaç/zaman ve secret/raw payload içeren input reddedilir",
+    "Matrisi çalıştırmak network, DB, credential veya gerçek DLQ mutation yapmaz; R-10/V4 live kararı değişmez"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/failure-injection-matrix.test.mjs"],
+    ["bun", "tests/payment-retrieve-failure.test.mjs"],
+    ["bun", "tests/invoice-delivery-retry.test.mjs"],
+    ["bun", "tests/worker-restart-restore.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

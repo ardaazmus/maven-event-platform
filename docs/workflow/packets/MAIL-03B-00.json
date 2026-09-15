@@ -1,0 +1,40 @@
+{
+  "id": "MAIL-03B-00",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Form bildirim editörüne düzenlenebilir güvenli hazır yanıt şablonları eklemek",
+  "rollback": "Yalnız MAIL-03B-00 değişikliklerini, şablon seçimi testini ve STATUS kaydını geri al; provider/gönderim açma",
+  "previous": ["MAIL-03A-03"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/workflow/packets/MAIL-03A-03.json",
+    "artifacts/workflow/MAIL-03A-03/verified.json",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/lib/submission-email-intents.ts",
+    "tests/notification-body-editor.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/MAIL-03B-00.json",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/notification-template-presets.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Yönetici yeni yanıtı ve katılımcı yanıtı güvenli hazır şablon olarak seçilebilir",
+    "Şablon seçimi yalnız konu ve düz metin gövdesi taslağını doldurur; kullanıcı sonradan düzenleyebilir",
+    "Şablonlarda yalnız desteklenen form merge tag'leri bulunur; pazarlama/unsubscribe içeriği eklenmez",
+    "Webhook bildiriminde şablon seçimi gösterilmez",
+    "Truth/regresyon testleri, TypeScript, build ve readiness geçmeden faz tamamlanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/notification-template-presets.test.mjs"],
+    ["bun", "tests/notification-body-editor.test.mjs"],
+    ["bun", "tests/submission-email-intents.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

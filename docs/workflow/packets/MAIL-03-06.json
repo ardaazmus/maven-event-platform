@@ -1,0 +1,41 @@
+{
+  "id": "MAIL-03-06",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "E-posta editöründeki oturum taslağında kaydedilmemiş değişiklikleri görünür kılmak ve güvenli geri alma eylemi eklemek",
+  "rollback": "Yalnız MAIL-03-06 packetini, editor geri alma göstergesini, ilgili testi ve STATUS kaydını geri al; provider, SMTP credential veya gerçek alıcı verisini değiştirme",
+  "previous": ["MAIL-03-05"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/workflow/packets/MAIL-03-05.json",
+    "artifacts/workflow/MAIL-03-05/verified.json",
+    "src/components/mavenforms/email-template-editor.tsx",
+    "tests/email-template-editor-copy.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/MAIL-03-06.json",
+    "src/components/mavenforms/email-template-editor.tsx",
+    "tests/email-template-editor-draft-state.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Editör, konu/HTML gövde/düz metin gövdesi kaynak şablondan farklı olduğunda kaydedilmemiş değişiklik olduğunu gösterir",
+    "Kullanıcı tek eylemle üç alanı kaynak şablon değerlerine geri alabilir; geri alma gerçek kaydetme veya provider işlemi başlatmaz",
+    "Draft durum göstergesi responsive ve erişilebilirdir; kalıcı API, outbox, provider ve gerçek gönderim açılmaz",
+    "Draft testi, önceki mail testleri, TypeScript, build ve readiness geçmeden faz tamamlanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/email-template-editor-draft-state.test.mjs"],
+    ["bun", "tests/email-template-editor-copy.test.mjs"],
+    ["bun", "tests/email-template-editor-fallback.test.mjs"],
+    ["bun", "tests/email-template-editor-preview.test.mjs"],
+    ["bun", "tests/email-template-editor-context.test.mjs"],
+    ["bun", "tests/email-template-content.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

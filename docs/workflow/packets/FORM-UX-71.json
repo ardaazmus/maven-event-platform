@@ -1,0 +1,38 @@
+{
+  "id": "FORM-UX-71",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yanıtlar ekranının sayfalama metadata'sını koruyarak 20'den fazla yanıtı doğru sayfa sayısına bölebilmesini sağlamak",
+  "rollback": "Bu paketin api-client envelope yardımcısı, yanıtlar ekranı ve regresyon testini geri al; yanıt, ödeme, fatura veya belge verisini silme",
+  "previous": [],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/api-client.ts",
+    "src/components/mavenforms/views/submissions-view.tsx",
+    "src/app/api/forms/[id]/submissions/route.ts",
+    "tests/form-ux-submissions-form-switch.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-71.json",
+    "src/lib/api-client.ts",
+    "src/components/mavenforms/views/submissions-view.tsx",
+    "tests/form-ux-submissions-pagination.test.mjs"
+  ],
+  "acceptance": [
+    "Yanıtlar ekranı submissions endpoint'inin data ve meta alanlarını birlikte tüketir",
+    "totalPages sunucu metadata'sından hesaplanır; metadata yokmuş gibi tek sayfaya düşülmez",
+    "Mevcut api() çağrılarının data unwrap davranışı korunur",
+    "API envelope ve yanıt sayfalama regresyon testi geçer; ödeme/fatura sözleşmeleri değişmez"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/form-ux-submissions-pagination.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

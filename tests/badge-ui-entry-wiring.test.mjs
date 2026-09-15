@@ -1,0 +1,30 @@
+import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
+
+const formsSource = readFileSync(new URL('../src/components/mavenforms/views/forms-list-view.tsx', import.meta.url), 'utf8')
+const builderSource = readFileSync(new URL('../src/components/mavenforms/views/form-builder-view.tsx', import.meta.url), 'utf8')
+const routeSource = readFileSync(new URL('../src/app/api/forms/[id]/badges/route.ts', import.meta.url), 'utf8')
+const artifactRouteSource = readFileSync(new URL('../src/app/api/forms/[id]/badges/artifacts/route.ts', import.meta.url), 'utf8')
+
+assert.match(formsSource, /id: 'badge', label: 'Yaka kartı'/)
+assert.match(formsSource, /settings:\$\{tab\}/)
+assert.match(builderSource, /id: 'badge', label: 'Yaka kartı'/)
+assert.match(builderSource, /activeTab === 'badge'/)
+assert.match(builderSource, /\/api\/forms\/\$\{form\.id\}\/badges/)
+assert.match(builderSource, /badges\/artifacts/)
+assert.match(builderSource, /PDF indir/)
+assert.match(builderSource, /badges\/templates/)
+assert.match(builderSource, /PDF şablonu yükle/)
+assert.match(builderSource, /Generation worker çıktıyı önce özel karantinaya alır/)
+assert.match(builderSource, /badges\/export/)
+assert.match(builderSource, /Birleşik PDF indir/)
+assert.match(builderSource, /ZIP paket indir/)
+assert.match(builderSource, /selectionMode: generationMode/)
+assert.match(builderSource, /Tüm uygun kayıtlar/)
+assert.match(builderSource, /Tek kayıt/)
+assert.match(routeSource, /eligibleSubmissionCount/)
+assert.match(artifactRouteSource, /readBadgeArtifactManifest/)
+assert.match(artifactRouteSource, /can\.readSubmissions/)
+assert.match(artifactRouteSource, /downloadUrl/)
+
+console.log('badge-ui-entry-wiring: all assertions passed (truthful output state, private download, and template upload)')

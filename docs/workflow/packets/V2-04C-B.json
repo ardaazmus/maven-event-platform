@@ -1,0 +1,13 @@
+{
+  "id": "V2-04C-B",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "V2 provider karar kaydı ve iyzico-birincil public payment-intent binding için mevcut LOCAL_PASS kanıtını yeni revision ile yeniden doğrulamak",
+  "rollback": "Yalnız V2-04C-B audit/reverification izini geri al; provider hesabı, secret veya live mutation oluşturma",
+  "previous": ["V2-04C-A"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "RELEASE-DECISION.md", "docs/workflow/README.md", "docs/acceptance/v2-deferred-provider-decision.md", "docs/superpowers/plans/2026-09-06-mavenforms-release-modules-first-party-saas-roadmap.md", "src/app/api/public/forms/[slug]/payment-intents/route.ts", "src/lib/payment-business-model.ts", "tests/v2-public-payment-intent-provider-binding.test.mjs", "tests/public-payment-intent-route.test.mjs", "tests/public-payment-intent-submission-binding.test.mjs", "tests/v2-iyzico-hpp-flow.test.mjs", "tests/payment-connection-gate.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/V2-04C-B.json", "docs/acceptance/v2-deferred-provider-decision.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/superpowers/plans/2026-09-06-mavenforms-release-modules-first-party-saas-roadmap.md", "RELEASE-DECISION.md", "src/app/api/public/forms/[slug]/payment-intents/route.ts", "src/lib/payment-business-model.ts", "tests/v2-public-payment-intent-provider-binding.test.mjs"],
+  "acceptance": ["Önceki V2-04C-A receipt’i LOCAL_PASS ve değişiklikleri güncel olmalıdır", "Provider karar kaydı ve bootstrap/roadmap/release kararları birbirini çelişmeden aynı iyzico-birincil, ileri provider deferred kararını göstermelidir", "Public route yalnız server-side iyzico test binding’ine izin vermeli; public provider/merchant/workspace/mode/amount/currency/callback override etmemelidir", "Gerçek provider mutation açılmaz; testlerde secret, token, PAN/CVV ve PII bulunmaz"],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["bun", "tests/v2-public-payment-intent-provider-binding.test.mjs"], ["bun", "tests/public-payment-intent-route.test.mjs"], ["bun", "tests/public-payment-intent-submission-binding.test.mjs"], ["bun", "tests/v2-iyzico-hpp-flow.test.mjs"], ["bun", "tests/payment-connection-gate.test.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

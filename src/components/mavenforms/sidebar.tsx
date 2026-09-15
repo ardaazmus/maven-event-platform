@@ -61,7 +61,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        'flex flex-col bg-sidebar border-r border-sidebar-border transition-all duration-300',
+        'mavenforms-sidebar hidden flex-col bg-sidebar border-r border-sidebar-border transition-all duration-300 md:flex',
         sidebarCollapsed ? 'w-[68px]' : 'w-[260px]'
       )}
     >
@@ -234,13 +234,15 @@ export function Sidebar() {
             <p className="text-[10px] text-muted-foreground mb-2">
               Sınırsız form, 10K yanıt/ay
             </p>
-            <Button size="sm" variant="outline" className="w-full h-7 text-xs">
+            <Button size="sm" variant="outline" className="w-full h-7 text-xs" disabled aria-label="Planı yükseltme (SaaS fazında)">
               Planı Yükselt
             </Button>
           </div>
         )}
         <button
           onClick={toggleSidebar}
+          aria-label={sidebarCollapsed ? 'Kenar çubuğunu genişlet' : 'Kenar çubuğunu daralt'}
+          title={sidebarCollapsed ? 'Kenar çubuğunu genişlet' : 'Kenar çubuğunu daralt'}
           className="w-full flex items-center justify-center gap-1 py-1.5 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50 transition-colors"
         >
           {sidebarCollapsed ? (

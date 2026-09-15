@@ -1,0 +1,49 @@
+{
+  "id": "M02.1",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "4af1099fe0509aec",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "snapshot.test PASS + parity live HTTP PASS (draft vs published)",
+    "scope": {
+      "changedFiles": [
+        "prisma/schema.prisma",
+        "src/lib/public-dto.ts",
+        "src/app/api/forms/[id]/publish/route.ts",
+        "src/app/api/public/forms/[slug]/route.ts",
+        "src/app/forms/[slug]/page.tsx",
+        "src/app/api/public/forms/[slug]/submissions/route.ts",
+        "src/components/mavenforms/public-form-renderer.tsx",
+        "tests/snapshot.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "no PII, no internal id in public, snapshot parity verified",
+    "acceptanceIds": [
+      "AC-PUBLIC-01",
+      "AC-PUBLIC-02",
+      "AC-PUBLIC-03"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/snapshot.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-01T22:04:59.213Z"
+}

@@ -1,0 +1,43 @@
+{
+  "id": "R10-V4-38",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Backup/restore manifest kapsamını tenant, hash, audit ve secret ayrımıyla saf sözleşmede doğrulamak",
+  "rollback": "Backup/restore sözleşmesi ve testini geri al; gerçek backup, database, storage veya worker mutation'ına dokunma",
+  "previous": ["R10-V4-37"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "docs/runbooks/worker-restart-restore.md",
+    "src/lib/badge-artifact-storage-contract.ts",
+    "src/lib/outbox-worker.ts",
+    "tests/worker-restart-restore.test.mjs",
+    "tests/form-ux-backup-status.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-38.json",
+    "src/lib/backup-restore-contract.ts",
+    "tests/backup-restore-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Manifest yalnız aynı workspace kapsamındaki bounded kayıt kimliklerini ve canonical SHA-256 özetini kabul eder",
+    "Restore hash, tenant, audit, migration ve readiness doğrulanmadan kabul edilmez",
+    "Secret değerleri manifest veya restore kararına girmez; yalnız ayrıştırılmış secret policy metadata'sı bulunur",
+    "Production restore mutation'ı reddedilir; sözleşme pure olur ve database, storage, queue veya gerçek backup işlemi yapmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/backup-restore-contract.test.mjs"],
+    ["bun", "tests/worker-restart-restore.test.mjs"],
+    ["bun", "tests/form-ux-backup-status.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "id": "FORM-UX-35",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Guncel medya kaynak secimi mimarisini kapsamli FORM-UX envanter kapisina baglamak ve eski kirilgan builder medya iddiasini kaldirmak",
+  "rollback": "Yalniz FORM-UX-35 packetini, envanter testindeki medya kontrolunu ve STATUS kaydini geri al; uygulama ve medya verisini degistirme",
+  "previous": ["FORM-UX-34"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "tests/form-ux-inventory-gate.test.mjs",
+    "tests/form-ux-media-workflow.test.mjs",
+    "src/components/mavenforms/media-source-field.tsx"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-35.json",
+    "tests/form-ux-inventory-gate.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Envanter kapisi builder medya kontrollerinin ortak MediaSourceField uzerinden calistigini dogrular",
+    "Medya kaynagi testleri ile envanter kapisi birlikte gecer",
+    "TypeScript, build, readiness, context-check ve workflow verify basarili olur",
+    "FORM-UX disinda odeme, fatura, yayin, public guvenlik ve V3/V4 davranisi degismez"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-inventory-gate.test.mjs"],
+    ["bun", "tests/form-ux-media-workflow.test.mjs"],
+    ["bun", "tests/form-ux-media-source-mode.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "id": "R10-V4-16",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "API-key, certificate ve manual credential alternatiflerini secretsız, server-boundary metadata sözleşmesine almak",
+  "rollback": "Credential method sözleşmesini ve testini geri al; mevcut credential envelope ve provider route’larını değiştirme",
+  "previous": ["R10-V4-15"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/secret-metadata-contract.ts",
+    "src/lib/connection-verification-contract.ts",
+    "src/lib/payment-credentials.ts",
+    "src/lib/email-credentials.ts",
+    "src/lib/parasut-credentials.ts",
+    "tests/secret-metadata-contract.test.mjs",
+    "tests/payment-credentials.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-16.json",
+    "src/lib/credential-method-contract.ts",
+    "tests/credential-method-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "API-key, certificate, manual_secret ve oauth_pkce yöntemleri tek provider-neutral descriptor ile ayrılır",
+    "Descriptor yalnız connection/key/version/method ve masked server-boundary metadata taşır; raw secret, token, PEM veya credential kabul etmez",
+    "Her yöntem verification ve server-side storage gereksinimini açıkça ifade eder; UI yalnız masked metadata tüketebilir",
+    "Bu faz mevcut credential encryption/decryption, provider route, canlı bağlantı ve R-10 production kararını açmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/credential-method-contract.test.mjs"],
+    ["bun", "tests/secret-metadata-contract.test.mjs"],
+    ["bun", "tests/payment-credentials.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

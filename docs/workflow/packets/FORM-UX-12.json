@@ -1,0 +1,13 @@
+{
+  "id": "FORM-UX-12",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yetkili taslak önizlemesinde pending medya varlıklarını private form-scope URL ile göstermek; anonymous public medya sınırını değiştirmemek",
+  "rollback": "Yalnız taslak önizleme URL dönüşümünü ve hedef testini geri al; public form, medya, ödeme, fatura veya yanıt verisini silme/değiştirme",
+  "previous": ["FORM-UX-11"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "RELEASE-DECISION.md", "docs/workflow/README.md", "src/app/forms/[slug]/page.tsx", "src/lib/public-dto.ts", "src/app/api/media/[id]/route.ts", "src/app/api/public/forms/[slug]/media/[token]/route.ts", "src/components/mavenforms/public-form-renderer.tsx", "tests/form-ux-public-boundary-release.test.mjs", "tests/form-ux-media-workflow.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-12.json", "src/app/forms/[slug]/page.tsx", "tests/form-ux-preview-media.test.mjs", "STATUS.md"],
+  "acceptance": ["Authenticated preview maps appearance and field-decoration media to private /api/media/:id?formId=... URLs", "Anonymous published form continues to use signed public media URLs and public endpoint continues to require clean status", "Preview mapping does not expose internal database fields or provider credentials", "Hedef preview/public boundary testleri, TypeScript, build ve local readiness geçer"],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["bun", "tests/form-ux-preview-media.test.mjs"], ["bun", "tests/form-ux-public-boundary-release.test.mjs"], ["bun", "tests/form-ux-media-workflow.test.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

@@ -1,0 +1,46 @@
+{
+  "id": "R-00-07A",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "iYzico doğrulanmış ödeme event allowlist'ini ve refund/cancel/chargeback fail-closed regresyon kapısını tamamlamak",
+  "rollback": "Bu revizyonun iYzico event normalization ve test değişikliklerini geri al; payment, invoice, document veya delivery verisini silme veya resetleme",
+  "previous": ["R-00-06"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/OzelAPP_Derin_Arastirma_2026-09-03/02_iyzico.md",
+    "docs/OzelAPP_Derin_Arastirma_2026-09-03/05_PaymentOrder_ve_Mutabakat.md",
+    "src/lib/payment-webhook-processing.ts",
+    "src/lib/payment-provider-contract.ts",
+    "tests/payment-webhook-processing.test.mjs",
+    "tests/payment-webhook-route-truth.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R-00-07A.json",
+    "src/lib/payment-webhook-processing.ts",
+    "tests/payment-webhook-processing.test.mjs",
+    "tests/payment-webhook-route-truth.test.mjs",
+    "STATUS.md",
+    "docs/superpowers/plans/2026-09-02-mavenforms-e-belge-15-dakikalik-uygulama-paketleri.md"
+  ],
+  "acceptance": [
+    "iYzico normalization yalnız mevcut doğrulanmış ödeme event allowlist'i ve SUCCESS/FAILURE statusları için sonuç üretir",
+    "REFUND, CANCEL, CHARGEBACK ve bilinmeyen iYzico event/status değerleri invoice veya payment refund mutation'ına giremez",
+    "iYzico HPP webhook order eşleştirmesi checkout token referansını, direct akış paymentId referansını kullanır",
+    "Mevcut iYzico retrieve/başarı/başarısızlık ve Stripe refund davranışı korunur; raw provider payload ve sır persist edilmez"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"],
+    ["bun", "tests/payment-webhook-processing.test.mjs"],
+    ["bun", "tests/payment-webhook-route-truth.test.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/payment-webhook-processing.test.mjs"],
+    ["bun", "tests/payment-webhook-route-truth.test.mjs"],
+    ["node", "scripts/run-tests.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

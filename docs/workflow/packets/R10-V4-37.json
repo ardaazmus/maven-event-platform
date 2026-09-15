@@ -1,0 +1,52 @@
+{
+  "id": "R10-V4-37",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Worker restart, stale lease, retry ve DLQ replay kararlarını ortak matriste doğrulamak",
+  "rollback": "Worker replay sözleşmesi ve testini geri al; mevcut worker, queue ve DB mutation davranışına dokunma",
+  "previous": ["R10-V4-36"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/lib/failure-injection-matrix.ts",
+    "src/lib/invoice-delivery-retry.ts",
+    "src/lib/payment-retrieve-worker-gate.ts",
+    "src/lib/payment-retrieve-worker.ts",
+    "src/lib/invoice-delivery-enqueue.ts",
+    "docs/runbooks/worker-restart-restore.md",
+    "tests/worker-restart-restore.test.mjs",
+    "tests/invoice-delivery-retry.test.mjs",
+    "tests/payment-retrieve-worker-gate.test.mjs",
+    "tests/payment-retrieve-worker.test.mjs",
+    "tests/failure-injection-matrix.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-37.json",
+    "src/lib/worker-replay-matrix.ts",
+    "tests/worker-replay-matrix.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Success, crash, stale lease, duplicate, retryable failure, permanent failure ve unknown iş durumları deterministic karara bağlanır",
+    "Stale lease yalnız süresi geçmiş lease ile reclaim edilir; duplicate idempotent deduplicate, permanent/unknown işler DLQ veya quarantine olur",
+    "Karar çıktısı bounded metadata taşır ve secret, PII, payload veya provider yanıtı içermez",
+    "Sözleşme pure olur; network, DB, queue, worker, mail, provider veya gerçek veri mutation yapmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/worker-replay-matrix.test.mjs"],
+    ["bun", "tests/worker-restart-restore.test.mjs"],
+    ["bun", "tests/invoice-delivery-retry.test.mjs"],
+    ["bun", "tests/payment-retrieve-worker-gate.test.mjs"],
+    ["bun", "tests/payment-retrieve-worker.test.mjs"],
+    ["bun", "tests/failure-injection-matrix.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

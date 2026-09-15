@@ -52,3 +52,13 @@ prompt
 server.log
 # Skills directory
 /skills/
+
+# MavenForms private media storage (keep only the directory marker)
+/storage/media/*
+!/storage/media/.gitkeep
+
+# local runtime state and database files
+/db/*.db
+/db/*.sqlite*
+/.zscripts/*.pid
+/tmp/

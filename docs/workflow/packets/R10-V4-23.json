@@ -1,0 +1,46 @@
+{
+  "id": "R10-V4-23",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Payment ve manuel invoice API yüzeylerinde production/live mutation için negatif R-10 entegrasyon kanıtı eklemek",
+  "rollback": "Production guard entegrasyon testini geri al; payment, invoice, DB ve provider mutation kodunu değiştirme",
+  "previous": ["R10-V4-22"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/r10-scope-gate.ts",
+    "src/lib/env.ts",
+    "src/app/api/payment-provider-connections/route.ts",
+    "src/app/api/invoices/import/route.ts",
+    "src/app/api/invoices/export/route.ts",
+    "src/app/api/invoices/[id]/documents/[documentId]/ready/route.ts",
+    "tests/r10-live-mutation-guard.test.mjs",
+    "tests/payment-provider-route-truth.test.mjs",
+    "tests/invoice-document-ready-route.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-23.json",
+    "tests/r10-production-guard-integration.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Local/staging live payment bağlantısı, R-10 kanıtı true olsa bile hard deny olarak doğrulanır",
+    "Production live payment yalnız açık PAYMENT_LIVE_ENABLED ve R-10 kanıtı ile teorik olarak değerlendirilebilir; eksik kanıt ve secret durumları reddedilir",
+    "Manuel invoice import/export/document-ready yüzeylerinin live provider mutation açmadığı ve mevcut private/manual sınırda kaldığı doğrulanır",
+    "Test yalnız kaynak ve pure policy sözleşmesini doğrular; DB, provider, mail, secret veya gerçek invoice mutation çalıştırmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/r10-production-guard-integration.test.mjs"],
+    ["bun", "tests/r10-live-mutation-guard.test.mjs"],
+    ["bun", "tests/payment-provider-route-truth.test.mjs"],
+    ["bun", "tests/invoice-document-ready-route.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

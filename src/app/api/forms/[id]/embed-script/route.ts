@@ -13,7 +13,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
   const slug = searchParams.get('slug') || id
 
   const form = await db.form.findFirst({
-    where: { OR: [{ id }, { slug }], deletedAt: null },
+    where: { OR: [{ id }, { slug }], status: 'published', deletedAt: null },
     select: { id: true, slug: true, title: true, status: true },
   })
 
@@ -25,7 +25,8 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
   }
 
   const baseUrl = req.nextUrl.origin
-  const formUrl = `${baseUrl}/forms/${form.slug}`
+  const jsBaseUrl = JSON.stringify(baseUrl)
+  const jsFormTitle = JSON.stringify(form.title || 'MavenForms')
 
   // Self-contained JavaScript that:
   // 1. Finds all [data-mavenforms] elements
@@ -43,8 +44,8 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
       container.setAttribute('data-mavenforms-initialized', 'true');
 
       var slug = container.getAttribute('data-mavenforms');
-      var height = container.getAttribute('data-height') || '600';
-      var theme = container.getAttribute('data-theme') || 'light';
+      var parsedHeight = Number.parseInt(container.getAttribute('data-height') || '600', 10);
+      var height = Number.isFinite(parsedHeight) ? Math.min(Math.max(parsedHeight, 240), 2000) : 600;
 
       // Create wrapper
       var wrapper = document.createElement('div');
@@ -70,11 +71,11 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 
       // Create iframe
       var iframe = document.createElement('iframe');
-      iframe.src = '${baseUrl}/forms/' + slug + '?embed=1';
+      iframe.src = ${jsBaseUrl} + '/forms/' + encodeURIComponent(slug) + '?embed=1';
       iframe.style.cssText = 'width:100%;border:0;display:none;min-height:' + height + 'px;';
-      iframe.title = form.title || 'MavenForms';
+      iframe.title = ${jsFormTitle};
       iframe.setAttribute('loading', 'lazy');
-      iframe.setAttribute('allow', 'geolocation; microphone; camera');
+      iframe.setAttribute('allow', '');
       iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-same-origin allow-popups allow-popups-to-escape-sandbox');
 
       iframe.onload = function() {
@@ -86,7 +87,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 
       // Listen for height changes from the form
       window.addEventListener('message', function(event) {
-        if (event.origin !== '${baseUrl}') return;
+        if (event.origin !== ${jsBaseUrl} || event.source !== iframe.contentWindow) return;
         if (event.data && event.data.mavenforms && event.data.type === 'resize') {
           iframe.style.height = event.data.height + 'px';
         }

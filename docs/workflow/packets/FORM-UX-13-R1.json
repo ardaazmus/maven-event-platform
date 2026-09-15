@@ -1,0 +1,14 @@
+{
+  "id": "FORM-UX-13-R1",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "FORM-UX-13 immutable receipt'i son durum kaydıyla eşitlemek ve sonraki form kapısına temiz predecessor bırakmak",
+  "rollback": "Yalnız durum satırını ve bu revalidation packetini geri al; uygulama ve kullanıcı verisi değişmez",
+  "previous": [],
+  "revalidationReason": "FORM-UX-13 verify sonrasında STATUS.md LOCAL_PASS kaydıyla güncellendi; immutable receipt'in stale olmaması için yalnız metadata durumu yeniden doğrulanıyor.",
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "artifacts/workflow/FORM-UX-13/verified.json"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-13-R1.json", "STATUS.md"],
+  "acceptance": ["FORM-UX-13 LOCAL_PASS kaydı korunur", "Context ve workflow metadata kapıları geçer", "Uygulama kodu ve veri değişmez"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["node", "scripts/context-check.mjs"]]
+}

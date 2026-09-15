@@ -1,0 +1,41 @@
+{
+  "id": "MAIL-03-01",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "E-posta şablonu editöründe yalnız izinli merge-tag seçimini konu veya gövdeye ekleyebilmek",
+  "rollback": "Yalnız MAIL-03-01 packetini, email template editor değişikliğini, tag wiring testini ve STATUS kaydını geri al; SMTP credential, form, yanıt, ödeme, fatura, mail veya production verisini silme/değiştirme",
+  "previous": ["MAIL-03-00"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/workflow/packets/MAIL-03-00.json",
+    "artifacts/workflow/MAIL-03-00/verified.json",
+    "src/components/mavenforms/email-template-editor.tsx",
+    "src/components/ui/button.tsx",
+    "src/lib/email-template-content.ts",
+    "tests/email-template-editor-wiring.test.mjs",
+    "tests/email-template-content.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/MAIL-03-01.json",
+    "src/components/mavenforms/email-template-editor.tsx",
+    "tests/email-template-editor-tags.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Editör güvenli EMAIL_TEMPLATE_MERGE_TAGS listesini kullanır; serbest veya secret/internal tag girişi açmaz",
+    "Kullanıcı seçili tag'i açık hedef seçimiyle konuya veya gövdeye ekleyebilir",
+    "Tag seçimi yalnız local draft state'i değiştirir; kalıcı API, provider ve gerçek gönderim açılmaz",
+    "Tag wiring testi, önceki editor/content testleri, TypeScript ve readiness geçmeden faz tamamlanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/email-template-editor-tags.test.mjs"],
+    ["bun", "tests/email-template-editor-wiring.test.mjs"],
+    ["bun", "tests/email-template-content.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

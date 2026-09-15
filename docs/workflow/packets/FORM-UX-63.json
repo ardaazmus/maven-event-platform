@@ -1,0 +1,46 @@
+{
+  "id": "FORM-UX-63",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Replace the redundant focused-form settings/edit pair with one compact management menu that groups all form settings while preserving every existing action route.",
+  "rollback": "Revert only the focused form action layout, grouped menu presentation, and focused interaction assertions; do not change form data, settings content, or server routes.",
+  "previous": ["FORM-UX-62"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/forms-list-view.tsx",
+    "tests/card-interaction.test.mjs",
+    "tests/form-ux-forms-workspace.test.mjs",
+    "tests/v1-internal-forms-view.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-63.json",
+    "src/components/mavenforms/views/forms-list-view.tsx",
+    "tests/card-interaction.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "The focused form workspace has one management entry point instead of separate settings and edit controls.",
+    "The management menu visibly groups all existing form settings and retains a direct Formu düzenle action.",
+    "Menu actions still route to the same builder tabs, responses view, preview, embed, and existing form actions.",
+    "The menu is bounded and responsive so its content does not cover the form workspace indefinitely.",
+    "No database, auth, payment, invoice, public form, provider, or release-gate behavior changes.",
+    "Focused tests, TypeScript, build, readiness, context, and workflow verification pass."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/card-interaction.test.mjs"],
+    ["bun", "tests/form-ux-forms-workspace.test.mjs"],
+    ["bun", "tests/v1-internal-forms-view.test.mjs"],
+    ["bun", "tests/form-ux-final-gate.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

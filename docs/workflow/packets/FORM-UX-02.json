@@ -1,0 +1,50 @@
+{
+  "id": "FORM-UX-02",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Formlar ekranındaki kart, seçili form çalışma alanı ve form ayarları menüsünün gerçek hedeflere bağlandığını; cover medya, canlı form, istatistik ve yanıt erişiminin responsive biçimde birlikte kaldığını doğrulamak ve tek en küçük kopukluğu düzeltmek",
+  "rollback": "Yalnız FORM-UX-02 packetini, STATUS kaydını ve hedef forms-workspace testini geri al; form verisi, medya, yayın, ödeme, fatura, belge veya yanıt silme/değiştirme",
+  "previous": ["FORM-UX-01"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/forms-list-view.tsx",
+    "src/components/mavenforms/views/submissions-view.tsx",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/components/mavenforms/media-picker.tsx",
+    "src/lib/store.ts",
+    "src/app/api/forms/route.ts",
+    "src/app/api/forms/[id]/summary/route.ts",
+    "src/app/api/forms/[id]/submissions/route.ts",
+    "src/app/api/media/[id]/route.ts",
+    "tests/form-ux-inventory-gate.test.mjs",
+    "tests/ui-layout.test.mjs",
+    "tests/v1-internal-forms-view.test.mjs",
+    "tests/invoice-center-responsive.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-02.json",
+    "src/components/mavenforms/views/forms-list-view.tsx",
+    "tests/form-ux-forms-workspace.test.mjs"
+  ],
+  "acceptance": [
+    "Form kartı seçimi gerçek form kimliğiyle seçili çalışma alanını açar; kart içindeki ayar action'ı kart tıklamasıyla çakışmaz",
+    "Seçili form çalışma alanında canlı yayın formu, istatistik ve son yanıtlar aynı form kimliğinden yüklenir; hedef action yanıt ekranına gider",
+    "Form ayarları menüsü mevcut builder sekmelerine gerçek state geçişi yapar; UI'da görünen ama hedefi olmayan sekme kalmaz",
+    "16:9 cover medya fallback'i, hata durumu ve dar ekran kart düzeni taşma/üst üste binme üretmez",
+    "Hedef test, UI regresyonu, TypeScript, build ve readiness geçmeden faz PASS sayılmaz; ödeme/fatura/V4 açılmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-forms-workspace.test.mjs"],
+    ["bun", "tests/form-ux-inventory-gate.test.mjs"],
+    ["bun", "tests/ui-layout.test.mjs"],
+    ["bun", "tests/v1-internal-forms-view.test.mjs"],
+    ["bun", "tests/invoice-center-responsive.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

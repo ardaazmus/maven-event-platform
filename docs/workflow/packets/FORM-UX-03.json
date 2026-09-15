@@ -1,0 +1,56 @@
+{
+  "id": "FORM-UX-03",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Form builder alan, ayar, önizleme ve yayın sekmelerinin gerçek server action'larına bağlı olduğunu; yayın öncesi doğrulamanın hatayı görünür ve fail-closed tuttuğunu denetlemek ve tek en küçük kopukluğu düzeltmek",
+  "rollback": "Yalnız FORM-UX-03 packetini, hedef builder bağlantı testini ve izin verilen builder kaynağındaki en küçük düzeltmeyi geri al; form alanı, yayın snapshot'ı, medya, ödeme, fatura veya yanıt verisi silme/değiştirme",
+  "previous": ["FORM-UX-02"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/components/mavenforms/builder/field-palette.tsx",
+    "src/components/mavenforms/builder/canvas.tsx",
+    "src/components/mavenforms/builder/properties-panel.tsx",
+    "src/lib/form-document.ts",
+    "src/lib/store.ts",
+    "src/app/api/forms/[id]/route.ts",
+    "src/app/api/forms/[id]/fields/route.ts",
+    "src/app/api/forms/[id]/fields/[fieldId]/route.ts",
+    "src/app/api/forms/[id]/preview/route.ts",
+    "src/app/api/forms/[id]/publish/route.ts",
+    "src/app/forms/[slug]/page.tsx",
+    "tests/form-ux-inventory-gate.test.mjs",
+    "tests/form-settings-preview.test.mjs",
+    "tests/builder-layout-renderer.test.mjs",
+    "tests/public-form-layout.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-03.json",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/components/mavenforms/builder/field-palette.tsx",
+    "src/components/mavenforms/builder/canvas.tsx",
+    "src/components/mavenforms/builder/properties-panel.tsx",
+    "tests/form-ux-builder-wiring.test.mjs"
+  ],
+  "acceptance": [
+    "Builder sekmeleri gerçek içerik state'ine geçer; ayar, görünüm/tema, yanıt, mantık, bildirim, embed, ödeme, entegrasyon ve rapor action'ları kaybolmaz",
+    "Alan ekleme, güncelleme, sıralama, çoğaltma ve silme action'ları doğru form/alan server route'larına bağlıdır; optimistic state başarısız kayıtta sessizce kalmaz",
+    "Önizleme draft için authenticated preview sınırında, yayınlama server publish route'unda çalışır; UI görünmesi tek başına publish kanıtı sayılmaz",
+    "Builder canvas ve properties panel dar ekranlarda panel taşması/erişilemeyen aşağı içerik üretmez",
+    "Hedef wiring testi, mevcut builder/public regresyonları, TypeScript, build ve readiness geçmeden faz PASS sayılmaz; ödeme/fatura/V4 açılmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-builder-wiring.test.mjs"],
+    ["bun", "tests/form-ux-inventory-gate.test.mjs"],
+    ["bun", "tests/form-settings-preview.test.mjs"],
+    ["bun", "tests/builder-layout-renderer.test.mjs"],
+    ["bun", "tests/public-form-layout.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

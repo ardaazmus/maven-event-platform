@@ -1,0 +1,14 @@
+{
+  "id": "FORM-UX-14-R2",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "FORM-UX-14 receipt'inin güncel STATUS bootstrap değişiklikleri nedeniyle stale olmasını yeniden doğrulama kapısıyla eşitlemek",
+  "rollback": "Yalnız revalidation packet ve durum satırını geri al; uygulama ve kullanıcı verisini değiştirme",
+  "previous": [],
+  "revalidationReason": "FORM-UX-14 receipt'inden sonra STATUS.md içindeki V4/R-10 gate kayıtları güncel bootstrap doğruluğu için tamamlandı; receipt'in değişen STATUS kanıtı eşitlenecek.",
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "artifacts/workflow/FORM-UX-14/verified.json"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-14-R2.json", "STATUS.md"],
+  "acceptance": ["Güncel STATUS, FORM-UX-14 yönlendirmesini ve V4/R-10 gate kayıtlarını içerir", "Context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["node", "scripts/context-check.mjs"]]
+}

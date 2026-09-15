@@ -1,0 +1,43 @@
+{
+  "id": "R10-V4-24",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Payment, invoice, mail ve media akışlarının paylaşacağı erişilebilir resumable connection wizard shell’ini oluşturmak",
+  "rollback": "Ortak connection wizard shell ve testini geri al; provider bağlantısı, credential, DB ve dış servis mutation yapma",
+  "previous": ["R10-V4-23"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/components/mavenforms/email-template-editor.tsx",
+    "src/components/mavenforms/media-picker.tsx",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/r10-production-guard-integration.test.mjs",
+    "tests/media-picker.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-24.json",
+    "src/components/mavenforms/connection-wizard.tsx",
+    "tests/connection-wizard.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Shell step, back, cancel ve refresh davranışlarını erişilebilir button/tab semantiğiyle sunar",
+    "Adım değişiminde yalnız izinli step ID’leri kullanılır; ilk adımda geri, son adımda ileri kontrollü kalır",
+    "Draft ID ve mevcut adım refresh sırasında korunur; cancel callback’i mutation yapmadan çağrılır",
+    "Bileşen provider, credential, network ve DB çağırmaz; R-10/V4 live kararını açmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/connection-wizard.test.mjs"],
+    ["bun", "tests/r10-production-guard-integration.test.mjs"],
+    ["bun", "tests/media-picker.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

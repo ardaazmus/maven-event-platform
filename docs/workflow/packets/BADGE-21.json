@@ -1,0 +1,43 @@
+{
+  "id": "BADGE-21",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı capability route'unu form ayar menüsünden ve builder sonuçları grubundan erişilebilir, dürüst bir durum ekranına bağlamak.",
+  "rollback": "Yalnız badge UI wiring, capability response count, focused wiring testi, packet ve BADGE-21 durum satırını geri al; PDF/export action'ı, ödeme, fatura veya provider açma.",
+  "previous": ["BADGE-20"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/app/api/forms/[id]/badges/route.ts",
+    "src/lib/badge-entry-surface-contract.ts",
+    "src/components/mavenforms/views/forms-list-view.tsx",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/badge-entry-route.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-21.json",
+    "src/app/api/forms/[id]/badges/route.ts",
+    "src/components/mavenforms/views/forms-list-view.tsx",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/badge-ui-entry-wiring.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Form ayar menüsü ve builder sonuçlar grubu aynı badge giriş sekmesine gider.",
+    "Badge ekranı capability endpoint'inden authenticated form-scope kararını okur; PII, QR veya provider verisi istemez.",
+    "Loading/error/eligible kayıt yok durumları görünür; üretim veya export action'ı backend kanıtı olmadan aktifleşmez.",
+    "Dar ekranlarda panel taşmaz ve mevcut builder/payment/invoice davranışları değişmez.",
+    "Focused wiring testi, TypeScript ve context-check geçer."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-ui-entry-wiring.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

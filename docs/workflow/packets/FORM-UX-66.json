@@ -1,0 +1,41 @@
+{
+  "id": "FORM-UX-66",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yanıtlar ekranındaki sol form seçimini ortak navigasyon state'iyle senkronlamak; form değişimini ve geri dönüşte seçimin korunmasını doğrulamak.",
+  "rollback": "Yalnız selected form state setter'ını, submissions sol liste wiring'ini, focused testi, packet ve FORM-UX-66 durum satırını geri al; API, veri, ödeme, fatura veya release kapısı değiştirme.",
+  "previous": [],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/store.ts",
+    "src/components/mavenforms/views/submissions-view.tsx",
+    "src/components/mavenforms/app-shell.tsx",
+    "tests/form-ux-navigation.test.mjs",
+    "tests/form-ux-forms-entry-actions.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-66.json",
+    "src/lib/store.ts",
+    "src/components/mavenforms/views/submissions-view.tsx",
+    "tests/form-ux-submission-form-switch.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Yanıtlar ekranındaki sol form seçimi selectedFormId ve formDetailTab=submissions ortak state'ine yazılır.",
+    "Seçim sonrası mevcut submissions görünümü, summary, filtre ve API çağrısı seçilen formu kullanmaya devam eder.",
+    "Formlar ekranına veya builder'a gidip dönüldüğünde seçilen form kimliği stale form yerine korunur; API/data şeması değişmez.",
+    "Dar ekran/diğer navigasyon davranışı ve payment/invoice akışları değişmez.",
+    "Focused wiring testi, TypeScript ve context-check geçer."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"]
+  ],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/form-ux-submission-form-switch.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "id": "BADGE-27",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı tekil/seçili/tümü girişini frozen snapshot, bounded batch ve idempotency ile birleşik generation job sözleşmesine bağlamak; gerçek PDF üretimi/export açmamak.",
+  "rollback": "Yalnız generation job composition sözleşmesini, focused testi, packet ve BADGE-27 durum satırını geri al; PDF renderer, DB/queue yazımı, storage, export action'ı, ödeme, fatura veya provider açma.",
+  "previous": ["BADGE-26"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/badge-entry-contract.ts",
+    "src/lib/badge-batch-contract.ts",
+    "src/lib/badge-pdf-render-port.ts",
+    "src/lib/badge-artifact-storage-contract.ts",
+    "tests/badge-entry-contract.test.mjs",
+    "tests/badge-batch-contract.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-27.json",
+    "src/lib/badge-generation-job-contract.ts",
+    "tests/badge-generation-job-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "SINGLE/SELECTED girişleri bounded SELECTED batch, ALL girişi bounded ALL batch olarak bağlanır; eligible dışı ve boş seçim reddedilir.",
+    "Job aynı workspace/form/template/snapshotHash/printProfile kapsamını taşır ve mevcut batch idempotencyKey'ini kullanır.",
+    "Yüz modu yalnız SINGLE_FACE veya DUAL_FACE kabul edilir; rendererRequired true ve outputExportEnabled false olarak kalır.",
+    "Job sözleşmesi PII, QR payload'ı, PDF bytes, storage path/URL veya provider verisi taşımaz; gerçek queue/DB/storage yazımı yapmaz.",
+    "Focused contract testi, TypeScript ve context-check geçer."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"]
+  ],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-generation-job-contract.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "id": "R10-V4-06",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Upload ve attach akışında tenant, form ve server-owned purpose kapsamını doğrulamak",
+  "rollback": "Scope normalizer, route guard, global attach düzeltmesi ve testleri geri al; dosya, medya kaydı ve provider durumunu değiştirme",
+  "previous": ["R10-V4-05"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/research-sources/2026-09-11-ozelapp-r10-v4-guvenli-entegrasyon-research-receipt.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/lib/media.ts",
+    "src/lib/file-policy.ts",
+    "src/app/api/media/route.ts",
+    "src/app/api/forms/[id]/media/route.ts",
+    "tests/media-scope.test.mjs",
+    "tests/media-api.test.mjs",
+    "tests/media-upload-trigger.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-06.json",
+    "src/lib/media.ts",
+    "src/app/api/media/route.ts",
+    "src/app/api/forms/[id]/media/route.ts",
+    "tests/media-scope.test.mjs",
+    "tests/media-api.test.mjs",
+    "tests/media-upload-session-scope.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Upload scope server-owned workspace/form/purpose bilgisiyle normalize edilir; client storage path veya tenant seçemez",
+    "Form upload yalnız aynı workspace içindeki form scope'una, global upload yalnız workspace settings scope'una bağlanır",
+    "Aynı workspace içindeki global temiz medya forma attach edilebilir; başka form veya workspace medyası reddedilir",
+    "Mevcut media, upload-trigger ve badge davranışları korunur; gerçek dosya/AV/provider mutation yapılmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"],
+    ["bun", "tests/media-scope.test.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/media-upload-session-scope.test.mjs"],
+    ["bun", "tests/media-scope.test.mjs"],
+    ["bun", "tests/media-api.test.mjs"],
+    ["bun", "tests/media-upload-trigger.test.mjs"],
+    ["bun", "tests/badge-template-contract.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "V3-06",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Tamamlanmış provider-neutral V3 Paraşüt hazırlık kanıtlarını STATUS.md içinde doğru ve release kapalı biçimde özetlemek.",
+  "rollback": "V3 durum özeti, packet ve receipt değişikliğini geri al; Paraşüt provider mutation, otomatik fatura, e-belge, mail dispatch, R-10 ve V4 kapılarına dokunma.",
+  "previous": [],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/workflow/status-history.md",
+    "RELEASE-DECISION.md",
+    "docs/acceptance/v2-deferred-provider-decision.md",
+    "tests/v3-parasut-connection-gate.test.mjs",
+    "tests/v3-release-gate.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/V3-06.json",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "STATUS.md V3-00, V3-04 ve V3-05 provider-neutral LOCAL_PASS hazırlık kanıtlarını gösterir.",
+    "STATUS.md gerçek Paraşüt hesabı, OAuth yetkilendirmesi, otomatik faturalama, e-belge ve production release'in hâlâ NO-GO/DEFERRED olduğunu açıkça korur.",
+    "V3 bağlantı ve release gate testleri, TypeScript ve context-check geçer; R-10 ve V4 açılmaz."
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [
+    ["bun", "tests/v3-parasut-connection-gate.test.mjs"],
+    ["bun", "tests/v3-release-gate.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

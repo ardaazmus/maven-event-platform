@@ -1,0 +1,41 @@
+{
+  "id": "M12.4",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "cb45862f4f910519",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "release-decision.test PASS",
+    "scope": {
+      "changedFiles": [
+        "RELEASE-DECISION.md",
+        "tests/release-decision.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "8 NO-GO conditions checked, GO_WITH_CAVEATS pilot",
+    "acceptanceIds": [
+      "AC-RELEASE-01"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/release-decision.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-02T04:48:48.824Z"
+}

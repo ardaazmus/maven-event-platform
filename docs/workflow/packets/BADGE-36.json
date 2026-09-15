@@ -1,0 +1,41 @@
+{
+  "id": "BADGE-36",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı PDF karantina çıktısının yalnız timing-safe iç worker sırrıyla scan geçişine alınması.",
+  "rollback": "BADGE-36 worker route ve testini geri al; authenticated download/export, public URL, ödeme, fatura, provider ve R-10 kapılarını açma.",
+  "previous": ["BADGE-35"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/internal-worker-auth.ts",
+    "src/lib/badge-artifact-storage.ts",
+    "src/lib/badge-artifact-scan-contract.ts",
+    "src/lib/badge-artifact-storage-contract.ts",
+    "src/app/api/internal/workers/email-protection/route.ts",
+    "tests/internal-worker-auth.test.mjs",
+    "tests/badge-artifact-scan-contract.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-36.json",
+    "src/app/api/internal/workers/badge-scan/route.ts",
+    "tests/badge-scan-worker-route.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Worker route ayrı BADGE scan sırrını timing-safe doğrulamadan çalışmaz; sır eksikse 503, yanlışsa 401 döner.",
+    "İstek scope'u manifest workspace/form/artifact ile eşleşir ve yalnız SCAN_PASSED veya SCAN_FAILED kabul edilir.",
+    "Geçiş storage katmanındaki QUARANTINED fence üzerinden yapılır; READY/BLOCKED tekrar geçirilemez.",
+    "Yanıt internal event, PDF byte, path, PII veya secret döndürmez; download/export/public route davranışı değişmez.",
+    "Focused route testi, TypeScript ve context-check geçer."
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-scan-worker-route.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/badge-artifact-scan-contract.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

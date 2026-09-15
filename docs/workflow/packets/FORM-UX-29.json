@@ -1,0 +1,13 @@
+{
+  "id": "FORM-UX-29",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Sol kenar çubuğu daralt/genişlet düğmesine durum bazlı erişilebilir ad eklemek",
+  "rollback": "Yalnız sidebar toggle aria-label/title/test/packet/STATUS değişikliklerini geri al; daraltma davranışını değiştirme",
+  "previous": ["FORM-UX-28-R1"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/sidebar.tsx", "tests/form-ux-final-gate.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-29.json", "src/components/mavenforms/sidebar.tsx", "tests/form-ux-sidebar-toggle-a11y.test.mjs", "STATUS.md"],
+  "acceptance": ["Sidebar toggle daraltılmış durumda genişletme adını taşır", "Sidebar toggle açık durumda daraltma adını taşır", "Toggle handler ve mevcut görünür Daralt metni korunur", "Hedef regression ve context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["bun", "tests/form-ux-sidebar-toggle-a11y.test.mjs"], ["bun", "tests/form-ux-final-gate.test.mjs"], ["node", "scripts/context-check.mjs"]]
+}

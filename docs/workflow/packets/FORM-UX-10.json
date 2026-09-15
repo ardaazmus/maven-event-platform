@@ -1,0 +1,13 @@
+{
+  "id": "FORM-UX-10",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Public form snapshot'ının private/admin/payment sırlarını sızdırmadığını bağımsız davranış testiyle release kapısına bağlamak",
+  "rollback": "Yalnız public snapshot release testini ve packet kaydını geri al; form, yanıt, ödeme, fatura veya medya verisini silme/değiştirme",
+  "previous": ["FORM-UX-09"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "RELEASE-DECISION.md", "docs/workflow/README.md", "src/lib/public-dto.ts", "src/app/api/public/forms/[slug]/route.ts", "tests/public-forbidden.test.mjs", "tests/public-snapshot-defense.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-10.json", "tests/form-ux-public-boundary-release.test.mjs", "STATUS.md"],
+  "acceptance": ["Sanitized public form yalnız allowlist alanlarını ve opaque public kimliği içerir; internal id/workspace/owner/session/provider credential/raw payload alanları sızmaz", "Public payment görünümü yalnız provider ve server-owned pricing policy taşır; connection, merchant ve secret alanları taşınmaz", "Public route yayınlanmış version snapshot'ına bağlı ve forbidden-key savunmasıyla fail-closed kalır", "Hedef boundary testleri, TypeScript, build ve local readiness geçer; bu test gerçek provider veya production release kanıtı sayılmaz"],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["bun", "tests/form-ux-public-boundary-release.test.mjs"], ["bun", "tests/public-forbidden.test.mjs"], ["bun", "tests/public-snapshot-defense.test.mjs"], ["bun", "tests/public-form-layout.test.mjs"], ["bun", "tests/public-header-background.test.mjs"], ["bun", "tests/form-ux-final-gate.test.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

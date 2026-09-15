@@ -1,0 +1,39 @@
+{
+  "id": "FORM-UX-36",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Form ayarlarindaki baslik ve aciklama alanlarinin katilimci gorunumuyle iliskisini aciklastirmak; mevcut veri ve endpoint davranisini korumak",
+  "rollback": "Yalniz FORM-UX-36 packetini, aciklayici metinleri, regression testini ve STATUS kaydini geri al; form verisini degistirme",
+  "previous": ["FORM-UX-35"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/components/mavenforms/views/appearance-panel.tsx",
+    "tests/form-ux-inventory-gate.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-36.json",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/components/mavenforms/views/appearance-panel.tsx",
+    "tests/form-ux-title-description-scope.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Form adi ve aciklama alanlari katilimciya gorunen icerik olarak acikca etiketlenir",
+    "Gorunum header alanlarinin bagimsiz ust bolum icerigi oldugu aciklanir",
+    "Mevcut form metadata, appearance endpoint ve public render davranisi degismez",
+    "Regression, TypeScript, build, readiness, context-check ve workflow verify basarili olur"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-title-description-scope.test.mjs"],
+    ["bun", "tests/form-ux-inventory-gate.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

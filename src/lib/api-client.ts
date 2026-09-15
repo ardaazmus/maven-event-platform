@@ -10,6 +10,11 @@ export class ApiError extends Error {
 
 const TOKEN_KEY = 'mavenforms_token'
 
+type ApiPayload = {
+  data?: unknown
+  meta?: unknown
+}
+
 export function getStoredToken(): string | null {
   if (typeof window === 'undefined') return null
   try {
@@ -33,10 +38,10 @@ export function setStoredToken(token: string | null) {
 // Track if we've already dispatched an unauthorized event to avoid loops
 let unauthorizedDispatched = false
 
-export async function api<T = any>(
+async function requestJson(
   path: string,
   options?: RequestInit & { skipAuth?: boolean }
-): Promise<T> {
+): Promise<ApiPayload> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(options?.headers as Record<string, string> || {}),
@@ -89,5 +94,29 @@ export async function api<T = any>(
   }
 
   const data = await res.json()
+  return data as ApiPayload
+}
+
+export async function api<T = any>(
+  path: string,
+  options?: RequestInit & { skipAuth?: boolean }
+): Promise<T> {
+  const data = await requestJson(path, options)
   return data.data as T
+}
+
+export type ApiEnvelope<T, M> = {
+  data: T
+  meta: M
+}
+
+export async function apiWithMeta<T, M>(
+  path: string,
+  options?: RequestInit & { skipAuth?: boolean }
+): Promise<ApiEnvelope<T, M>> {
+  const payload = await requestJson(path, options)
+  return {
+    data: payload.data as T,
+    meta: payload.meta as M,
+  }
 }

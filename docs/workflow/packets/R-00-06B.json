@@ -1,0 +1,40 @@
+{
+  "id": "R-00-06B",
+  "status": "READY",
+  "goal": "Güncel Stripe charge refund/dispute correlation sözleşmesini yeniden kanıtlamak ve sonraki iyzico risk fazının stale evidence kilidini onarmak",
+  "rollback": "Bu mikro-fazda eklenen correlation regression assertion ve adlandırma değişikliğini geri al; R-00-07 previous kilidini eski değere döndürmeden fazı doğrulanmış sayma.",
+  "timeboxMinutes": 15,
+  "allowedFiles": [
+    "docs/workflow/packets/R-00-06B.json",
+    "docs/workflow/packets/R-00-07.json",
+    "src/app/api/webhooks/stripe/[connectionId]/route.ts",
+    "tests/payment-webhook-route-truth.test.mjs",
+    "tests/payment-webhook-processing.test.mjs"
+  ],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/webhooks/stripe/[connectionId]/route.ts",
+    "src/lib/payment-webhook-processing.ts",
+    "src/lib/payment-webhook-signatures.ts",
+    "tests/payment-webhook-route-truth.test.mjs",
+    "tests/payment-webhook-processing.test.mjs"
+  ],
+  "acceptance": [
+    "Stripe charge.refunded ve charge.dispute.created olayları payment_intent kimliği olmadan charge ID'ye düşmez",
+    "Güncel route/test dosyaları aynı imza doğrulama, inbox idempotency ve raw payload sınırını korur",
+    "Sonraki R-00-07 iyzico fazı bu güncel receipt'i previous evidence olarak kullanır"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/payment-webhook-route-truth.test.mjs"],
+    ["bun", "tests/payment-webhook-processing.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "previous": []
+}

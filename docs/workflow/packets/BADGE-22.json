@@ -1,0 +1,41 @@
+{
+  "id": "BADGE-22",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı PDF üretimi için provider ve renderer bağımsız, fail-closed bir render planı sözleşmesi tanımlamak; gerçek PDF üretimi veya export action'ı açmamak.",
+  "rollback": "Yalnız PDF render port sözleşmesini, focused testi, packet ve BADGE-22 durum satırını geri al; gerçek PDF kütüphanesi, dosya yazımı, export action'ı, ödeme, fatura veya provider açma.",
+  "previous": ["BADGE-21"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/badge-export-contract.ts",
+    "src/lib/badge-download-contract.ts",
+    "src/lib/badge-face-contract.ts",
+    "src/lib/badge-snapshot-contract.ts",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/badge-export-contract.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-22.json",
+    "src/lib/badge-pdf-render-port.ts",
+    "tests/badge-pdf-render-port.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Render planı yalnız opaque workspace/form/template/snapshot/output kimlikleri, yüz modu ve sayfa sayısını taşır; PII, QR payload'ı, provider secret/config veya ham yanıt taşımaz.",
+    "Tek yüz tam olarak 1, çift yüz tam olarak 2 sayfa ile eşleşir; uyumsuz istek fail-closed reddedilir.",
+    "Renderer yapılandırılmadıysa plan üretimi RENDERER_NOT_CONFIGURED ile durur; sahte PDF/artifact/export sonucu oluşturulmaz.",
+    "Çıktı görünürlüğü private ve teslim yolu artifact-store-only olarak sözleşmeye bağlanır; direct matbaa API/email açılmaz.",
+    "Focused contract testi, TypeScript ve context-check geçer."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"]
+  ],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-pdf-render-port.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

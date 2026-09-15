@@ -1,0 +1,47 @@
+{
+  "id": "FORM-UX-33",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Görünüm ve Form Ayarları medya alanlarında tek aktif kaynak modelini uygulamak; medya klasörü seçimi/yüklemeyi ve HTTPS URL alternatifini özellik kaybetmeden açıkça ayırmak",
+  "rollback": "Yalnız FORM-UX-33 packetini, medya kaynak seçici bileşenini, çağıran UI/test/STATUS değişikliklerini geri al; medya varlıklarını, form ayarlarını, yayın sürümünü veya public medya sınırını silme/değiştirme",
+  "previous": ["FORM-UX-32-R1"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/media-picker.tsx",
+    "src/components/mavenforms/views/appearance-panel.tsx",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/appearance-picker.test.mjs",
+    "tests/form-ux-media-workflow.test.mjs",
+    "tests/form-settings-preview.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-33.json",
+    "src/components/mavenforms/media-source-field.tsx",
+    "src/components/mavenforms/views/appearance-panel.tsx",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/appearance-picker.test.mjs",
+    "tests/form-ux-media-source-mode.test.mjs",
+    "tests/form-ux-media-workflow.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Görünüm ve Form Ayarları medya yüzeylerinde aynı anda iki aktif kaynak editörü gösterilmez",
+    "Medya klasörü seçimi/yükleme, form kapsamı ve aktif medya önizlemesi korunur; harici kaynak seçilirse yalnız HTTPS URL editörü görünür",
+    "Kaynak değişimi bilinçli yapılır; seçilmeyen kaynak public DTO, internal medya ID veya form yayın sınırını genişletmez",
+    "Mevcut görünüm, medya iş akışı, form ayarları, TypeScript, build, readiness, context-check ve workflow verify geçer"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-media-source-mode.test.mjs"],
+    ["bun", "tests/appearance-picker.test.mjs"],
+    ["bun", "tests/form-ux-media-workflow.test.mjs"],
+    ["bun", "tests/form-settings-preview.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

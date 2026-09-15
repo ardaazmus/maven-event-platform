@@ -1,0 +1,54 @@
+{
+  "id": "R10-V4-30",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Ödeme, manuel fatura, Paraşüt, transactional mail ve R-10 canlı durumunu tested/verified/blocked ayrımıyla tek capability kanıt listesinde göstermek",
+  "rollback": "Capability evidence checklist ve invoice center bağlantısını geri al; provider, release ve modül entitlement durumlarını değiştirme",
+  "previous": ["R10-V4-29"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/components/mavenforms/views/invoice-center-view.tsx",
+    "src/lib/release-module.ts",
+    "src/lib/r10-scope-gate.ts",
+    "src/components/mavenforms/payment-connection-wizard.tsx",
+    "src/components/mavenforms/manual-invoice-wizard.tsx",
+    "src/components/mavenforms/future-invoice-wizard.tsx",
+    "src/components/mavenforms/transactional-mail-wizard.tsx",
+    "tests/release-capability-snapshot.test.mjs",
+    "tests/v1-release-gate.test.mjs",
+    "tests/v2-release-gate.test.mjs",
+    "tests/v3-release-gate.test.mjs",
+    "tests/v4-release-gate.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-30.json",
+    "src/components/mavenforms/capability-evidence-checklist.tsx",
+    "src/components/mavenforms/views/invoice-center-view.tsx",
+    "tests/capability-evidence-checklist.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Checklist tested, verified ve blocked durumlarını ayrı gösterir; bağlandı ifadesiyle gerçek release iddiası yapmaz",
+    "First-party ödeme ve manuel fatura yerel kapsamda, Paraşüt otomasyonu ve R-10 canlı durumu blocked olarak görünür",
+    "Checklist invoice center’da görünür ve mevcut wizard akışlarıyla çelişmez",
+    "Bileşen network, DB, provider veya entitlement mutation yapmaz; dış kanıt gelmeden release açılmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/capability-evidence-checklist.test.mjs"],
+    ["bun", "tests/release-capability-snapshot.test.mjs"],
+    ["bun", "tests/v1-release-gate.test.mjs"],
+    ["bun", "tests/v2-release-gate.test.mjs"],
+    ["bun", "tests/v3-release-gate.test.mjs"],
+    ["bun", "tests/v4-release-gate.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

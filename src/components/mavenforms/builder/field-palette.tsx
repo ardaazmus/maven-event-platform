@@ -83,9 +83,25 @@ const categoryLabels: Record<string, string> = {
 
 const categoryOrder = ['basic', 'choice', 'advanced', 'layout', 'special']
 
-export function FieldPalette({ onAdd }: { onAdd: (type: FieldType) => void }) {
+interface Props {
+  onAdd: (type: FieldType) => void
+  fieldCount: number
+  onApplyLayout: (presetId: string) => void
+}
+
+const layoutPresets = [
+  { id: 'grid-single', label: 'Tek kolon', description: '12/12', group: 'Grid' },
+  { id: 'grid-equal', label: 'İki eşit', description: '6 + 6', group: 'Grid' },
+  { id: 'grid-thirds', label: 'Ana + yan', description: '4 + 8', group: 'Grid' },
+  { id: 'grid-quarters', label: 'Dört eşit', description: '3 + 3 + 3 + 3', group: 'Grid' },
+  { id: 'bento-featured', label: 'Öne çıkan', description: '8 + 4 + 4', group: 'Bento' },
+  { id: 'bento-focus', label: 'Odak düzeni', description: '7 + 5 + 5', group: 'Bento' },
+]
+
+export function FieldPalette({ onAdd, fieldCount, onApplyLayout }: Props) {
   const [search, setSearch] = useState('')
   const [openCats, setOpenCats] = useState<Set<string>>(new Set(['basic', 'choice']))
+  const [layoutGuideOpen, setLayoutGuideOpen] = useState(false)
 
   const filtered = fieldDefs.filter(
     (f) =>
@@ -123,6 +139,57 @@ export function FieldPalette({ onAdd }: { onAdd: (type: FieldType) => void }) {
         </div>
       </div>
 
+      <div className="border-b border-border p-3">
+        <Collapsible open={layoutGuideOpen} onOpenChange={setLayoutGuideOpen}>
+          <CollapsibleTrigger className="w-full rounded-md text-left transition-colors hover:bg-accent/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <div className="flex items-center justify-between gap-2 px-1 py-1">
+              <div className="flex min-w-0 items-center gap-2">
+                <Layout className="h-3.5 w-3.5 shrink-0 text-primary" />
+                <div className="min-w-0">
+                  <div className="text-xs font-semibold">Responsive düzen</div>
+                  <div className="truncate text-[10px] text-muted-foreground">
+                    {fieldCount} alan · alan seçince sağ panelden ayarla
+                  </div>
+                </div>
+              </div>
+              <ChevronRight
+                className={cn('h-3.5 w-3.5 shrink-0 transition-transform', layoutGuideOpen && 'rotate-90')}
+              />
+            </div>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="pt-2">
+            <div className="rounded-lg border border-border/80 bg-muted/20 p-2">
+              <div className="mb-2 text-[10px] leading-relaxed text-muted-foreground">
+                <span className="font-medium text-foreground">Yerleşim sihirbazı</span> yalnızca hızlı başlangıç içindir.
+                Kesin genişliği canvas&apos;ta alanı seçip sağdaki Desktop/Tablet kaydırıcısından belirleyin.
+              </div>
+              <div className="space-y-2">
+                {(['Grid', 'Bento'] as const).map((group) => (
+                  <div key={group} className="space-y-1">
+                    <div className="px-1 text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">{group}</div>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      {layoutPresets.filter((preset) => preset.group === group).map((preset) => (
+                        <button
+                          key={preset.id}
+                          type="button"
+                          disabled={fieldCount === 0}
+                          onClick={() => onApplyLayout(preset.id)}
+                          className="min-w-0 rounded-md border border-border bg-background px-2 py-1.5 text-left transition-colors hover:border-primary/60 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                          title={`${preset.group}: ${preset.description}`}
+                        >
+                          <span className="block truncate text-[11px] font-medium">{preset.label}</span>
+                          <span className="block truncate text-[9px] text-muted-foreground">{preset.description}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      </div>
+
       <div className="flex-1 overflow-y-auto p-2 space-y-1">
         {grouped.map(({ cat, fields }) => (
           <Collapsible key={cat} open={openCats.has(cat)} onOpenChange={() => toggleCat(cat)}>
@@ -137,6 +204,12 @@ export function FieldPalette({ onAdd }: { onAdd: (type: FieldType) => void }) {
                 {fields.map((f) => (
                   <button
                     key={f.type}
+                    type="button"
+                    draggable
+                    onDragStart={(event) => {
+                      event.dataTransfer.setData('application/x-mavenforms-field', f.type)
+                      event.dataTransfer.effectAllowed = 'copy'
+                    }}
                     onClick={() => onAdd(f.type)}
                     className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-sm hover:bg-accent hover:text-accent-foreground transition-colors group text-left"
                     title={f.description}

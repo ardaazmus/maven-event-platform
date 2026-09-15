@@ -1,0 +1,43 @@
+{
+  "id": "BADGE-26",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı artifact tarama kararını tek yönlü quarantine -> ready/blocked geçişleriyle fail-closed modellemek; gerçek scanner, storage ve PDF üretimi açmamak.",
+  "rollback": "Yalnız scan state transition sözleşmesini, focused testi, packet ve BADGE-26 durum satırını geri al; scanner entegrasyonu, DB/storage yazımı, public URL, PDF dependency, export action'ı, ödeme, fatura veya provider açma.",
+  "previous": ["BADGE-25"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/badge-artifact-storage-contract.ts",
+    "src/lib/badge-artifact-delivery-contract.ts",
+    "src/lib/badge-download-contract.ts",
+    "src/lib/invoice-document-upload-gate.ts",
+    "src/lib/invoice-document-ready-transition.ts",
+    "tests/badge-artifact-delivery-contract.test.mjs",
+    "tests/invoice-document-upload-gate.test.mjs",
+    "tests/invoice-document-ready-transition.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-26.json",
+    "src/lib/badge-artifact-scan-contract.ts",
+    "tests/badge-artifact-scan-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Yalnız QUARANTINED artifact SCAN_PASSED ile READY veya SCAN_FAILED ile BLOCKED olabilir.",
+    "READY ve BLOCKED terminal durumdur; yeni scan event'iyle yeniden açılmaz ve eski artifact overwrite edilmez.",
+    "QUARANTINED durumunda downloadable false, READY durumunda true, BLOCKED durumunda false kararı verilir.",
+    "Sözleşme scanner/storage entegrasyonu, PII, QR payload'ı, provider verisi, public URL veya dosya bytes taşımaz.",
+    "Focused contract testi, TypeScript ve context-check geçer."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"]
+  ],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-artifact-scan-contract.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

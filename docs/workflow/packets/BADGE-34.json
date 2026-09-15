@@ -1,0 +1,41 @@
+{
+  "id": "BADGE-34",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı arka plan PDF'sinden tek ve çift yüzlü, kişi verisi ve vektörel QR içeren private PDF dokümanı üretmek.",
+  "rollback": "BADGE-34 renderer modülünü, testini ve durum satırını geri al; storage, download, export, ödeme, fatura, provider ve R-10 kapılarını açma.",
+  "previous": ["BADGE-33"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/badge-front-render-contract.ts",
+    "src/lib/badge-pdf-renderer.ts",
+    "src/lib/badge-pdf-render-port.ts",
+    "src/lib/badge-template-binding-contract.ts",
+    "tests/badge-pdf-renderer.test.mjs",
+    "tests/badge-pdf-render-port.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-34.json",
+    "src/lib/badge-pdf-document-renderer.ts",
+    "tests/badge-pdf-document-renderer.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Tek yüz için bir, çift yüz için iki sayfalı özel arka plan PDF yalnız doğrulanmış yüz planlarıyla üretilir.",
+    "Kişi/context alanları güvenli kutulara çizilir; QR yalnız payload verildiğinde ve vektörel modda çizilir.",
+    "Arka plan PDF sayfa sayısı ve ölçüsü face mode ile eşleşmezse işlem fail-closed olur; aktif PDF içeriği reddedilir.",
+    "Çıktı bellekte application/pdf olarak kalır; public URL, e-posta, provider, matbaa ve R-10 mutasyonu eklenmez.",
+    "Focused renderer testi, TypeScript ve context-check geçer."
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-pdf-document-renderer.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/badge-pdf-renderer.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/badge-pdf-render-port.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

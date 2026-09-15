@@ -1,0 +1,41 @@
+{
+  "id": "M10.3",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "38fd000c16024edd",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "outbox-worker.test PASS",
+    "scope": {
+      "changedFiles": [
+        "src/lib/outbox-worker.ts",
+        "tests/outbox-worker.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "no PII, claim lease + dead-letter",
+    "acceptanceIds": [
+      "AC-OUTBOX-WORKER-01"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/outbox-worker.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-02T03:34:51.213Z"
+}

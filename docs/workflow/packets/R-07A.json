@@ -1,0 +1,13 @@
+{
+  "id": "R-07A",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "R-07 private document retrieval bulgusunu düzeltmek: explicit private visibility defense-in-depth şartı eklemek",
+  "rollback": "Bu paketin yalnız document retrieval route ve security contract test değişikliklerini geri al; invoice/document verisini silme",
+  "previous": ["R-06"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "src/app/api/invoices/[id]/documents/[documentId]/route.ts", "tests/payment-invoice-security-boundary.test.mjs", "tests/invoice-document-retrieval-route.test.mjs", "tests/public-forbidden.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/R-07A.json", "src/app/api/invoices/[id]/documents/[documentId]/route.ts", "tests/payment-invoice-security-boundary.test.mjs", "STATUS.md", "docs/superpowers/plans/2026-09-02-mavenforms-e-belge-15-dakikalik-uygulama-paketleri.md"],
+  "acceptance": ["Document retrieval query aynı invoice/workspace scope yanında explicit private visibility şartı uygular", "Ready/clean/private koşulu olmadan belge response edilmez", "Hedef security/document route testleri, tam regresyon, TypeScript, production build, /api/ready ve workflow verify PASS olur"],
+  "preflight": [["node", "scripts/local-ready.mjs"], ["bun", "tests/invoice-document-retrieval-route.test.mjs"], ["bun", "tests/public-forbidden.test.mjs"]],
+  "checks": [["bun", "tests/payment-invoice-security-boundary.test.mjs"], ["bun", "tests/invoice-document-retrieval-route.test.mjs"], ["bun", "tests/public-forbidden.test.mjs"], ["node", "scripts/run-tests.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

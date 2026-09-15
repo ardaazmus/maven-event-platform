@@ -1,0 +1,13 @@
+{
+  "id": "P-12C-05",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Document-ready akışını authenticated invoice route üzerinden server caller’a bağlamak",
+  "rollback": "Bu paketin route ve testini geri al; mevcut belge, ödeme, teslimat ve veritabanı verilerine dokunma",
+  "previous": ["P-12C-04"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "src/lib/invoice-document-ready-caller.ts", "src/lib/auth.ts", "src/lib/policy.ts", "src/app/api/invoices/[id]/documents/[documentId]/match-preview/route.ts", "src/app/api/invoices/[id]/documents/route.ts"],
+  "allowedFiles": ["docs/workflow/packets/P-12C-05.json", "src/app/api/invoices/[id]/documents/[documentId]/ready/route.ts", "tests/invoice-document-ready-route.test.mjs", "STATUS.md", "docs/superpowers/plans/2026-09-02-mavenforms-e-belge-15-dakikalik-uygulama-paketleri.md"],
+  "acceptance": ["Route session and invoice capability checks happen before any decision", "Route derives workspace and actor from the server session", "Route accepts only bounded match/approval input and delegates to the caller", "Raw provider values, PII and delivery internals are not exposed"],
+  "preflight": [["node", "scripts/local-ready.mjs"], ["bun", "tests/invoice-document-ready-caller.test.mjs"]],
+  "checks": [["bun", "tests/invoice-document-ready-route.test.mjs"], ["node", "scripts/run-tests.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

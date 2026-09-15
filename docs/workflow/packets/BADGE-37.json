@@ -1,0 +1,43 @@
+{
+  "id": "BADGE-37",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Form builder yaka kartı panelinde özel scope artifact durumlarını göstermek ve yalnız READY PDF için authenticated download bağlantısı sunmak.",
+  "rollback": "BADGE-37 artifact list route, panel bağlantısı, test ve durum satırını geri al; generation/storage/scan, ödeme, fatura, provider ve R-10 kapılarını açma.",
+  "previous": ["BADGE-36"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/auth.ts",
+    "src/lib/policy.ts",
+    "src/lib/badge-artifact-storage.ts",
+    "src/app/api/forms/[id]/badges/artifacts/[artifactId]/route.ts",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/badge-artifact-download-route.test.mjs",
+    "tests/badge-ui-entry-wiring.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-37.json",
+    "src/app/api/forms/[id]/badges/artifacts/route.ts",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/badge-artifact-list-route.test.mjs",
+    "tests/badge-ui-entry-wiring.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Artifact list authenticated workspace/form scope'unda, bounded ve PII/storage path dışı DTO döndürür.",
+    "Panel karantina/blocked/READY durumlarını ayırır; indirme bağlantısı yalnız READY kayıtta görünür ve mevcut authenticated route'u kullanır.",
+    "Kayıt bulunmadığında açık empty state gösterilir; sahte generation/export başarı bildirimi eklenmez.",
+    "Public form, provider, e-posta, matbaa ve R-10 davranışları değişmez.",
+    "Focused route/UI wiring testi, TypeScript ve context-check geçer."
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-artifact-list-route.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/badge-ui-entry-wiring.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

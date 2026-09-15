@@ -1,0 +1,13 @@
+{
+  "id": "FORM-UX-21",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Genel Bakış Son Yanıtlar bölümündeki icon-only navigasyon düğmesine erişilebilir ad eklemek",
+  "rollback": "Yalnız dashboard düğme etiketi/test/packet değişikliklerini geri al; yanıt verisini değiştirme",
+  "previous": ["FORM-UX-20"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/views/dashboard-view.tsx", "tests/form-ux-final-gate.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-21.json", "src/components/mavenforms/views/dashboard-view.tsx", "tests/form-ux-dashboard-a11y.test.mjs", "STATUS.md"],
+  "acceptance": ["Son Yanıtlar bölümündeki submissions navigasyonu erişilebilir ad taşır", "Düğmenin mevcut setView('submissions') action'ı korunur", "Hedef regression ve context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["bun", "tests/form-ux-dashboard-a11y.test.mjs"], ["bun", "tests/form-ux-final-gate.test.mjs"], ["node", "scripts/context-check.mjs"]]
+}

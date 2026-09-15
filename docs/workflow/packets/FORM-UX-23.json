@@ -1,0 +1,13 @@
+{
+  "id": "FORM-UX-23",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Genel Bakış KPI kartlarındaki sabit ve kaynağı gösterilmeyen trend yüzdelerini kaldırmak",
+  "rollback": "Yalnız dashboard KPI trend/test/packet değişikliklerini geri al; istatistik veya yanıt verisini değiştirme",
+  "previous": ["FORM-UX-22"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/views/dashboard-view.tsx", "src/lib/types.ts", "tests/form-ux-final-gate.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-23.json", "src/components/mavenforms/views/dashboard-view.tsx", "tests/form-ux-dashboard-kpi-truth.test.mjs", "STATUS.md"],
+  "acceptance": ["Toplam Form ve Bugünkü Yanıt KPI'larında kaynaksız sabit trend yüzdesi gösterilmez", "KPI değerleri, kart action'ları ve API istatistikleri değişmez", "Hedef regression ve context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["bun", "tests/form-ux-dashboard-kpi-truth.test.mjs"], ["bun", "tests/form-ux-final-gate.test.mjs"], ["node", "scripts/context-check.mjs"]]
+}

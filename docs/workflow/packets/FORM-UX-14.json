@@ -1,0 +1,13 @@
+{
+  "id": "FORM-UX-14",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Form kartı ayar menüsündeki tüm sekmelerin doğru builder/submissions ekranına yönlendiğini regression testine bağlamak",
+  "rollback": "Yalnız form kartı action regression testini ve packet kaydını geri al; form, yanıt, medya, ödeme veya fatura verisini silme/değiştirme",
+  "previous": ["FORM-UX-13-R1"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/views/forms-list-view.tsx", "src/components/mavenforms/views/form-builder-view.tsx", "src/lib/store.ts"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-14.json", "tests/form-ux-forms-entry-actions.test.mjs", "STATUS.md"],
+  "acceptance": ["Kart ayar menüsü genel ayar, görünüm, tema, mantık, bildirim, embed, ödeme, entegrasyon ve rapor sekmelerini taşır", "Ayar sekmeleri seçildiğinde seçili form builder'a, Yanıtlar seçildiğinde submissions görünümüne gider", "Kartın iç menü action'ları kartın açılma click'ini tetiklemez", "Hedef regression ve context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["bun", "tests/form-ux-forms-entry-actions.test.mjs"], ["node", "scripts/context-check.mjs"]]
+}

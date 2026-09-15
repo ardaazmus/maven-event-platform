@@ -1,0 +1,48 @@
+{
+  "id": "R10-V4-35",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Medya ve belge upload abuse sinyallerini ortak, fail-closed bir matriste normalize etmek",
+  "rollback": "Upload abuse adapterı ve testini geri al; mevcut upload route ve validator davranışına mutation ekleme",
+  "previous": ["R10-V4-34"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/lib/invoice-document-validation.ts",
+    "src/lib/media.ts",
+    "src/app/api/forms/[id]/media/route.ts",
+    "src/app/api/invoices/[id]/documents/route.ts",
+    "tests/invoice-document-filetype.test.mjs",
+    "tests/invoice-document-archive.test.mjs",
+    "tests/media-upload.test.mjs",
+    "tests/badge-template-upload-route.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-35.json",
+    "src/lib/upload-abuse-matrix.ts",
+    "tests/upload-abuse-matrix.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Path traversal, invalid magic/MIME/size, polyglot ve aktif içerik sinyalleri fail-closed kategorilerle normalize edilir",
+    "XLSX macro, nested archive, external link ve decompression-risk sonuçları archive abuse olarak ayrıştırılır",
+    "Başarılı sonuç yalnız güvenli metadata taşır; dosya içeriği, raw response veya kullanıcı verisi dışarı sızmaz",
+    "Sözleşme network, AV, DB, dosya, provider veya gerçek veri mutation yapmaz; AV/quarantine release yine dış kapıdır"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/upload-abuse-matrix.test.mjs"],
+    ["bun", "tests/invoice-document-filetype.test.mjs"],
+    ["bun", "tests/invoice-document-archive.test.mjs"],
+    ["bun", "tests/media-upload.test.mjs"],
+    ["bun", "tests/badge-template-upload-route.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

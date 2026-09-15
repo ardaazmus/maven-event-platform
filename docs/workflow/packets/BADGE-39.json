@@ -1,0 +1,44 @@
+{
+  "id": "BADGE-39",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı için private, form scope'lu PDF template yükleme akışını builder paneline bağlamak.",
+  "rollback": "BADGE-39 template storage/route/UI/test ve durum satırını geri al; generation/scan/download/export, ödeme, fatura, provider ve R-10 kapılarını açma.",
+  "previous": ["BADGE-38-R1"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/auth.ts",
+    "src/lib/policy.ts",
+    "src/lib/badge-template-contract.ts",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/app/api/forms/[id]/media/route.ts",
+    "tests/badge-template-contract.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-39.json",
+    "src/lib/badge-template-storage.ts",
+    "src/app/api/forms/[id]/badges/templates/route.ts",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/badge-template-storage.test.mjs",
+    "tests/badge-template-upload-route.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Yalnız authenticated forms.write kullanıcı private PDF template yükleyebilir; form/workspace scope server tarafından bağlanır.",
+    "PDF MIME/signature, 1-2 sayfa, ölçü, boyut ve aktif içerik doğrulanır; geçersiz dosya fail-closed kalır.",
+    "Şablon dosyası path traversal'sız private storage ve metadata manifestine yazılır; public URL üretilmez.",
+    "Builder panelinde gerçek upload action, yükleniyor/hata/başarı durumu ve yalnız PDF kabul bilgisi gösterilir.",
+    "Focused storage/route/UI testleri, TypeScript ve context-check geçer."
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-template-storage.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/badge-template-upload-route.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/badge-ui-entry-wiring.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

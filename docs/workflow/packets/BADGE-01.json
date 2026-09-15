@@ -1,0 +1,43 @@
+{
+  "id": "BADGE-01",
+  "status": "READY",
+  "lifecycle": "SUPERSEDED",
+  "supersededBy": "BADGE-01-R1",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı kimlik ayrımı, QR modları ve güvenli/deterministik PDF dosya adı sözleşmesini kod ve regresyon testi olarak kurmak.",
+  "rollback": "Yalnız badge-contract modülü, ilgili testi, packet ve BADGE-01 durum satırını geri al; PDF, medya, form yanıtı, ödeme ve fatura verilerine dokunma.",
+  "previous": ["BADGE-00-R1"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-09-mavenforms-badge-module-roadmap.md",
+    "docs/research-sources/2026-09-09-badge-qr-output-research-receipt.md",
+    "src/lib/form-document.ts",
+    "src/lib/file-policy.ts"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-01.json",
+    "src/lib/badge-contract.ts",
+    "tests/badge-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "QR mode sözleşmesi NONE, PUBLIC_CARD_URL, INLINE_VCARD ve SECURE_TOKEN değerlerini ayrı tutar.",
+    "participant/submission/badge/QR token/generation job/PDF output kimlikleri tek alanda birleştirilmez.",
+    "PDF outputIdShort ile QR token ayrımı kod seviyesinde doğrulanır.",
+    "PDF adı Windows/ZIP yasak karakterleri, reserved names, boşluk/nokta sonu ve Unicode normalization kurallarına uyar.",
+    "Aynı görünen adlarda title ve opak outputId fallback deterministik biçimde kullanılabilir.",
+    "Focused test, TypeScript ve context-check geçer; ödeme/fatura/V3/V4 davranışları değişmez."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/badge-contract.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "id": "FORM-UX-53",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Intentional grouped builder navigation, deterministic forms sorting ve bounded settings layout icin regression sozlesmelerini guncellemek",
+  "rollback": "Yalniz FORM-UX-53 packetini, builder aria-current niteligini, uc regression test guncellemesini ve STATUS kaydini geri al",
+  "previous": ["FORM-UX-52"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/views/form-builder-view.tsx", "tests/form-ux-builder-controls.test.mjs", "tests/form-ux-forms-sort.test.mjs", "tests/form-ux-settings-layout.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-53.json", "src/components/mavenforms/views/form-builder-view.tsx", "tests/form-ux-builder-controls.test.mjs", "tests/form-ux-forms-sort.test.mjs", "tests/form-ux-settings-layout.test.mjs", "STATUS.md"],
+  "acceptance": [
+    "Child builder tabs expose both selected and current-page accessibility state without changing tab behavior",
+    "Builder regression test validates grouped workspace registry and named workspace tablist",
+    "Forms sorting regression test validates non-mutating filter-then-sort behavior",
+    "Settings layout regression test validates bounded grouped strips, independent overflow and nested scrolling",
+    "No public boundary, database schema or provider behavior changes",
+    "Regression, TypeScript, build, readiness, context-check and workflow verify basarili olur"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]],
+  "checks": [["bun", "tests/form-ux-builder-controls.test.mjs"], ["bun", "tests/form-ux-forms-sort.test.mjs"], ["bun", "tests/form-ux-settings-layout.test.mjs"], ["bun", "tests/form-ux-public-boundary-release.test.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"], ["node", "scripts/context-check.mjs"]]
+}

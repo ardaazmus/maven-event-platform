@@ -1,0 +1,36 @@
+{
+  "id": "BADGE-38",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı builder panelindeki eski eksik/yanıltıcı açıklamaları gerçek generation, scan ve authenticated download durumuna göre düzeltmek.",
+  "rollback": "BADGE-38 UI metin/test ve durum satırını geri al; badge renderer/storage/scan/download/export, ödeme, fatura, provider ve R-10 kapılarını açma.",
+  "previous": ["BADGE-37"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/app/api/forms/[id]/badges/artifacts/route.ts",
+    "src/app/api/internal/workers/badge-scan/route.ts",
+    "tests/badge-ui-entry-wiring.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-38.json",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/badge-ui-entry-wiring.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Panel artık tamamlanmış renderer/export kapılarını eksik göstermez; generation worker, tarama karantinası ve READY authenticated download sınırını doğru açıklar.",
+    "Karantina/engelli çıktıda indirme kapalı, READY çıktıda mevcut private route bağlantısı korunur.",
+    "Ödeme, fatura, provider, SaaS, matbaa ve R-10 davranışları değişmez.",
+    "Focused UI wiring testi, TypeScript ve context-check geçer."
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-ui-entry-wiring.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

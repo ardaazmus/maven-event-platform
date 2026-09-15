@@ -1,0 +1,44 @@
+{
+  "id": "FORM-UX-58",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Group the settings navigation into clear personal, workspace, security/data, and plan sections while preserving every existing tab id, tab content, and action.",
+  "rollback": "Revert only the grouped settings navigation and its focused test assertions; do not change tab content or persisted settings data.",
+  "previous": ["FORM-UX-57"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/settings-view.tsx",
+    "tests/ui-layout.test.mjs",
+    "tests/form-ux-settings-navigation.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-58.json",
+    "src/components/mavenforms/views/settings-view.tsx",
+    "tests/form-ux-settings-navigation.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "All ten existing settings tab ids remain available and select the same TabsContent values.",
+    "The navigation visibly separates personal, workspace, security/data, and plan/system categories.",
+    "Mobile horizontal and wide vertical settings navigation behavior remains responsive and keyboard accessible.",
+    "Settings content, persistence, authorization, public form behavior, and provider behavior are unchanged.",
+    "Focused tests, TypeScript, build, readiness, context, and workflow verification pass."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/form-ux-settings-navigation.test.mjs"],
+    ["bun", "tests/ui-layout.test.mjs"],
+    ["bun", "tests/form-ux-settings-actions.test.mjs"],
+    ["bun", "tests/form-ux-final-gate.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

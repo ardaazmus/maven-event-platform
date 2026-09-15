@@ -1,0 +1,34 @@
+{
+  "id": "BADGE-44",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı ve FORM-UX durum özetini doğrulanmış receipt'lerle tutarlı hale getirmek.",
+  "rollback": "STATUS.md, packet ve receipt değişikliğini geri al; yaka kartı generation/export, form UI, ödeme, fatura, R-10 ve V4 kapılarına dokunma.",
+  "previous": [],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "artifacts/workflow/BADGE-42/verified.json",
+    "artifacts/workflow/BADGE-43/verified.json",
+    "artifacts/workflow/FORM-UX-69A/verified.json",
+    "tests/badge-ui-entry-wiring.test.mjs",
+    "tests/form-ux-builder-wiring.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-44.json",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "STATUS.md BADGE-42'yi receipt ile uyumlu LOCAL_PASS olarak gösterir.",
+    "STATUS.md FORM-UX kanıt aralığını FORM-UX-69A'yı kapsayacak biçimde gösterir.",
+    "Yaka kartı generation/export, form UI, ödeme, fatura, R-10 ve V4 davranışları değişmez; focused testler ve context-check geçer."
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [
+    ["bun", "tests/badge-ui-entry-wiring.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/form-ux-builder-wiring.test.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

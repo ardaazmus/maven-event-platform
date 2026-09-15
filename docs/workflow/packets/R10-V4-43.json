@@ -1,0 +1,40 @@
+{
+  "id": "R10-V4-43",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "R10/V4 yerel kanıtlarını production iddiasına yükseltmeden tek redacted final evidence raporunda ve tarihçede izlenebilir kılmak",
+  "rollback": "Yeni final evidence raporu ve tarihçe kaydını geri al; receipt, kaynak, provider, release flag veya canlı sistem mutation'ına dokunma",
+  "previous": ["R10-V4-42"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "docs/runbooks/r10-external-evidence-guide.md",
+    "docs/research-sources/2026-09-11-ozelapp-r10-v4-guvenli-entegrasyon-research-receipt.md",
+    "artifacts/workflow/R10-V4-40/verified.json",
+    "artifacts/workflow/R10-V4-41/verified.json",
+    "artifacts/workflow/R10-V4-42/verified.json",
+    "docs/workflow/status-history.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-43.json",
+    "docs/research-sources/2026-09-11-r10-v4-final-local-evidence-report.md",
+    "docs/workflow/status-history.md",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "R10-V4-40..42 local receipt sonuçları ve kontrol sınırları tek redacted raporda kanıt türlerine göre ayrılır",
+    "LOCAL_PASS, external dependency, NO-GO/BLOCKED ve productionMutationAllowed=false açıkça ayrılır; local kanıt release/pass iddiasına yükseltilmez",
+    "Provider, legal, AV/KMS, DNS/TLS, sender, backup/restore ve independent review eksikleri somut fakat secretsiz şekilde listelenir",
+    "Rapor gerçek secret, token, PAN/CVV, PII, raw provider payload, dosya içeriği veya canlı mutation içermez"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

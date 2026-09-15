@@ -1,0 +1,41 @@
+{
+  "id": "M03.3",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "e50c5cdf5f720ba3",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "media-scope.test PASS",
+    "scope": {
+      "changedFiles": [
+        "src/lib/media.ts",
+        "tests/media-scope.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "no PII, workspaceId check 404",
+    "acceptanceIds": [
+      "AC-MEDIA-SCOPE-01"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/media-scope.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-01T22:48:11.669Z"
+}

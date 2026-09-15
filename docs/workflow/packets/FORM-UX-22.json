@@ -1,0 +1,13 @@
+{
+  "id": "FORM-UX-22",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yayınlanmış public form iletişim çubuğundaki icon-only sosyal bağlantılara erişilebilir ad eklemek",
+  "rollback": "Yalnız public sosyal link aria-label/test/packet değişikliklerini geri al; form snapshot veya katılımcı verisini değiştirme",
+  "previous": ["FORM-UX-21"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/public-form-renderer.tsx", "tests/form-ux-final-gate.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-22.json", "src/components/mavenforms/public-form-renderer.tsx", "tests/form-ux-public-social-a11y.test.mjs", "STATUS.md"],
+  "acceptance": ["Instagram, LinkedIn, X, Facebook ve YouTube icon-only linkleri erişilebilir ad taşır", "Hedef link href/target/rel davranışı değişmez", "Public form snapshot/private sınırı değişmez", "Hedef regression ve context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["bun", "tests/form-ux-public-social-a11y.test.mjs"], ["bun", "tests/form-ux-final-gate.test.mjs"], ["node", "scripts/context-check.mjs"]]
+}

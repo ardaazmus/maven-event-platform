@@ -1,0 +1,47 @@
+{
+  "id": "V4-05",
+  "title": "Harici ve manuel SaaS abonelik durumu",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "MavenForms aboneliği için operator-controlled durum geçişini tenant son-müşteri ödeme domaininden ayıran provider-neutral bir sözleşme kurmak.",
+  "rollback": "Yeni abonelik kararı kullanılmadığında mevcut subscription-state geçişleri değişmeden kalır; yalnız eklenen policy ve test dosyaları geri alınabilir, payment provider çağrısı yapılmaz.",
+  "previous": ["V4-04"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-06-mavenforms-release-modules-first-party-saas-roadmap.md",
+    "src/lib/subscription-state.ts",
+    "src/lib/release-module.ts",
+    "src/lib/tenant-entitlement.ts",
+    "tests/subscription-state.test.mjs",
+    "tests/release-module.test.mjs",
+    "tests/v4-tenant-entitlement.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/V4-05.json",
+    "src/lib/subscription-state.ts",
+    "tests/v4-external-subscription.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Platform aboneliği ile tenant end-customer payment order domaini ayrılır",
+    "Tenant scope mismatch ve tenant kullanıcısının state mutation talebi reddedilir",
+    "Operator state değişikliği approval reference ve effective date olmadan reddedilir",
+    "Geçersiz subscription transition fail-closed olur",
+    "Provider mutation, customer payment collection veya secret/PII çıktısı üretilmez",
+    "State kararı active, due_soon, grace, suspended ve ended durumlarını mevcut geçiş matrisiyle kullanır"
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/v4-external-subscription.test.mjs"],
+    ["bun", "tests/subscription-state.test.mjs"],
+    ["bun", "tests/release-module.test.mjs"],
+    ["bun", "tests/v4-tenant-entitlement.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

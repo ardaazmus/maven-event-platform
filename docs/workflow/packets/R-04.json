@@ -1,0 +1,48 @@
+{
+  "id": "R-04",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Fatura merkezi ve form yanıtları UI'sında responsive, keyboard ve rol görünürlüğü kapısını geçirmek",
+  "rollback": "Bu paketin responsive/role UI ve test değişikliklerini geri al; invoice, payment, document, delivery veya response verisini silme",
+  "previous": ["R-03"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/components/mavenforms/views/invoice-center-view.tsx",
+    "src/components/mavenforms/views/forms-list-view.tsx",
+    "src/components/mavenforms/views/submissions-view.tsx",
+    "src/lib/policy.ts",
+    "tests/responsive-a11y.test.mjs",
+    "tests/submissions-layout.test.mjs",
+    "tests/policy.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R-04.json",
+    "src/components/mavenforms/views/invoice-center-view.tsx",
+    "src/components/mavenforms/views/submissions-view.tsx",
+    "tests/invoice-center-responsive.test.mjs",
+    "STATUS.md",
+    "docs/superpowers/plans/2026-09-02-mavenforms-e-belge-15-dakikalik-uygulama-paketleri.md"
+  ],
+  "acceptance": [
+    "Invoice center and response layouts have no horizontal overflow or invisible critical actions at desktop/tablet/mobile widths",
+    "Export/import/send and PII actions respect role/policy visibility; no unauthorized active control is rendered",
+    "Keyboard focus, labels, disabled reasons and status semantics are present for dense action rows",
+    "Responsive changes do not alter payment/invoice/document/delivery data contracts"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"],
+    ["bun", "tests/responsive-a11y.test.mjs"],
+    ["bun", "tests/submissions-layout.test.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/invoice-center-responsive.test.mjs"],
+    ["bun", "tests/responsive-a11y.test.mjs"],
+    ["bun", "tests/submissions-layout.test.mjs"],
+    ["node", "scripts/run-tests.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

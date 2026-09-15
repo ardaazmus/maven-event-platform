@@ -1,0 +1,13 @@
+{
+  "id": "R-00-04",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Retrieve reducer'da verified refund/chargeback sonucunu payment state mutation transaction'ı içinde invoice review handoff'una bağlamak",
+  "rollback": "Bu paketin retrieve reducer wiring ve testini geri al; payment, invoice, document veya delivery verisini silme veya resetleme",
+  "previous": ["R-00-03"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "src/lib/payment-retrieve-reducer.ts", "src/lib/payment-retrieve-claimed-execution.ts", "src/lib/payment-retrieve-contract.ts", "src/lib/payment-invoice-refund-handoff.ts", "src/lib/invoice-refund-reconciliation-persistence.ts", "tests/payment-retrieve-reducer.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/R-00-04.json", "src/lib/payment-retrieve-reducer.ts", "src/lib/payment-invoice-refund-handoff.ts", "tests/payment-retrieve-reducer.test.mjs", "tests/payment-invoice-refund-handoff.test.mjs", "STATUS.md", "docs/superpowers/plans/2026-09-02-mavenforms-e-belge-15-dakikalik-uygulama-paketleri.md"],
+  "acceptance": ["Only normalized verified refund/partial-refund/chargeback result can trigger invoice review", "Payment state and invoice review mutation share one transaction boundary and tenant scope", "Repeated retrieve result is idempotent and never deletes invoice/document or emits credit note", "Non-refund retrieve results preserve existing handoff behavior"],
+  "preflight": [["node", "scripts/local-ready.mjs"], ["bun", "tests/payment-invoice-refund-handoff.test.mjs"]],
+  "checks": [["bun", "tests/payment-retrieve-reducer.test.mjs"], ["bun", "tests/payment-invoice-refund-handoff.test.mjs"], ["node", "scripts/run-tests.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

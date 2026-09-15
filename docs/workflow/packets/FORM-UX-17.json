@@ -1,0 +1,13 @@
+{
+  "id": "FORM-UX-17",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Kullanıcı listesindeki bağlantısız satır işlemleri kontrolünü erişilebilir ve dürüst ertelenmiş duruma almak",
+  "rollback": "Yalnız kullanıcı listesi kontrol/test/packet değişikliklerini geri al; kullanıcı, rol veya erişim verisini değiştirme",
+  "previous": ["FORM-UX-16"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/views/users-view.tsx", "tests/form-ux-final-gate.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-17.json", "src/components/mavenforms/views/users-view.tsx", "tests/form-ux-users-actions.test.mjs", "STATUS.md"],
+  "acceptance": ["Kullanıcı satırındaki bağlantısız MoreVertical kontrolü aktifmiş gibi görünmez", "Kontrol her kullanıcı için erişilebilir ve ertelenmiş ad taşır", "Rol matrisi ve kullanıcı liste verisi değişmez", "Hedef regression ve context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["bun", "tests/form-ux-users-actions.test.mjs"], ["bun", "tests/form-ux-final-gate.test.mjs"], ["node", "scripts/context-check.mjs"]]
+}

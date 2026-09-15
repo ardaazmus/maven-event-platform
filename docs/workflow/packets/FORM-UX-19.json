@@ -1,0 +1,13 @@
+{
+  "id": "FORM-UX-19",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Ayarlar ekranındaki kalıcı API bağlantısı olmayan güvenlik/bildirim/yedekleme kontrollerini aktifmiş gibi göstermemek",
+  "rollback": "Yalnız ayarlar placeholder kontrol/test/packet değişikliklerini geri al; hesap, güvenlik veya yedek verisini değiştirme",
+  "previous": ["FORM-UX-18"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/views/settings-view.tsx", "tests/form-ux-settings-actions.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-19.json", "src/components/mavenforms/views/settings-view.tsx", "tests/form-ux-settings-placeholder-actions.test.mjs", "STATUS.md"],
+  "acceptance": ["Kalıcı handler'ı olmayan parola/oturum, passkey, workspace, LDAP, bildirim, plan ve yedek kontrolleri aktif görünmez", "Ertelenmiş kontroller erişilebilir ad ve görünür yakında açıklaması taşır", "Tehlikeli bölge kod onayı akışı ve gerçek e-posta şablonu Düzenle action'ı değişmez", "Hedef regression ve context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["bun", "tests/form-ux-settings-placeholder-actions.test.mjs"], ["bun", "tests/form-ux-settings-actions.test.mjs"], ["node", "scripts/context-check.mjs"]]
+}

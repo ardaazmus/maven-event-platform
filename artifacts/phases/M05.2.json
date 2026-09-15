@@ -1,0 +1,43 @@
+{
+  "id": "M05.2",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "8264ad3f42353172",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "card-cover.test PASS",
+    "scope": {
+      "changedFiles": [
+        "src/app/api/forms/route.ts",
+        "src/components/mavenforms/views/forms-list-view.tsx",
+        "src/lib/types.ts",
+        "tests/card-cover.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "16/9 cover, coverMediaId private, alt, fallback",
+    "acceptanceIds": [
+      "AC-MEDIA-CARD-01"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/card-cover.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-01T23:19:35.826Z"
+}

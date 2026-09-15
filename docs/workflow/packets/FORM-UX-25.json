@@ -1,0 +1,13 @@
+{
+  "id": "FORM-UX-25",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Dashboard KPI kartlarının tıklama yönlendirmesini klavye ile erişilebilir yapmak",
+  "rollback": "Yalnız StatCard klavye semantiği/test/packet/STATUS değişikliklerini geri al; KPI değerlerini ve yönlendirme hedeflerini değiştirme",
+  "previous": ["FORM-UX-24-R2"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/views/dashboard-view.tsx", "src/components/ui/card.tsx", "tests/form-ux-final-gate.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-25.json", "src/components/mavenforms/views/dashboard-view.tsx", "tests/form-ux-dashboard-kpi-a11y.test.mjs", "STATUS.md"],
+  "acceptance": ["Tıklanabilir StatCard kartları role=button ve tabIndex taşır", "Enter ve Space kartın mevcut onClick yönlendirmesini çalıştırır", "KPI değerleri ve mevcut mouse yönlendirmeleri değişmez", "Hedef regression ve context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["bun", "tests/form-ux-dashboard-kpi-a11y.test.mjs"], ["bun", "tests/form-ux-final-gate.test.mjs"], ["node", "scripts/context-check.mjs"]]
+}

@@ -1,0 +1,44 @@
+{
+  "id": "R10-V4-20",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Sentetik kullanıcı/form/ödeme/fatura ilişkilerini PII ve gerçek sağlayıcı verisi olmadan graph fixture olarak doğrulamak",
+  "rollback": "Sentetik graph helper ve testini geri al; Prisma seed, gerçek DB ve ödeme/fatura kayıtlarını değiştirme",
+  "previous": ["R10-V4-19"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "prisma/schema.prisma",
+    "src/lib/payment-order-contract.ts",
+    "src/lib/invoice-state.ts",
+    "tests/payment-order-contract.test.mjs",
+    "tests/invoice-record-schema.test.mjs",
+    "tests/invoice-pii-boundary.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-20.json",
+    "src/lib/synthetic-graph-fixture.ts",
+    "tests/synthetic-graph-fixture.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Graph kullanıcı, form, submission, payment ve invoice düğümlerini yalnız sentetik ID/domain/e-posta ile ilişkilendirir",
+    "Sentetik e-posta test.invalid alanındadır; IP, gerçek PII, secret, PAN/CVV veya provider payload üretilemez",
+    "İlişki bütünlüğü, tenant/workspace eşleşmesi ve ödeme-fatura bağının aynı submission/form graphında kaldığı doğrulanır",
+    "Fixture yalnız bellekte üretilir; Prisma seed, DB mutation ve R-10/V4 release kararı açılmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/synthetic-graph-fixture.test.mjs"],
+    ["bun", "tests/payment-order-contract.test.mjs"],
+    ["bun", "tests/invoice-record-schema.test.mjs"],
+    ["bun", "tests/invoice-pii-boundary.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

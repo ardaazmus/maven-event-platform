@@ -34,6 +34,7 @@ interface AppState {
   init: (user: User, workspace: Workspace) => void
   setView: (view: AppView) => void
   selectForm: (formId: string, tab?: string) => void
+  setSelectedFormId: (formId: string | null, tab?: string) => void
   selectFolder: (folderId: string | null) => void
   toggleSidebar: () => void
   setFolders: (folders: Folder[]) => void
@@ -63,6 +64,7 @@ export const useApp = create<AppState>((set) => ({
   setView: (view) => set({ view }),
   selectForm: (formId, tab = 'submissions') =>
     set({ selectedFormId: formId, view: 'builder', formDetailTab: tab }),
+  setSelectedFormId: (formId, tab = 'submissions') => set({ selectedFormId: formId, formDetailTab: tab }),
   selectFolder: (folderId) => set({ selectedFolderId: folderId, view: 'forms' }),
   toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
   setFolders: (folders) => set({ folders }),

@@ -1,0 +1,40 @@
+{
+  "id": "BADGE-06",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Ön/arka yaka kartı önizleme planını baskı profili ve açık duplex çevirme kenarıyla bağlamak.",
+  "rollback": "Yalnız badge-print-preview-contract modülü, sentetik focused testi, packet ve BADGE-06 durum satırını geri al; PDF motoru, medya, form yanıtı, ödeme ve fatura verilerine dokunma.",
+  "previous": ["BADGE-05"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-09-mavenforms-badge-module-roadmap.md",
+    "docs/research-sources/2026-09-09-badge-qr-output-research-receipt.md",
+    "src/lib/badge-face-contract.ts",
+    "src/lib/badge-front-render-contract.ts"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-06.json",
+    "src/lib/badge-print-preview-contract.ts",
+    "tests/badge-print-preview-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Önizleme planı front/back yüzlerini açık sayfa sırasıyla taşır; tek yüzde yalnız front gösterilir.",
+    "Baskı profili pozitif bitmiş ölçü, bleed ve safe-area ilişkisini doğrular.",
+    "Çift yüzde flip edge zorunludur ve kullanıcıya uzun/kısa kenar metniyle gösterilir.",
+    "Yön ve ölçü uyumsuzluğu sessizce düzeltilmez; plan reddedilir.",
+    "Focused test, TypeScript ve context-check geçer; ödeme/fatura/V3/V4/R-10 davranışları değişmez."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-print-preview-contract.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

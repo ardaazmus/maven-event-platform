@@ -1,0 +1,42 @@
+{
+  "id": "MAIL-01",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Form/workspace/message-class kapsamlı email şablonu taslak, yayın ve arşiv yaşam döngüsünü immutable sürüm sözleşmesi olarak tanımlamak",
+  "rollback": "Yalnız MAIL-01 packetini, şablon yaşam döngüsü sözleşmesini, hedef testini ve STATUS kaydını geri al; form, yanıt, ödeme, fatura, mail veya production verisini silme/değiştirme",
+  "previous": ["MAIL-00"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/workflow/packets/MAIL-00.json",
+    "docs/research-sources/2026-09-07-mail-configuration-research-receipt.md",
+    "src/lib/email-policy.ts",
+    "src/lib/email-template-policy.ts",
+    "src/lib/email-sender-profile.ts",
+    "tests/email-policy.test.mjs",
+    "tests/email-template-policy.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/MAIL-01.json",
+    "src/lib/email-template-lifecycle.ts",
+    "tests/email-template-lifecycle.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Şablon workspace scope ve bilinen message class olmadan oluşturulamaz; form scope varsa boş olamaz",
+    "Taslak düzenlenebilir; yalnız draft -> published -> archived geçişleri açıktır ve published/archive sürümleri runtime immutable kalır",
+    "Yayınlı/arşivli şablon kopyalanınca yeni draft ve artan sürüm oluşur; gönderim geçmişini değiştiren in-place güncelleme yoktur",
+    "Bu faz database CRUD, provider gönderimi, kampanya, canlı teslimat veya R-10 release kapısı açmaz; yalnız sonraki API/DB fazı için güvenli domain sözleşmesi üretir",
+    "Hedef lifecycle testi, email regresyon testleri, TypeScript ve readiness geçmeden faz tamamlanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/email-template-lifecycle.test.mjs"],
+    ["bun", "tests/email-policy.test.mjs"],
+    ["bun", "tests/email-template-policy.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

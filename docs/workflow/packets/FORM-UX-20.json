@@ -1,0 +1,13 @@
+{
+  "id": "FORM-UX-20",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Topbar tema ve bildirim menüsü düğmelerine erişilebilir ad eklemek",
+  "rollback": "Yalnız topbar aria-label/test/packet değişikliklerini geri al; tema, bildirim veya oturum verisini değiştirme",
+  "previous": ["FORM-UX-19"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/topbar.tsx", "tests/form-ux-final-gate.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-20.json", "src/components/mavenforms/topbar.tsx", "tests/form-ux-topbar-a11y.test.mjs", "STATUS.md"],
+  "acceptance": ["Tema ve bildirim icon-only düğmeleri erişilebilir ad taşır", "Tema/bildirim action wiring ve mobil menü davranışı değişmez", "Hedef regression ve context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["bun", "tests/form-ux-topbar-a11y.test.mjs"], ["bun", "tests/form-ux-final-gate.test.mjs"], ["node", "scripts/context-check.mjs"]]
+}

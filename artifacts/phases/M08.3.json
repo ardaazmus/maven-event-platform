@@ -1,0 +1,40 @@
+{
+  "id": "M08.3",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "3d2da3c78fd30f46",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "inline.test PASS",
+    "scope": {
+      "changedFiles": [
+        "tests/inline.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "no PII, duplicate init + origin check",
+    "acceptanceIds": [
+      "AC-PUBLIC-02"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/inline.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-02T03:12:11.551Z"
+}

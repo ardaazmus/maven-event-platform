@@ -1,0 +1,13 @@
+{
+  "id": "CTX-01B",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Kısa taşınabilir giriş, görev bazlı kaynak yönlendirmesi ve IDE bağımsız yürütme kapıları",
+  "rollback": "Bu değişikliğin diffini geri al; mevcut plan, araştırma, uygulama verisi ve tarihsel worklog’a dokunma",
+  "previous": [],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "package.json", "scripts/workflow.mjs"],
+  "allowedFiles": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "CLAUDE.md", "GEMINI.md", ".github/**", ".cursor/**", ".vscode/**", "docs/workflow/**", "scripts/context-check.mjs", "scripts/workflow.mjs", "tests/workflow.test.mjs", "package.json", ".gitignore"],
+  "acceptance": ["Kısa bootstrap", "Görev bazlı kaynaklar", "İhtiyaçta geniş okuma izni", "IDE adapterları", "Çalıştırılabilir faz kapısı", "Secretsiz kanıt"],
+  "preflight": [["node", "scripts/local-ready.mjs"], ["node", "scripts/run-tests.mjs"]],
+  "checks": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"], ["node", "tests/workflow.test.mjs"], ["node", "scripts/run-tests.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["node", "node_modules/eslint/bin/eslint.js", "scripts/workflow.mjs", "scripts/context-check.mjs", "scripts/local-ready.mjs", "tests/workflow.test.mjs"], ["bun", "run", "build"]]
+}

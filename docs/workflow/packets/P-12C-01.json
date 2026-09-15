@@ -1,0 +1,40 @@
+{
+  "id": "P-12C-01",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Belge hazır olma geçidini tek, saf ve fail-closed bir sözleşmede toplamak",
+  "rollback": "Bu paketin yeni geçit dosyasını ve testini geri al; mevcut belge, ödeme, teslimat ve veritabanı verilerine dokunma",
+  "previous": ["CTX-01B"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/lib/invoice-document-matching.ts",
+    "src/lib/invoice-state.ts",
+    "src/lib/invoice-delivery-enqueue.ts",
+    "tests/invoice-document-matching.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/P-12C-01.json",
+    "src/lib/invoice-document-ready-transition.ts",
+    "tests/invoice-document-ready-transition.test.mjs",
+    "STATUS.md",
+    "docs/superpowers/plans/2026-09-02-mavenforms-e-belge-15-dakikalik-uygulama-paketleri.md"
+  ],
+  "acceptance": [
+    "Yalnız issued + matched + approved + clean + quarantined belge document_ready adayı olabilir",
+    "Kural bilinmeyen veya eksik değerlerde fail-closed kalır",
+    "Geçiş sözleşmesi teslimat kuyruğunu kendisi çalıştırmaz",
+    "Önceki faz kapıları yeniden doğrulanır"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"],
+    ["bun", "tests/invoice-document-matching.test.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/invoice-document-ready-transition.test.mjs"],
+    ["bun", "tests/invoice-document-matching.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

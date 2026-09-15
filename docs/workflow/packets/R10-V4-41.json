@@ -1,0 +1,48 @@
+{
+  "id": "R10-V4-41",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "V4 tenant, BYO bağlantı ve entitlement kapılarını provider-neutral saf bir capability sözleşmesinde birleştirmek",
+  "rollback": "Tenant capability sözleşmesi ve testini geri al; tenant hesabı, provider credential, entitlement kaydı veya canlı mutation'a dokunma",
+  "previous": ["R10-V4-40"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/lib/release-module.ts",
+    "src/lib/tenant-entitlement.ts",
+    "src/lib/tenant-payment-connection.ts",
+    "src/lib/tenant-invoice-mail.ts",
+    "tests/v4-tenant-entitlement.test.mjs",
+    "tests/v4-tenant-byo-payment.test.mjs",
+    "tests/v4-tenant-byo-invoice-mail.test.mjs",
+    "tests/v4-release-gate.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-41.json",
+    "src/lib/v4-tenant-capability-gate.ts",
+    "tests/v4-tenant-capability-gate.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Tenant/requested tenant ve connection/workspace scope eşleşmesi server-owned olarak doğrulanır",
+    "Active tenant, explicit entitlement, verified capability ve tenant-owned BYO bağlantı olmadan capability açılmaz",
+    "Test modu provider-neutral sandbox sınırında kalır; live mutation yalnız R-10 production evidence ile değerlendirilebilir",
+    "Sözleşme secret, token, provider payload, PII veya gerçek tenant/provider mutation üretmez; V4 production NO-GO kararı korunur"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/v4-tenant-capability-gate.test.mjs"],
+    ["bun", "tests/v4-tenant-entitlement.test.mjs"],
+    ["bun", "tests/v4-tenant-byo-payment.test.mjs"],
+    ["bun", "tests/v4-tenant-byo-invoice-mail.test.mjs"],
+    ["bun", "tests/v4-release-gate.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

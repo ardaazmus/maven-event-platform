@@ -3,7 +3,10 @@
 export type FormStatus = 'draft' | 'published' | 'paused' | 'archived'
 export type SubmissionStatus = 'new' | 'reviewing' | 'approved' | 'rejected' | 'spam' | 'archived'
 export type PaymentStatus = 'pending' | 'authorized' | 'paid' | 'failed' | 'refunded' | 'partially_refunded'
-export type UserRole = 'owner' | 'admin' | 'form_manager' | 'analyst' | 'reviewer' | 'viewer'
+export type UserRole = 'owner' | 'admin' | 'accounting' | 'form_manager' | 'analyst' | 'reviewer' | 'viewer'
+export type FieldHeight = 'auto' | 'compact' | 'standard' | 'tall'
+export type FieldDecorationPosition = 'top' | 'left' | 'right'
+export type FieldDecorationSize = 'sm' | 'md' | 'lg'
 export type FieldType =
   | 'text' | 'paragraph' | 'email' | 'phone' | 'number' | 'date' | 'time'
   | 'checkbox' | 'radio' | 'select' | 'dropdown' | 'file' | 'address'
@@ -53,7 +56,28 @@ export interface FormField {
   sortOrder: number
 }
 
+export interface FieldLayout {
+  colSpan?: number
+  tabletColSpan?: number
+  mobileColSpan?: 1
+  height?: FieldHeight
+  breakBefore?: boolean
+}
+
+export interface FieldDecoration {
+  source: 'builtin' | 'media'
+  iconName?: string
+  mediaAssetId?: string | null
+  position: FieldDecorationPosition
+  size: FieldDecorationSize
+  altText?: string
+  decorative?: boolean
+}
+
 export interface FieldConfig {
+  mediaAssetId?: string | null
+  layout?: FieldLayout
+  decoration?: FieldDecoration
   options?: Array<{ label: string; value: string }>
   min?: number
   max?: number
@@ -81,6 +105,9 @@ export interface FormListItem {
   submissionCount: number
   todaySubmissionCount: number
   responseLimit?: number | null
+  coverMediaId?: string | null
+  coverImageUrl?: string | null // deprecated
+  coverImageAlt?: string | null
   createdAt: string
   updatedAt: string
   startDate?: string | null
@@ -105,6 +132,15 @@ export interface FormSettings {
   locale?: string
   timezone?: string
   closedMessage?: string
+  coverMediaId?: string | null
+  coverImageUrl?: string | null
+  coverImageAlt?: string | null
+  invoice?: {
+    version: 1
+    enabled: boolean
+    recipientCollection: 'optional' | 'required'
+    consentRequired: boolean
+  }
 }
 
 export interface Theme {
@@ -186,7 +222,20 @@ export interface DashboardData {
     todaySubmissions: number
     pendingApprovals: number
     failedNotifications: number
-    paymentTotal: number
+    paymentTotal: number | null
+  }
+  deliverability: {
+    queued: number
+    sending: number
+    accepted: number
+    failed: number
+    delivered: number
+    bounced: number
+    rejected: number
+    complaints: number
+    unsubscribes: number
+    marketingPaused: boolean
+    deliveryRatePercent: number | null
   }
   recentForms: FormListItem[]
   recentSubmissions: Array<{
@@ -239,6 +288,47 @@ export interface Integration {
   name: string
   status: 'connected' | 'disconnected' | 'error'
   config: any
+}
+
+export interface FormAppearance {
+  id: string
+  formId: string
+  headerEnabled: boolean
+  headerLogoMediaId?: string | null
+  headerLogoUrl?: string | null
+  headerLogoAlt?: string | null
+  headerLogoWidth?: number | null
+  headerTitle?: string | null
+  headerSubtitle?: string | null
+  headerDescription?: string | null
+  headerBgColor: string
+  headerBgMediaId?: string | null
+  headerBgImage?: string | null
+  headerTextColor: string
+  headerAlign: string
+  headerPadding: number
+  contactBarEnabled: boolean
+  contactBarBgColor: string
+  contactBarTextColor: string
+  contactEmail?: string | null
+  contactPhone?: string | null
+  contactAddress?: string | null
+  socialInstagram?: string | null
+  socialLinkedin?: string | null
+  socialTwitter?: string | null
+  socialFacebook?: string | null
+  socialYoutube?: string | null
+  footerEnabled: boolean
+  footerLogoMediaId?: string | null
+  footerLogoUrl?: string | null
+  footerText?: string | null
+  footerBgColor: string
+  footerTextColor: string
+  footerLinks?: string | null
+  footerPadding: number
+  customCss?: string | null
+  createdAt: string | Date
+  updatedAt: string | Date
 }
 
 export type AppView =

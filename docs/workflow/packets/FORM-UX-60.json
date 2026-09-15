@@ -1,0 +1,43 @@
+{
+  "id": "FORM-UX-60",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Make the grouped settings navigation understandable to assistive technology without changing tab selection or content behavior.",
+  "rollback": "Revert only the settings navigation group semantics and focused assertions; do not alter settings content, persistence, or authorization.",
+  "previous": ["FORM-UX-59"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/settings-view.tsx",
+    "tests/form-ux-settings-navigation.test.mjs",
+    "tests/form-ux-responsive-a11y.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-60.json",
+    "src/components/mavenforms/views/settings-view.tsx",
+    "tests/form-ux-settings-navigation.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Each settings category exposes a labelled semantic group for assistive technology.",
+    "All ten existing tab ids, selection behavior, responsive orientation, and tab content remain unchanged.",
+    "No settings persistence, auth, public form, payment, invoice, or provider behavior changes.",
+    "Focused tests, TypeScript, build, readiness, context, and workflow verification pass."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/form-ux-settings-navigation.test.mjs"],
+    ["bun", "tests/form-ux-responsive-a11y.test.mjs"],
+    ["bun", "tests/ui-layout.test.mjs"],
+    ["bun", "tests/form-ux-final-gate.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

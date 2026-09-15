@@ -1,0 +1,40 @@
+{
+  "id": "MAIL-03-07",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "SMTP ayarlarındaki gerçek gönderim açılana kadar test e-postası kontrolünü fail-safe ve açık hale getirmek",
+  "rollback": "Yalnız MAIL-03-07 packetini, test gönderimi disabled açıklamasını, ilgili testi ve STATUS kaydını geri al; SMTP credential, provider veya gerçek alıcı verisini değiştirme",
+  "previous": ["MAIL-03-06"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/workflow/packets/MAIL-03-06.json",
+    "artifacts/workflow/MAIL-03-06/verified.json",
+    "src/components/mavenforms/views/settings-view.tsx",
+    "tests/settings-truth.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/MAIL-03-07.json",
+    "src/components/mavenforms/views/settings-view.tsx",
+    "tests/settings-test-email-truth.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "SMTP ayarlarında gerçek gönderim açılmadığı sürece Test E-postası Gönder kontrolü disabled olur",
+    "Kullanıcı, kontrolün neden kullanılamadığını aynı bölümde açık ve erişilebilir bir bilgiyle görür",
+    "Bu mikro-faz fetch/API, outbox, SMTP provider mutation veya gerçek alıcıya gönderim açmaz",
+    "Truth testi, önceki mail testleri, TypeScript, build ve readiness geçmeden faz tamamlanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/settings-test-email-truth.test.mjs"],
+    ["bun", "tests/settings-truth.test.mjs"],
+    ["bun", "tests/email-template-editor-draft-state.test.mjs"],
+    ["bun", "tests/email-template-editor-copy.test.mjs"],
+    ["bun", "tests/email-template-content.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

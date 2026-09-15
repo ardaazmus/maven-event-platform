@@ -1,0 +1,49 @@
+{
+  "id": "BADGE-41",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Seçili private yaka kartı şablonuyla form yanıtlarından kontrollü generation action'ı başlatmak.",
+  "rollback": "BADGE-41 generation route/UI/test ve durum satırını geri al; scan/download/export, payment, invoice, provider, R-10 ve V4 kapılarını açma.",
+  "previous": ["BADGE-40"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/auth.ts",
+    "src/lib/policy.ts",
+    "src/lib/db.ts",
+    "src/lib/badge-entry-contract.ts",
+    "src/lib/badge-generation-job-contract.ts",
+    "src/lib/badge-generation-execution.ts",
+    "src/lib/badge-template-catalog.ts",
+    "src/lib/badge-template-storage.ts",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/badge-generation-execution.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-41.json",
+    "src/lib/badge-generation-request.ts",
+    "src/app/api/forms/[id]/badges/generate/route.ts",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/badge-generation-request.test.mjs",
+    "tests/badge-generation-route.test.mjs",
+    "tests/badge-ui-entry-wiring.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Generation endpoint authenticated forms.write, published form ve aynı workspace/form şablonunu zorunlu kılar.",
+    "İstek selected/all modunda en fazla 500 uygun submission ile sınırlandırılır; spam/archived veya forma ait olmayan kayıtlar üretilmez.",
+    "Her kayıt snapshot ve ayrı opaque kimliklerle executeBadgeGeneration'a bağlanır; QR payload PII içermez ve çıktı QUARANTINED kalır.",
+    "Builder paneli seçili şablon olmadan action'ı kapalı gösterir; şablon seçilince gerçek generation endpoint'ine bağlanır ve sonuçları yeniler.",
+    "Focused request/route/UI testleri, TypeScript ve context-check geçer."
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-generation-request.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/badge-generation-route.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/badge-ui-entry-wiring.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

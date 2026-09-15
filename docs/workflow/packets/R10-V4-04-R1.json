@@ -1,0 +1,31 @@
+{
+  "id": "R10-V4-04-R1",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "R10-V4-04 immutable receipt'ini güncel STATUS metadata'sıyla yeniden eşitlemek",
+  "rollback": "Yalnız revalidation packet ve durum satırını geri al; uygulama kodu, provider ve kullanıcı verisi değişmez",
+  "previous": [],
+  "revalidationReason": "R10-V4-04 verify sonrasında STATUS.md güncel LOCAL_PASS kayıtlarıyla değişti; sonraki packet predecessor zinciri stale kanıtı bypass etmeden yenilenecek.",
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "artifacts/workflow/R10-V4-04/verified.json"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-04-R1.json",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "R10-V4-04 LOCAL_PASS kararı korunur ve güncel STATUS metadata'sı kanıt zincirine alınır",
+    "Uygulama kodu, provider bağlantısı, production flag'i ve kullanıcı verisi değişmez",
+    "Context-check geçer"
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"]
+  ],
+  "checks": [
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "id": "M10.1",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "6201fb5cdd320071",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "settings-truth.test PASS",
+    "scope": {
+      "changedFiles": [
+        "src/components/mavenforms/views/settings-view.tsx",
+        "tests/settings-truth.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "no fake connected, DEFERRED shown",
+    "acceptanceIds": [
+      "AC-SETTINGS-01"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/settings-truth.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-02T03:16:01.505Z"
+}

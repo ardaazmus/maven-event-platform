@@ -1,0 +1,49 @@
+{
+  "id": "R10-V4-36",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Payment, invoice, document-ready ve mail zincirinde korelasyon ve replay sınırını tek sözleşmede doğrulamak",
+  "rollback": "Zincir korelasyon sözleşmesi ve testini geri al; mevcut ödeme, fatura ve mail worker mutation'larına dokunma",
+  "previous": ["R10-V4-35"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/lib/payment-invoice-webhook-handoff.ts",
+    "src/lib/invoice-document-ready-persistence.ts",
+    "src/lib/invoice-delivery-gate.ts",
+    "src/lib/invoice-delivery-enqueue.ts",
+    "src/lib/tenant-invoice-mail.ts",
+    "tests/invoice-chain-replay.test.mjs",
+    "tests/payment-invoice-webhook-handoff.test.mjs",
+    "tests/invoice-delivery-gate.test.mjs",
+    "tests/invoice-delivery-persistence.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-36.json",
+    "src/lib/payment-invoice-mail-correlation.ts",
+    "tests/payment-invoice-mail-correlation.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Payment success tek başına invoice/document-ready/mail başarısı sayılmaz; her aşama açık evidence ister",
+    "Korelasyon paymentOrderId, invoiceRecordId, documentId, deliveryIntentId ve workspace/form/submission scope ile bağlanır",
+    "Replay veya duplicate event idempotent duplicate sonucu verir; scope veya sıra uyuşmazlığı fail-closed olur",
+    "Sözleşme pure olur; network, DB, queue, mail, provider veya gerçek veri mutation yapmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/payment-invoice-mail-correlation.test.mjs"],
+    ["bun", "tests/invoice-chain-replay.test.mjs"],
+    ["bun", "tests/payment-invoice-webhook-handoff.test.mjs"],
+    ["bun", "tests/invoice-delivery-gate.test.mjs"],
+    ["bun", "tests/invoice-delivery-persistence.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

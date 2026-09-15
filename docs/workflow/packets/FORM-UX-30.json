@@ -1,0 +1,15 @@
+{
+  "id": "FORM-UX-30",
+  "status": "READY",
+  "lifecycle": "SUPERSEDED",
+  "supersededBy": "FORM-UX-30-R1",
+  "timeboxMinutes": 15,
+  "goal": "Yanıtlar ekranındaki sol form seçicisinde yerel form seçiminin global seçime geri yazılmasını önlemek",
+  "rollback": "Yalnız form seçim effect'i, yeni regression testi, packet ve STATUS kaydını geri al; form/yanıt verisini değiştirme",
+  "previous": ["FORM-UX-29"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/views/submissions-view.tsx", "src/lib/store.ts", "tests/submissions-state.test.mjs", "tests/submissions-layout.test.mjs", "tests/form-ux-final-gate.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-30.json", "src/components/mavenforms/views/submissions-view.tsx", "tests/form-ux-submissions-form-switch.test.mjs", "STATUS.md"],
+  "acceptance": ["Sidebar'dan başka form seçildiğinde local selectedForm korunur", "Yeni form seçimi eski özet ve seçili yanıtı göstermez", "Global store üzerinden gelen ilk/dış form seçimi çalışmaya devam eder", "Hedef regression, final gate ve context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["bun", "tests/form-ux-submissions-form-switch.test.mjs"], ["bun", "tests/submissions-state.test.mjs"], ["bun", "tests/submissions-layout.test.mjs"], ["bun", "tests/form-ux-final-gate.test.mjs"], ["node", "scripts/context-check.mjs"]]
+}

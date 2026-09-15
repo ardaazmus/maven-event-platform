@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getSessionFromCookie } from '@/lib/auth'
+import { can } from '@/lib/policy'
+import { FORM_USE_PROFILES } from '@/lib/form-use-profile'
 import { z } from 'zod'
 
 interface RouteParams {
@@ -10,6 +12,8 @@ interface RouteParams {
 export async function GET(req: NextRequest, { params }: RouteParams) {
   const ctx = await getSessionFromCookie()
   if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const auth = can.readForms(ctx as any)
+  if (!auth.allowed) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const { id } = await params
   const form = await db.form.findFirst({
@@ -58,11 +62,14 @@ const updateFormSchema = z.object({
   startDate: z.string().datetime().nullable().optional(),
   endDate: z.string().datetime().nullable().optional(),
   closedMessage: z.string().nullable().optional(),
+  useProfile: z.enum(FORM_USE_PROFILES).optional(),
 })
 
 export async function PATCH(req: NextRequest, { params }: RouteParams) {
   const ctx = await getSessionFromCookie()
   if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const auth = can.writeForms(ctx as any)
+  if (!auth.allowed) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const { id } = await params
   try {
@@ -87,6 +94,16 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
     if (parsed.data.startDate !== undefined) data.startDate = parsed.data.startDate ? new Date(parsed.data.startDate) : null
     if (parsed.data.endDate !== undefined) data.endDate = parsed.data.endDate ? new Date(parsed.data.endDate) : null
     if (parsed.data.closedMessage !== undefined) data.closedMessage = parsed.data.closedMessage
+    if (parsed.data.useProfile !== undefined) {
+      let settings: Record<string, unknown> = {}
+      try {
+        const decoded = JSON.parse(form.settingsJson || '{}')
+        if (decoded && typeof decoded === 'object' && !Array.isArray(decoded)) settings = decoded
+      } catch {
+        settings = {}
+      }
+      data.settingsJson = JSON.stringify({ ...settings, useProfile: parsed.data.useProfile })
+    }
 
     const before = form
     const updated = await db.form.update({ where: { id }, data })
@@ -112,6 +129,8 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
 export async function DELETE(req: NextRequest, { params }: RouteParams) {
   const ctx = await getSessionFromCookie()
   if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const auth = can.writeForms(ctx as any)
+  if (!auth.allowed) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const { id } = await params
   // Soft delete
@@ -143,6 +162,8 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
 export async function POST(req: NextRequest, { params }: RouteParams) {
   const ctx = await getSessionFromCookie()
   if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const auth = can.writeForms(ctx as any)
+  if (!auth.allowed) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const { id } = await params
   const url = new URL(req.url)

@@ -1,0 +1,15 @@
+{
+  "id": "FORM-UX-24",
+  "status": "READY",
+  "lifecycle": "SUPERSEDED",
+  "supersededBy": "FORM-UX-24-R2",
+  "timeboxMinutes": 15,
+  "goal": "Public form puanlama yıldızlarına erişilebilir ad ve seçili durum bilgisi eklemek",
+  "rollback": "Yalnız rating aria-label/aria-pressed/title/test/packet değişikliklerini geri al; yanıt değerini ve puanlama davranışını değiştirme",
+  "previous": ["FORM-UX-23"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/public-form-renderer.tsx", "tests/form-ux-final-gate.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-24.json", "src/components/mavenforms/public-form-renderer.tsx", "tests/form-ux-public-rating-a11y.test.mjs", "STATUS.md"],
+  "acceptance": ["Her puan yıldızı erişilebilir ad ve tooltip taşır", "Seçili puan aria-pressed ile ifade edilir", "Rating onChange davranışı ve public/private sınırı değişmez", "Hedef regression ve context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["bun", "tests/form-ux-public-rating-a11y.test.mjs"], ["bun", "tests/form-ux-final-gate.test.mjs"], ["node", "scripts/context-check.mjs"]]
+}

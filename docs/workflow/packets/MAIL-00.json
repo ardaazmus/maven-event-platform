@@ -1,0 +1,45 @@
+{
+  "id": "MAIL-00",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Form bildirimi, ödeme/fatura transactional mesajı ve marketing olaylarının server-side message class sözleşmesini ayırmak",
+  "rollback": "Yalnız MAIL-00 packetini, email-policy sınıflandırıcı testini ve STATUS kaydını geri al; gönderim, ödeme, fatura veya kullanıcı verisini silme/değiştirme",
+  "previous": ["V2-08A", "V3-05"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/workflow/packets/V2-08A.json",
+    "docs/workflow/packets/V3-05.json",
+    "docs/superpowers/plans/2026-09-06-mavenforms-release-modules-first-party-saas-roadmap.md",
+    "docs/research-sources/2026-09-07-mail-configuration-research-receipt.md",
+    "src/lib/email-policy.ts",
+    "src/lib/email-consent.ts",
+    "src/lib/email-queue.ts",
+    "tests/email-policy.test.mjs",
+    "tests/email-consent.test.mjs",
+    "tests/email-queue.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/MAIL-00.json",
+    "src/lib/email-policy.ts",
+    "tests/email-policy.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "form_confirmation, admin_notification ve integration_alert notification sınıfında kalır; invoice/payment olayları transactional, marketing_campaign marketing sınıfına gider",
+    "Bilinmeyen olay adı fail-closed olur; browser veya payload sınıf override’ı bu sözleşmenin parçası değildir",
+    "Marketing consent kararı ve queue/suppression davranışı mevcut policy sözleşmesiyle uyumlu kalır",
+    "Bu faz provider bağlantısı, canlı gönderim, otomatik fatura, SaaS veya R-10 release açmaz",
+    "Hedef test, ilgili email policy/consent/queue testleri, TypeScript ve readiness geçer"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/email-policy.test.mjs"],
+    ["bun", "tests/email-consent.test.mjs"],
+    ["bun", "tests/email-queue.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

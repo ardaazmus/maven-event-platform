@@ -1,0 +1,40 @@
+{
+  "id": "R10-V4-39",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Incident response ve support break-glass yaşam döngüsünü ticket, purpose, TTL, MFA, read-only ve revoke kapılarıyla saf tatbikat sözleşmesinde doğrulamak",
+  "rollback": "Break-glass tatbikat sözleşmesi ve testini geri al; support session, auth, tenant veya kullanıcı verisi mutation'ına dokunma",
+  "previous": ["R10-V4-38"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/lib/support-access-policy.ts",
+    "tests/v4-support-break-glass.test.mjs",
+    "docs/runbooks/r10-external-evidence-guide.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-39.json",
+    "src/lib/support-break-glass-exercise.ts",
+    "tests/support-break-glass-exercise.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Break-glass yalnız aynı tenant scope, onay, ticket, purpose, MFA/step-up, gelecekteki bounded TTL ve read-only istek ile issue edilir",
+    "Süre dolması veya revoke talebi aktif erişimi terminal olarak kapatır; suspected breach erişim vermez ve revoke kararı üretir",
+    "Scope mismatch, mutation isteği, eksik kayıt ve bilinmeyen durum fail-closed olur; karar çıktısı PII, secret ve ticket içeriği taşımaz",
+    "Sözleşme pure olur; gerçek support session, auth, ticket sistemi, tenant verisi veya incident mutation çalıştırmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/support-break-glass-exercise.test.mjs"],
+    ["bun", "tests/v4-support-break-glass.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

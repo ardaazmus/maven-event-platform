@@ -1,0 +1,42 @@
+{
+  "id": "M02.2",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "1dfa4507ab3d68a9",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "publish-transaction.test PASS + live publish atomic verified version 4",
+    "scope": {
+      "changedFiles": [
+        "src/app/api/forms/[id]/publish/route.ts",
+        "tests/publish-transaction.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "no PII, transaction inside $transaction, archive previous",
+    "acceptanceIds": [
+      "AC-PUBLISH-01",
+      "AC-PUBLISH-02"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/publish-transaction.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-01T22:12:30.739Z"
+}

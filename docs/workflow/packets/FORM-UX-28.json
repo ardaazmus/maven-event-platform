@@ -1,0 +1,13 @@
+{
+  "id": "FORM-UX-28",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Üst çubuk kullanıcı menüsü tetikleyicisine erişilebilir ad eklemek",
+  "rollback": "Yalnız kullanıcı menüsü aria-label/title/test/packet/STATUS değişikliklerini geri al; profil, ayar ve çıkış action'larını değiştirme",
+  "previous": ["FORM-UX-27-R1"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/topbar.tsx", "tests/form-ux-final-gate.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-28.json", "src/components/mavenforms/topbar.tsx", "tests/form-ux-topbar-user-menu-a11y.test.mjs", "STATUS.md"],
+  "acceptance": ["Kullanıcı menüsü tetikleyicisi dinamik erişilebilir ad taşır", "Tetikleyici görünür tooltip taşır", "Profil, hesap ayarları ve çıkış action'ları değişmez", "Hedef regression ve context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["bun", "tests/form-ux-topbar-user-menu-a11y.test.mjs"], ["bun", "tests/form-ux-final-gate.test.mjs"], ["node", "scripts/context-check.mjs"]]
+}

@@ -1,0 +1,43 @@
+{
+  "id": "V4-03",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Tenant'ın kendi muhasebe/fatura kaynağı ve verified billing sender sınırını provider-neutral olarak doğrulamak.",
+  "rollback": "V4-03 tenant invoice/mail contractı, testi, packet ve STATUS kaydını geri al; gerçek Paraşüt/SMTP mutation, PII erişimi, ödeme, R-10 ve V4 release açma.",
+  "previous": [],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-06-mavenforms-release-modules-first-party-saas-roadmap.md",
+    "docs/acceptance/v2-deferred-provider-decision.md",
+    "src/lib/email-policy.ts",
+    "src/lib/email-sender-profile.ts",
+    "src/lib/invoice-delivery-gate.ts",
+    "src/lib/invoice-document-ready-delivery.ts",
+    "src/lib/tenant-entitlement.ts",
+    "tests/v2-invoice-delivery-manual.test.mjs",
+    "tests/email-sender-profile.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/V4-03.json",
+    "src/lib/tenant-invoice-mail.ts",
+    "tests/v4-tenant-byo-invoice-mail.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Invoice, document ve sender workspace scope'ları tenant ile eşleşmeden sonuç allowed olamaz.",
+    "Yalnız document_ready, quarantined/clean belge, transactional sender, healthy/enabled profil ve mevcut alıcı ile manual invoice yolu allowed olur.",
+    "Paraşüt yolu gerçek provider mutation açılmadan deferred olarak kapanır; sonuç secret, token, PII veya raw provider payload taşımaz.",
+    "Focused V4-03 testi, ilgili fatura/mail regresyonları, TypeScript ve context-check geçer; R-10 ve V4 production release kapalı kalır."
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [
+    ["bun", "tests/v4-tenant-byo-invoice-mail.test.mjs"],
+    ["bun", "tests/v2-invoice-delivery-manual.test.mjs"],
+    ["bun", "tests/email-sender-profile.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

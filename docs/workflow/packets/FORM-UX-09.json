@@ -1,0 +1,14 @@
+{
+  "id": "FORM-UX-09",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Formlar ekranındaki yeni form diyaloğunun erişilebilir açıklamasını eklemek; modal açılışında console uyarısını ve ekran okuyucu belirsizliğini kaldırmak",
+  "rollback": "Yalnız yeni form dialog açıklaması ve hedef testini geri al; form, yanıt, ödeme, fatura veya medya verisini silme/değiştirme",
+  "previous": [],
+  "revalidationReason": "FORM-UX-08 receipt'i sonradan yapılan kullanıcı/form-builder değişiklikleri nedeniyle stale; bu packet güncel çalışma ağacında yeni baseline alıp aynı form UI kalite kapısını yeniden kurar",
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/views/forms-list-view.tsx", "src/components/ui/dialog.tsx", "tests/form-ux-final-gate.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-09.json", "src/components/mavenforms/views/forms-list-view.tsx", "tests/form-ux-dialog-a11y.test.mjs", "STATUS.md"],
+  "acceptance": ["Yeni Form dialogu DialogTitle yanında kullanıcıya amacını açıklayan DialogDescription içerir", "Modal açılışında DialogContent için Description/aria-describedby uyarısı oluşmaz", "Form oluşturma akışı, API çağrıları, veri modeli ve public/private güvenlik sınırları değişmez", "Hedef test, mevcut form UI testleri, TypeScript, build ve local readiness geçer"],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["bun", "tests/form-ux-dialog-a11y.test.mjs"], ["bun", "tests/form-ux-final-gate.test.mjs"], ["bun", "tests/ui-layout.test.mjs"], ["bun", "tests/responsive-a11y.test.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

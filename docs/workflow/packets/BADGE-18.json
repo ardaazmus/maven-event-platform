@@ -1,0 +1,41 @@
+{
+  "id": "BADGE-18",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı sözleşmelerini üretim dışı iç-pilot capability gate ile birleştirmek ve V1/V2 ana yolunu koruyan release notunu kanıtlamak.",
+  "rollback": "Yalnız badge-release contract modülü, sentetik focused testi, packet ve BADGE-18 durum satırını geri al; V1/V2 ödeme-form-fatura akışlarına, R-10 kayıtlarına ve production enablement'a dokunma.",
+  "previous": [],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-09-mavenforms-badge-module-roadmap.md",
+    "docs/research-sources/2026-09-09-badge-qr-output-research-receipt.md",
+    "src/lib/badge-pilot-contract.ts",
+    "src/lib/badge-handoff-contract.ts",
+    "src/lib/badge-qr-security-contract.ts"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-18.json",
+    "src/lib/badge-release-contract.ts",
+    "tests/badge-release-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "BADGE-00-R1 ile BADGE-17 arasındaki sentetik badge sözleşmeleri LOCAL_PASS olmadan iç-pilot kapısı açılmaz.",
+    "R-10 NO-GO/BLOCKED durumu iç-pilot badge capability'sini bloke etmez; provider veya production enablement yine açılamaz.",
+    "Production hedefi, R-10 ve dış bağımlılık kanıtı olmadan BLOCKED döner.",
+    "Gate yalnız badge kapsamındadır; ödeme, manuel fatura, Paraşüt, e-posta ve SaaS fazlarının sırasını değiştirmez.",
+    "Focused test, TypeScript ve context-check geçer; badge dışı davranışlar değişmez."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-release-contract.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

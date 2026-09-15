@@ -1,0 +1,13 @@
+{
+  "id": "R-00-06",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Stripe charge webhook metadata'sını payment_intent kimliği ve tam/kısmi refund sınıflandırmasıyla canonical inbox kaydına almak",
+  "rollback": "Bu paketin Stripe webhook extraction ve test değişikliklerini geri al; inbox, payment, invoice, document veya delivery verisini silme veya resetleme",
+  "previous": ["R-00-05"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "src/app/api/webhooks/stripe/[connectionId]/route.ts", "src/lib/payment-webhook-processing.ts", "src/lib/payment-webhook-signatures.ts", "prisma/schema.prisma", "tests/payment-webhook-route-truth.test.mjs", "tests/payment-webhook-processing.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/R-00-06.json", "src/app/api/webhooks/stripe/[connectionId]/route.ts", "tests/payment-webhook-route-truth.test.mjs", "tests/payment-webhook-processing.test.mjs", "STATUS.md", "docs/superpowers/plans/2026-09-02-mavenforms-e-belge-15-dakikalik-uygulama-paketleri.md"],
+  "acceptance": ["Stripe charge refund/dispute records use payment_intent as the canonical payment identity when present and never fall back to charge ID for order matching", "charge.refunded metadata distinguishes full and partial refund only from bounded amount_refunded and amount values", "Missing correlation or refund classification remains safely non-mutating; raw provider payload and secrets are not persisted", "Existing signature verification, inbox idempotency and non-charge webhook extraction remain unchanged"],
+  "preflight": [["node", "scripts/local-ready.mjs"], ["bun", "tests/payment-webhook-route-truth.test.mjs"]],
+  "checks": [["bun", "tests/payment-webhook-route-truth.test.mjs"], ["bun", "tests/payment-webhook-processing.test.mjs"], ["node", "scripts/run-tests.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

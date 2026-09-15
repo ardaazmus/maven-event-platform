@@ -1,0 +1,19 @@
+{
+  "id": "FORM-UX-55",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Kullanicilar ekraninda uye listesini ana icerik, rol yetki matrisini ikincil acilir bilgi olarak konumlandirmak",
+  "rollback": "FORM-UX-55 kapsamindaki users-view yerlesim, regression testi, packet ve STATUS degisikligini geri al",
+  "previous": ["FORM-UX-54"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/views/users-view.tsx", "tests/form-ux-users-fixture.test.mjs", "tests/form-ux-users-actions.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-55.json", "src/components/mavenforms/views/users-view.tsx", "tests/form-ux-users-fixture.test.mjs", "STATUS.md"],
+  "acceptance": [
+    "Uye listesi ekranda ilk ana operasyon yuzeyi olarak gorunur",
+    "Rol yetki matrisi varsayilan olarak kapali ikincil acilir bolumde kalir ve mevcut izin verileri korunur",
+    "Ornek veri ve bagli olmayan davet/uye aksiyonlarinin acik urun dili korunur",
+    "Database, auth/policy, public form ve provider davranisi degismez",
+    "Regression, TypeScript, build, readiness, context-check ve workflow verify basarili olur"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]],
+  "checks": [["bun", "tests/form-ux-users-fixture.test.mjs"], ["bun", "tests/form-ux-users-actions.test.mjs"], ["bun", "tests/form-ux-final-gate.test.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"], ["node", "scripts/context-check.mjs"]]
+}

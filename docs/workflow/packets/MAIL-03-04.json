@@ -1,0 +1,42 @@
+{
+  "id": "MAIL-03-04",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "E-posta editöründe ayrı düz metin yedeğini kaydetmek ve önizlemede kullanmak",
+  "rollback": "Yalnız MAIL-03-04 packetini, editor/settings plain-text değişikliğini, fallback testini ve STATUS kaydını geri al; provider, SMTP credential veya gerçek alıcı verisini değiştirme",
+  "previous": ["MAIL-03-03"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/workflow/packets/MAIL-03-03.json",
+    "artifacts/workflow/MAIL-03-03/verified.json",
+    "src/components/mavenforms/email-template-editor.tsx",
+    "src/components/mavenforms/views/settings-view.tsx",
+    "src/lib/email-template-content.ts",
+    "tests/email-template-editor-preview.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/MAIL-03-04.json",
+    "src/components/mavenforms/email-template-editor.tsx",
+    "src/components/mavenforms/views/settings-view.tsx",
+    "tests/email-template-editor-fallback.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Şablon draft'ında düz metin yedeği ayrı kontrollü alan olarak düzenlenir ve kaydetme callback'ine taşınır",
+    "Önizleme düz metin yedeğini kullanır; boş/uygunsuz içerik güvenli renderer sınırında görünür hata verir",
+    "Düz metin alanı yalnız local draft'tır; HTML sanitizasyonu, provider, SMTP, outbox ve kalıcı API açılmaz",
+    "Fallback testi, önceki mail testleri, TypeScript ve readiness geçmeden faz tamamlanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/email-template-editor-fallback.test.mjs"],
+    ["bun", "tests/email-template-editor-preview.test.mjs"],
+    ["bun", "tests/email-template-editor-context.test.mjs"],
+    ["bun", "tests/email-template-content.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

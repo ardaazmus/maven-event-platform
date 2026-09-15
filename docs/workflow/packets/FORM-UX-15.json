@@ -1,0 +1,15 @@
+{
+  "id": "FORM-UX-15",
+  "status": "READY",
+  "lifecycle": "SUPERSEDED",
+  "supersededBy": "FORM-UX-15-R2",
+  "timeboxMinutes": 15,
+  "goal": "Raporlar ekranındaki sıfır bazlı KPI trend yüzdesinin yanıltıcı değer üretmesini güvenli bir durum metniyle düzeltmek",
+  "rollback": "Yalnız trend sunumundaki helper/test/packet değişikliklerini geri al; rapor veya yanıt verisini silme/değiştirme",
+  "previous": ["FORM-UX-14"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/views/reports-view.tsx", "tests/form-ux-final-gate.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-15.json", "src/components/mavenforms/views/reports-view.tsx", "tests/form-ux-reports-kpi.test.mjs", "STATUS.md"],
+  "acceptance": ["Önceki dönem yanıtı sıfırken rapor ekranı sahte veya aşırı yüzde göstermez", "Pozitif karşılaştırma bazında mevcut trend yüzdesi korunur", "Hedef regression, TypeScript/build ve context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["bun", "tests/form-ux-reports-kpi.test.mjs"], ["bun", "tests/form-ux-final-gate.test.mjs"], ["bun", "tests/form-ux-inventory-gate.test.mjs"], ["bun", "tests/form-ux-reports-kpi.test.mjs"], ["bun", "x", "tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"], ["node", "scripts/context-check.mjs"]]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "FORM-UX-44",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Calisma alani ayarlarinda dikey navigasyonu orta-genis ekranlarda da kullanarak sekme tasmasini azaltmak",
+  "rollback": "Yalniz FORM-UX-44 packetini, settings responsive breakpoint degisikligini, regression testini ve STATUS kaydini geri al",
+  "previous": ["FORM-UX-43"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/settings-view.tsx"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-44.json",
+    "src/components/mavenforms/views/settings-view.tsx",
+    "tests/form-ux-settings-navigation.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "1280 CSS px ve uzerinde ayarlar navigasyonu dikey, okunabilir bir yan panel olur",
+    "1280 CSS px altinda ayarlar sekmeleri tasma yapmadan sarilabilir kalir",
+    "Ayarlar sekme kimlikleri ve icerik endpoint baglantilari degismez",
+    "Regression, TypeScript, build, readiness, context-check ve workflow verify basarili olur"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-settings-navigation.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

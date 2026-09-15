@@ -1,0 +1,47 @@
+{
+  "id": "R10-V4-27",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Gelecekteki e-belge/API bağlantısını provider-neutral, default-off ve resmi kanıt kapısına bağlı bir wizard sözleşmesi olarak görünür kılmak",
+  "rollback": "Future invoice wizard ve invoice center bağlantısını geri al; manuel fatura fallback yolunu, provider, credential ve DB mutation yapma",
+  "previous": ["R10-V4-26"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/components/mavenforms/connection-wizard.tsx",
+    "src/components/mavenforms/manual-invoice-wizard.tsx",
+    "src/components/mavenforms/views/invoice-center-view.tsx",
+    "src/lib/connection-verification-contract.ts",
+    "src/lib/credential-method-contract.ts",
+    "tests/manual-invoice-wizard.test.mjs",
+    "tests/invoice-import-gate.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-27.json",
+    "src/components/mavenforms/future-invoice-wizard.tsx",
+    "src/components/mavenforms/views/invoice-center-view.tsx",
+    "tests/future-invoice-wizard.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Future invoice wizard provider-neutral sağlayıcı, kapsam, kanıt ve inceleme adımlarını gösterir",
+    "Otomatik e-belge varsayılan olarak kapalıdır; resmi dış kanıt ve ayrı release kapısı olmadan etkinlik iddiası gösterilmez",
+    "Wizard invoice center’da görünür ve manuel fatura yolu aktif fallback olarak korunur",
+    "Bileşen network, credential, provider, mail veya DB mutation yapmaz; secret ve ham provider yanıtı kabul etmez"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/future-invoice-wizard.test.mjs"],
+    ["bun", "tests/manual-invoice-wizard.test.mjs"],
+    ["bun", "tests/invoice-import-gate.test.mjs"],
+    ["bun", "tests/invoice-document-ready-route.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

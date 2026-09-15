@@ -1,0 +1,43 @@
+{
+  "id": "BADGE-30",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Doğrulanmış özel arka plan PDF'si üzerine kişi alanları ve vektörel QR basabilen, yalnız bellekte PDF byte üreten tekil badge renderer adapter'ını eklemek.",
+  "rollback": "Renderer adapter ve focused test, packet ve BADGE-30 durum satırını geri al; storage, download, ZIP, ödeme, fatura, provider ve R-10 kapılarını açma.",
+  "previous": ["BADGE-29-R2"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/badge-front-render-contract.ts",
+    "src/lib/badge-pdf-render-result.ts",
+    "src/lib/badge-template-contract.ts",
+    "src/lib/badge-render-input-contract.ts",
+    "tests/badge-front-render-contract.test.mjs",
+    "tests/badge-pdf-render-port.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-30.json",
+    "src/lib/badge-pdf-renderer.ts",
+    "tests/badge-pdf-renderer.test.mjs",
+    "package.json",
+    "bun.lock",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Renderer yalnız application/pdf bytes ve doğrulanmış, özel arka plan PDF bytes kabul eder; dış URL, storage path ve public output kabul etmez.",
+    "Tekil ön yüz PDF'i arka plan sayfasını korur, kişi alanlarını güvenli kutulara çizer ve QR'ı raster görsel olarak değil vektörel modül dikdörtgenleri olarak işler.",
+    "Türkçe/Unicode kişi verisi için çağıran tarafın verdiği güvenilir TTF/OTF font byte'ı gerekir; font yokken ASCII dışı değer fail-closed olur.",
+    "Çıktı bellekte Uint8Array olarak döner; dosya sistemi, DB, download, ZIP, e-posta veya provider çağrısı yapmaz.",
+    "Focused renderer testi, TypeScript ve context-check geçer; gerçek storage/export sonraki mikro-fazlarda kalır."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"]
+  ],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-pdf-renderer.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

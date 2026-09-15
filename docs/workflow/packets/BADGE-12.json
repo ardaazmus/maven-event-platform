@@ -1,0 +1,41 @@
+{
+  "id": "BADGE-12",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı QR modları için opaque token, scope/revoke ve varsayılan no-PII regresyon sözleşmesini kurmak.",
+  "rollback": "Yalnız badge-qr-security-contract modülü, sentetik focused testi, packet ve BADGE-12 durum satırını geri al; QR provider, public endpoint, submission, ödeme, fatura ve e-posta verilerine dokunma.",
+  "previous": ["BADGE-11"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-09-mavenforms-badge-module-roadmap.md",
+    "docs/research-sources/2026-09-09-badge-qr-output-research-receipt.md",
+    "src/lib/badge-contract.ts",
+    "src/lib/badge-download-contract.ts",
+    "src/lib/badge-snapshot-contract.ts"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-12.json",
+    "src/lib/badge-qr-security-contract.ts",
+    "tests/badge-qr-security-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "SECURE_TOKEN credential yalnız opaque payload, eşleşen workspace/form/badge scope'u ve revoke edilmemiş durumla geçer.",
+    "Public card URL HTTPS ve opaque path gerektirir; query/fragment veya ham PII içeren URL reddedilir.",
+    "INLINE_VCARD varsayılan olarak reddedilir; yalnız açık politika ile warning seviyesinde açılabilir ve payment/secret içeremez.",
+    "E-posta, telefon, ödeme, ham form cevabı, raw token/secret ve kişi PII’si QR payload regresyonunda yakalanır.",
+    "Focused test, TypeScript ve context-check geçer; ödeme/fatura/V3/V4/R-10 davranışları değişmez."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-qr-security-contract.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

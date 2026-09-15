@@ -1,0 +1,62 @@
+{
+  "id": "FORM-UX-05A",
+  "status": "READY",
+  "lifecycle": "SUPERSEDED",
+  "supersededBy": "FORM-UX-05B",
+  "timeboxMinutes": 15,
+  "goal": "Uygulamanın ana ekranlarında desktop, tablet ve mobile viewport davranışını; taşma/üst üste binme, aşağıda erişilemeyen içerik, panel scroll/focus ve temel klavye erişilebilirliğini tek ölçülebilir regresyon kapısında doğrulamak",
+  "rollback": "Yalnız FORM-UX-05A packetini, hedef responsive/a11y testini ve izin verilen UI kaynaklarındaki en küçük düzeltmeyi geri al; form, medya, ödeme, fatura veya yanıt verisi silme/değiştirme",
+  "previous": ["FORM-UX-04A"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/app/globals.css",
+    "src/app/layout.tsx",
+    "src/components/mavenforms/app-shell.tsx",
+    "src/components/mavenforms/sidebar.tsx",
+    "src/components/mavenforms/topbar.tsx",
+    "src/components/mavenforms/views/forms-list-view.tsx",
+    "src/components/mavenforms/views/submissions-view.tsx",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/components/mavenforms/views/settings-view.tsx",
+    "src/components/mavenforms/views/invoice-center-view.tsx",
+    "tests/ui-layout.test.mjs",
+    "tests/responsive-a11y.test.mjs",
+    "tests/submissions-layout.test.mjs",
+    "tests/invoice-center-responsive.test.mjs",
+    "tests/builder-layout-renderer.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-05A.json",
+    "src/app/globals.css",
+    "src/components/mavenforms/app-shell.tsx",
+    "src/components/mavenforms/sidebar.tsx",
+    "src/components/mavenforms/topbar.tsx",
+    "src/components/mavenforms/views/forms-list-view.tsx",
+    "src/components/mavenforms/views/submissions-view.tsx",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/components/mavenforms/views/settings-view.tsx",
+    "src/components/mavenforms/views/invoice-center-view.tsx",
+    "tests/form-ux-responsive-a11y.test.mjs"
+  ],
+  "acceptance": [
+    "Ana shell, sidebar/topbar, Formlar çalışma alanı, Yanıtlar tablosu, Ayarlar, Fatura merkezi ve Builder panelleri dar viewport'ta yatay taşma veya erişilemeyen içerik üretmez",
+    "İstatistikler, ayarlar action'ları, canlı form/yanıt alanları ve medya kontrolü kart içinde üst üste binmez; aşağı sarkan içerik ilgili scroll container içinde erişilebilir kalır",
+    "Klavye ile ana navigasyon, sekmeler, butonlar, seçim kontrolleri ve medya picker focus-visible olarak erişilebilir; ikon-only action'larda anlamlı aria-label korunur",
+    "Responsive/a11y hedef testi, mevcut UI/layout regresyonları, TypeScript, production build ve readiness geçmeden faz PASS sayılmaz; ödeme/fatura, Paraşüt ve V4 kapsamı açılmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-responsive-a11y.test.mjs"],
+    ["bun", "tests/ui-layout.test.mjs"],
+    ["bun", "tests/responsive-a11y.test.mjs"],
+    ["bun", "tests/submissions-layout.test.mjs"],
+    ["bun", "tests/invoice-center-responsive.test.mjs"],
+    ["bun", "tests/builder-layout-renderer.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "id": "FORM-UX-68",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Birleşik Görünüm sekmesi sözleşmesine göre eski tema sekmesi beklentisini testte düzeltmek.",
+  "rollback": "Focused test, packet ve durum satırını geri al; uygulama kodu, API, ödeme, fatura, R-10 ve V4 kapılarına dokunma.",
+  "previous": [],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/form-ux-builder-wiring.test.mjs",
+    "tests/form-ux-appearance-theme-unification.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-68.json",
+    "tests/form-ux-builder-wiring.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Focused wiring testi ayrı bir theme sekmesi beklemez ve legacy theme seçiminin appearance yüzeyine yönlendirildiğini doğrular.",
+    "Uygulama kodu, API, ödeme, fatura, R-10 ve V4 kapsamı değişmez.",
+    "Focused test, TypeScript ve context-check geçer."
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/form-ux-builder-wiring.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

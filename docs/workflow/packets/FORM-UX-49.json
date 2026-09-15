@@ -1,0 +1,36 @@
+{
+  "id": "FORM-UX-49",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Form listesi klasor secicilerini semantik ve guvenli hale getirmek; veri baglantisi olmayan etiketleri sahte action gibi gostermemek",
+  "rollback": "Yalniz FORM-UX-49 packetini, forms listesi klasor/etiket sunumunu, regression testini ve STATUS kaydini geri al",
+  "previous": ["FORM-UX-48"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/forms-list-view.tsx",
+    "src/lib/types.ts"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-49.json",
+    "src/components/mavenforms/views/forms-list-view.tsx",
+    "tests/form-ux-list-navigation.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Tum form listesi klasor secicileri type=button ve secili durum aria-current ile ifade edilir",
+    "Veri baglantisi olmayan etiketler tiklanabilir gibi gorunmez",
+    "Form listesi, arama, status, smart filter ve secili form workspace akisi korunur",
+    "Regression, TypeScript, build, readiness, context-check ve workflow verify basarili olur"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-list-navigation.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

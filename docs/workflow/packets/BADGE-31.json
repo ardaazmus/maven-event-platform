@@ -1,0 +1,43 @@
+{
+  "id": "BADGE-31",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Üretilmiş badge PDF byte'ını scope güvenli özel depolamaya karantinada yazmak, checksum ile doğrulamak ve yalnız tek yönlü scan sonucu sonrası hazır okumaya izin vermek.",
+  "rollback": "Badge artifact storage adapter, focused test, packet ve BADGE-31 durum satırını geri al; download, ZIP, e-posta, ödeme, fatura, provider ve R-10 kapılarını açma.",
+  "previous": ["BADGE-30"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/badge-artifact-storage-contract.ts",
+    "src/lib/badge-artifact-scan-contract.ts",
+    "src/lib/badge-pdf-renderer.ts",
+    "src/lib/invoice-document-storage.ts",
+    "tests/badge-artifact-storage-contract.test.mjs",
+    "tests/badge-artifact-scan-contract.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-31.json",
+    "src/lib/badge-artifact-storage.ts",
+    "tests/badge-artifact-storage.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Artifact yalnız güvenli workspace/form/artifact/output kimlikleriyle storage/badges altında yazılır; caller path veremez.",
+    "Yazım sonucu application/pdf, boyut ve SHA-256 doğrulanır; kayıt PENDING scan ile QUARANTINED olur.",
+    "QUARANTINED artifact yalnız SCAN_PASSED ile READY olur; SCAN_FAILED BLOCKED olur ve BLOCKED/QUARANTINED byte okumaya kapalıdır.",
+    "Hazır okuma storage key kapsamını ve checksum'u yeniden doğrular; path traversal ve overwrite fail-closed olur.",
+    "Focused storage/scan testi, TypeScript ve context-check geçer; public route/download/export henüz açılmaz."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"]
+  ],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-artifact-storage.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/badge-artifact-storage-contract.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/badge-artifact-scan-contract.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

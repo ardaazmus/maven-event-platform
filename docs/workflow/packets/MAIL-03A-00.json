@@ -1,0 +1,43 @@
+{
+  "id": "MAIL-03A-00",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Form bildirim editöründe özel düz metin gövdesini mevcut form-scoped notification API'sine bağlamak",
+  "rollback": "Yalnız MAIL-03A-00 packetini, bildirim gövdesi alanını, ilgili truth testini ve STATUS kaydını geri al; SMTP/provider gönderimi açma",
+  "previous": ["MAIL-03-08"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/workflow/packets/MAIL-03-08.json",
+    "artifacts/workflow/MAIL-03-08/verified.json",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/lib/types.ts",
+    "src/lib/submission-email-intents.ts",
+    "tests/notifications-panel.test.mjs",
+    "tests/notification-create.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/MAIL-03A-00.json",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/notification-body-editor.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Kullanıcı onayı ve yönetici e-posta bildirimlerinde özel düz metin gövdesi düzenlenebilir ve kaydetme isteğine config.body olarak dahil edilir",
+    "Webhook bildiriminde e-posta gövdesi alanı gösterilmez; mevcut webhook davranışı korunur",
+    "Gövde alanı boş bırakılırsa server-side mevcut varsayılan metin davranışı korunur",
+    "SMTP/provider gönderimi açılmaz ve public response içine bildirim ayarı sızdırılmaz",
+    "Truth testi, önceki mail testleri, TypeScript, build ve readiness geçmeden faz tamamlanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/notification-body-editor.test.mjs"],
+    ["bun", "tests/notifications-panel.test.mjs"],
+    ["bun", "tests/notification-create.test.mjs"],
+    ["bun", "tests/submission-email-intents.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

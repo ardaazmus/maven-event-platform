@@ -1,0 +1,7 @@
+---
+description: "MavenForms task routing, small phases, security and verification"
+globs: "src/**/*,tests/**/*,prisma/**/*,scripts/**/*,docs/workflow/**/*"
+alwaysApply: false
+---
+
+Read `AGENTS.md`, `PROJECT_CONTEXT.md`, `STATUS.md`, and the relevant `docs/workflow/packets/*.json` packet. Use only the packet's source files plus direct dependencies; inspect the wider project when correctness requires it and record that need. Keep the fixed phase order, use a 15-minute single-output phase, preserve tenant and public/private boundaries, and run `node scripts/workflow.mjs verify <packet>` before claiming completion.

@@ -1,0 +1,13 @@
+{
+  "id": "FORM-UX-16",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Raporlar ekranındaki henüz bağlı olmayan Export ve Paylaş kontrollerini kullanıcıya dürüstçe ertelenmiş durum olarak göstermek",
+  "rollback": "Yalnız rapor toolbar durum/test/packet değişikliklerini geri al; rapor verisini silme veya dışarı aktarma",
+  "previous": ["FORM-UX-15-R2"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/views/reports-view.tsx", "src/app/api/forms/[id]/export/route.ts", "tests/form-ux-final-gate.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-16.json", "src/components/mavenforms/views/reports-view.tsx", "tests/form-ux-reports-actions.test.mjs", "STATUS.md"],
+  "acceptance": ["Bağlanmamış Export ve Paylaş butonları aktifmiş gibi görünmez", "Ertelenmiş durum erişilebilir adla açıklanır", "Rapor ekranının veri/filtre akışı değişmez", "Hedef regression ve context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["bun", "tests/form-ux-reports-actions.test.mjs"], ["bun", "tests/form-ux-final-gate.test.mjs"], ["node", "scripts/context-check.mjs"]]
+}

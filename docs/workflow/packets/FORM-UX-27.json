@@ -1,0 +1,13 @@
+{
+  "id": "FORM-UX-27",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Formlar ekranındaki Sırala düğmesini gerçek ve ölçülebilir sıralama seçeneklerine bağlamak",
+  "rollback": "Yalnız form liste sıralama state/menu/test/packet/STATUS değişikliklerini geri al; API filtrelerini ve form verisini değiştirme",
+  "previous": ["FORM-UX-26-R1"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/views/forms-list-view.tsx", "src/lib/types.ts", "tests/form-ux-final-gate.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-27.json", "src/components/mavenforms/views/forms-list-view.tsx", "tests/form-ux-forms-sort.test.mjs", "STATUS.md"],
+  "acceptance": ["Sırala kontrolü güncelleme, oluşturulma, başlık ve yanıt sayısı seçeneklerini sunar", "Grid ve tablo görünümü aynı sıralanmış listeyi kullanır", "Arama/status/klasör filtreleri ve seçili form davranışı korunur", "Hedef regression ve context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["bun", "tests/form-ux-forms-sort.test.mjs"], ["bun", "tests/form-ux-final-gate.test.mjs"], ["node", "scripts/context-check.mjs"]]
+}

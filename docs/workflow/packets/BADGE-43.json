@@ -1,0 +1,44 @@
+{
+  "id": "BADGE-43",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "READY yaka kartı PDF'leri için authenticated birleşik PDF ve ZIP export action'ı eklemek.",
+  "rollback": "BADGE-43 metadata/export route/UI/test ve durum satırını geri al; karantina/scan/download, payment, invoice, provider, R-10 ve V4 kapılarını açma.",
+  "previous": ["BADGE-42"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/badge-artifact-storage.ts",
+    "src/lib/badge-generation-execution.ts",
+    "src/lib/badge-export-package.ts",
+    "src/app/api/forms/[id]/badges/artifacts/route.ts",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/badge-export-package.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-43.json",
+    "src/lib/badge-artifact-storage.ts",
+    "src/lib/badge-generation-execution.ts",
+    "src/app/api/forms/[id]/badges/export/route.ts",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/badge-export-route.test.mjs",
+    "tests/badge-ui-entry-wiring.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Generation artifact manifesti submission/job/template/print metadata taşıyacak; mevcut scope ve checksum doğrulaması korunacak.",
+    "Export route authenticated submissions.read ve form/workspace scope doğrulaması yapacak; yalnız READY ve aynı generation metadata'sına sahip artifact'ler export edilecek.",
+    "ZIP ve birleşik PDF response'u memory'de üretilir; dosya diske veya public alana yazılmaz.",
+    "Builder panelinde READY çıktılar için birleşik PDF/ZIP indirme action'ı görünür, karantina çıktıları action'a dahil edilmez.",
+    "Focused export/route/UI testleri, TypeScript ve context-check geçer."
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-export-route.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/badge-ui-entry-wiring.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

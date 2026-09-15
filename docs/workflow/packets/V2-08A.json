@@ -1,0 +1,13 @@
+{
+  "id": "V2-08A",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "V2-08 manuel billing sender ve document-ready teslimat sözleşmesini güncel release kararları altında yeniden doğrulamak",
+  "rollback": "Yalnız V2-08A teslimat regresyon testini ve packetini geri al; fatura, belge, ödeme, mail veya production verisini silme/değiştirme",
+  "previous": ["V2-07A"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "RELEASE-DECISION.md", "docs/workflow/README.md", "docs/acceptance/v2-deferred-provider-decision.md", "docs/runbooks/r10-payment-invoice-hold-and-mail-separation.md", "docs/superpowers/plans/2026-09-06-mavenforms-release-modules-first-party-saas-roadmap.md", "src/lib/email-policy.ts", "src/lib/email-sender-profile.ts", "src/lib/email-template-policy.ts", "src/lib/email-queue.ts", "src/lib/email-suppression.ts", "src/lib/invoice-delivery-enqueue.ts", "src/lib/invoice-delivery-gate.ts", "src/lib/invoice-email.ts", "src/lib/invoice-document-ready-delivery.ts", "src/lib/outbox.ts", "tests/email-policy.test.mjs", "tests/email-sender-profile.test.mjs", "tests/email-template-policy.test.mjs", "tests/email-queue.test.mjs", "tests/email-suppression.test.mjs", "tests/invoice-delivery-enqueue.test.mjs", "tests/invoice-delivery-gate.test.mjs", "tests/invoice-chain-replay.test.mjs", "tests/v2-invoice-delivery-manual.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/V2-08A.json", "tests/v2-invoice-delivery-manual.test.mjs"],
+  "acceptance": ["Document-ready + private/quarantine + clean scan olmadan fatura teslimatı açılamaz", "Fatura delivery transactional billing sender/queue ve idempotency sınırında, form kayıt notification kanalından ayrı kalır", "Secure app-origin belge linki kullanılır; provider URL, secret ve kontrolsüz hassas içerik taşınmaz", "Suppression, recipient, sender health ve queue/outbox kapıları korunur; accepted delivered sayılmaz", "Bu revalidation Paraşüt, otomatik/toplu fatura dispatch, SaaS veya R-10 release açmaz"],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["bun", "tests/v2-invoice-delivery-manual.test.mjs"], ["bun", "tests/email-policy.test.mjs"], ["bun", "tests/email-sender-profile.test.mjs"], ["bun", "tests/email-template-policy.test.mjs"], ["bun", "tests/email-queue.test.mjs"], ["bun", "tests/email-suppression.test.mjs"], ["bun", "tests/invoice-delivery-enqueue.test.mjs"], ["bun", "tests/invoice-delivery-gate.test.mjs"], ["bun", "tests/invoice-chain-replay.test.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

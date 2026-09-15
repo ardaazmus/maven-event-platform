@@ -74,6 +74,13 @@ interface ReportData {
   paymentStats: Array<{ paymentStatus: string; _count: number }>
 }
 
+function calculateTrendDelta(trend: ReportData['trend']) {
+  const current = trend.slice(-7).reduce((total, point) => total + point.count, 0)
+  const previous = trend.slice(0, 7).reduce((total, point) => total + point.count, 0)
+
+  return previous > 0 ? Math.round(((current - previous) / previous) * 100) : null
+}
+
 export function ReportsView() {
   const [forms, setForms] = useState<FormListItem[]>([])
   const [selectedForm, setSelectedForm] = useState<string | null>(null)
@@ -107,6 +114,7 @@ export function ReportsView() {
   }, [selectedForm, days])
 
   const selectedFormObj = forms.find((f) => f.id === selectedForm)
+  const trendDelta = data ? calculateTrendDelta(data.trend) : null
 
   return (
     <div className="p-4 lg:p-6 space-y-6">
@@ -142,11 +150,11 @@ export function ReportsView() {
               <SelectItem value="90">Son 90 gün</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" size="sm" className="gap-1.5">
-            <Download className="w-3.5 h-3.5" /> Export
+          <Button variant="outline" size="sm" className="gap-1.5" disabled aria-label="Rapor dışa aktarma (yakında)" title="Rapor dışa aktarma (yakında)">
+            <Download className="w-3.5 h-3.5" /> Export (yakında)
           </Button>
-          <Button variant="outline" size="sm" className="gap-1.5">
-            <Share2 className="w-3.5 h-3.5" /> Paylaş
+          <Button variant="outline" size="sm" className="gap-1.5" disabled aria-label="Rapor paylaşımı (yakında)" title="Rapor paylaşımı (yakında)">
+            <Share2 className="w-3.5 h-3.5" /> Paylaş (yakında)
           </Button>
         </div>
       </div>
@@ -168,8 +176,13 @@ export function ReportsView() {
                 <div className="w-9 h-9 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                   <Activity className="w-4 h-4" />
                 </div>
-                <Badge variant="outline" className="text-[10px] text-emerald-600 border-emerald-200 dark:border-emerald-900">
-                  +{data.trend.slice(-7).reduce((a, b) => a + b.count, 0) > 0 ? Math.round((data.trend.slice(-7).reduce((a, b) => a + b.count, 0) / Math.max(data.trend.slice(0, 7).reduce((a, b) => a + b.count, 0), 1)) * 100 - 100) : 0}%
+                <Badge variant="outline" className={cn(
+                  'text-[10px]',
+                  trendDelta === null && 'text-muted-foreground border-border',
+                  trendDelta !== null && trendDelta >= 0 && 'text-emerald-600 border-emerald-200 dark:border-emerald-900',
+                  trendDelta !== null && trendDelta < 0 && 'text-rose-600 border-rose-200 dark:border-rose-900',
+                )}>
+                  {trendDelta === null ? 'Yeni dönem' : `${trendDelta >= 0 ? '+' : ''}${trendDelta}%`}
                 </Badge>
               </div>
               <div className="text-2xl font-bold">{data.totalSubmissions}</div>

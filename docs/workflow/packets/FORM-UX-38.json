@@ -1,0 +1,37 @@
+{
+  "id": "FORM-UX-38",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Gorunum renklerinin form header override'i oldugunu ve Tema alanindan bagimsiz calistigini aciklastirmak; renk kayit davranisini korumak",
+  "rollback": "Yalniz FORM-UX-38 packetini, renk aciklamalarini, regression testini ve STATUS kaydini geri al; tema ve gorunum verisini degistirme",
+  "previous": ["FORM-UX-37"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/appearance-panel.tsx",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/components/mavenforms/public-form-renderer.tsx"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-38.json",
+    "src/components/mavenforms/views/appearance-panel.tsx",
+    "tests/form-ux-theme-override-scope.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Header renklerinin form gorunum override'i oldugu arayuzde belirtilir",
+    "Tema sekmesinin genel renk/font/radius ayarlari oldugu belirtilir",
+    "Appearance endpoint ve public renderer veri onceligi degismez",
+    "Regression, TypeScript, build, readiness, context-check ve workflow verify basarili olur"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-theme-override-scope.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "id": "BADGE-24",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı PDF artifact'lerinin private, scope bağlı ve tarama kararı olmadan teslim edilemez storage descriptor sözleşmesini tanımlamak; DB/storage yazımı açmamak.",
+  "rollback": "Yalnız artifact storage descriptor sözleşmesini, focused testi, packet ve BADGE-24 durum satırını geri al; Prisma migration, dosya yazımı, public URL, PDF dependency, export action'ı, ödeme, fatura veya provider açma.",
+  "previous": ["BADGE-23"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/badge-pdf-render-result.ts",
+    "src/lib/badge-download-contract.ts",
+    "src/lib/badge-template-contract.ts",
+    "prisma/schema.prisma",
+    "tests/badge-pdf-render-result.test.mjs",
+    "tests/badge-template-contract.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-24.json",
+    "src/lib/badge-artifact-storage-contract.ts",
+    "tests/badge-artifact-storage-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Artifact descriptor yalnız opaque artifact/workspace/form/output kimlikleri ve güvenli storage key taşır; kişi verisi, QR payload'ı, provider verisi veya public URL taşımaz.",
+    "Storage key scope ile eşleşen badge/<workspace>/<form>/<artifact>/ namespace'i ve .pdf uzantısını kullanır; traversal/boşluk/yanlış scope reddedilir.",
+    "Yalnız application/pdf kabul edilir; boyut ve SHA-256 metadata'sı doğrulanır.",
+    "Tarama pending durumunda QUARANTINED, başarılı taramada READY, başarısız taramada BLOCKED olur; yalnız READY özel teslimata adaydır.",
+    "Focused contract testi, TypeScript ve context-check geçer."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"]
+  ],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-artifact-storage-contract.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "id": "CTX-02A",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Tarihçede kapanmış packet'leri lifecycle etiketiyle ayırmak ve workflow'un superseded kayıtları yeniden çalıştırmasını engellemek.",
+  "rollback": "Legacy lifecycle işaretlerini, workflow guard'ını, testini ve bu packet kaydını geri al; uygulama koduna, V1/V2/V3/yaka kartı davranışına, V4'e ve R-10'a dokunma.",
+  "previous": [],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/workflow/status-history.md",
+    "scripts/workflow.mjs",
+    "tests/workflow-legacy-packets.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/CTX-02A.json",
+    "scripts/workflow.mjs",
+    "STATUS.md",
+    "tests/workflow-legacy-packets.test.mjs",
+    "docs/workflow/packets/BADGE-00.json",
+    "docs/workflow/packets/BADGE-01.json",
+    "docs/workflow/packets/FORM-UX-04.json",
+    "docs/workflow/packets/FORM-UX-05.json",
+    "docs/workflow/packets/FORM-UX-05A.json",
+    "docs/workflow/packets/FORM-UX-15.json",
+    "docs/workflow/packets/FORM-UX-15-R1.json",
+    "docs/workflow/packets/FORM-UX-24.json",
+    "docs/workflow/packets/FORM-UX-30.json",
+    "docs/workflow/packets/FORM-UX-69.json",
+    "docs/workflow/packets/V1-00.json",
+    "docs/workflow/packets/V1-04.json",
+    "docs/workflow/packets/V2-00.json",
+    "docs/workflow/packets/V2-04C.json",
+    "docs/workflow/packets/V2-09.json",
+    "docs/workflow/packets/V3-01A.json",
+    "docs/workflow/packets/V3-01B.json"
+  ],
+  "acceptance": [
+    "Tarihçede superseded olan 17 legacy packet lifecycle: SUPERSEDED ve replacement işaretini taşır.",
+    "Workflow superseded packet için begin/verify çalıştırmaz; güncel READY packet davranışı korunur.",
+    "Legacy packet testi, TypeScript ve context-check geçer."
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [
+    ["bun", "tests/workflow-legacy-packets.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

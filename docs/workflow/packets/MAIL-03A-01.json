@@ -1,0 +1,46 @@
+{
+  "id": "MAIL-03A-01",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Kullanıcı onayı bildirimini yalnız public e-posta alanı bulunan formlarda yapılandırılabilir hale getirmek",
+  "rollback": "Yalnız MAIL-03A-01 değişikliklerini, ilgili doğrulama testini ve STATUS kaydını geri al; bildirim gönderimi veya provider açma",
+  "previous": ["MAIL-03A-00"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/workflow/packets/MAIL-03A-00.json",
+    "artifacts/workflow/MAIL-03A-00/verified.json",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/app/api/forms/[id]/notifications/route.ts",
+    "src/app/api/forms/[id]/notifications/[notifId]/route.ts",
+    "src/lib/types.ts",
+    "tests/notification-create.test.mjs",
+    "tests/notification-edit-delete.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/MAIL-03A-01.json",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/app/api/forms/[id]/notifications/route.ts",
+    "src/app/api/forms/[id]/notifications/[notifId]/route.ts",
+    "tests/notification-email-eligibility.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Kullanıcı onayı bildirimi public e-posta alanı olmayan formda server-side reddedilir",
+    "Builder, public e-posta alanı yoksa kullanıcı onayı seçeneğini etkinleştirilemez olarak gösterir ve nedenini açıklar",
+    "Yönetici ve webhook bildirimlerinin mevcut oluşturma/düzenleme davranışı korunur",
+    "Bu faz gerçek e-posta gönderimi veya provider bağlantısı açmaz",
+    "Truth/regresyon testleri, TypeScript, build ve readiness geçmeden faz tamamlanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/notification-email-eligibility.test.mjs"],
+    ["bun", "tests/notification-create.test.mjs"],
+    ["bun", "tests/notification-edit-delete.test.mjs"],
+    ["bun", "tests/submission-email-intents.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

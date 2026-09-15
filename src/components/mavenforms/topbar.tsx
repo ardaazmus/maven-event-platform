@@ -23,6 +23,7 @@ import {
   ChevronDown,
   Command,
   HelpCircle,
+  Menu,
 } from 'lucide-react'
 import { api, setStoredToken } from '@/lib/api-client'
 import { useToast } from '@/hooks/use-toast'
@@ -42,7 +43,7 @@ const themeIcons = { light: Sun, dark: Moon, vibrant: Palette }
 const themeLabels = { light: 'Açık', dark: 'Koyu', vibrant: 'Canlı' }
 
 export function TopBar() {
-  const { user, workspace, view, theme, setTheme, logout } = useApp()
+  const { user, workspace, view, theme, setTheme, logout, setView } = useApp()
   const { toast } = useToast()
 
   const info = viewTitles[view] || viewTitles.dashboard
@@ -69,15 +70,40 @@ export function TopBar() {
 
   return (
     <header className="h-16 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-30">
-      <div className="h-full flex items-center gap-4 px-4 lg:px-6">
+      <div className="h-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="icon" className="h-9 w-9 shrink-0 md:hidden" aria-label="Menüyü aç">
+              <Menu className="w-4 h-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-52">
+            <DropdownMenuLabel>Menü</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {Object.entries(viewTitles).map(([id, item]) => (
+              <DropdownMenuItem
+                key={id}
+                className="gap-2"
+                onClick={() => {
+                  if (id === 'forms') useApp.getState().selectForm('')
+                  setView(id as any)
+                }}
+              >
+                {item.title}
+                {view === id && <span className="ml-auto text-xs text-primary">●</span>}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         {/* Title */}
-        <div className="flex-1 min-w-0">
-          <h1 className="text-lg font-semibold leading-tight truncate">{info.title}</h1>
-          <p className="text-xs text-muted-foreground truncate hidden sm:block">{info.subtitle}</p>
+        <div className="min-w-[5.5rem] shrink-0 sm:min-w-[7rem] lg:min-w-[8rem] lg:max-w-[10rem]">
+          <h1 className="text-lg font-semibold leading-tight whitespace-nowrap">{info.title}</h1>
+          <p className="text-xs text-muted-foreground truncate hidden lg:block">{info.subtitle}</p>
         </div>
 
         {/* Search */}
-        <div className="hidden md:flex items-center relative max-w-sm w-full">
+        <div className="hidden min-w-0 flex-1 items-center relative max-w-sm lg:flex">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
@@ -99,7 +125,7 @@ export function TopBar() {
         {/* Workspace switcher */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-2 hidden sm:flex">
+            <Button variant="outline" size="sm" className="hidden gap-2 lg:flex">
               <div className="w-5 h-5 rounded bg-gradient-to-br from-primary to-chart-3 flex items-center justify-center text-[10px] font-bold text-primary-foreground">
                 {workspace?.name?.[0]?.toUpperCase() || 'W'}
               </div>
@@ -123,7 +149,7 @@ export function TopBar() {
               <div className="w-2 h-2 rounded-full bg-emerald-500" />
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 text-sm">
+            <DropdownMenuItem className="gap-2 text-sm" disabled>
               <div className="w-6 h-6 rounded border border-dashed border-border flex items-center justify-center">
                 +
               </div>
@@ -135,7 +161,7 @@ export function TopBar() {
         {/* Theme switcher */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-9 w-9">
+            <Button variant="ghost" size="icon" className="h-9 w-9" aria-label={`Tema: ${themeLabels[theme]}`}>
               <ThemeIcon className="w-4 h-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -166,7 +192,7 @@ export function TopBar() {
         {/* Notifications */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-9 w-9 relative">
+            <Button variant="ghost" size="icon" className="h-9 w-9 relative" aria-label="Bildirimler">
               <Bell className="w-4 h-4" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-destructive ring-2 ring-background" />
             </Button>
@@ -191,21 +217,21 @@ export function TopBar() {
               ))}
             </div>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="justify-center text-sm text-primary">
+            <DropdownMenuItem className="justify-center text-sm text-primary" onClick={() => setView('submissions')}>
               Tümünü gör
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
         {/* Help */}
-        <Button variant="ghost" size="icon" className="h-9 w-9 hidden sm:flex">
+        <Button variant="ghost" size="icon" className="h-9 w-9 hidden sm:flex" disabled aria-label="Yardım (yakında)">
           <HelpCircle className="w-4 h-4" />
         </Button>
 
         {/* User menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 rounded-lg p-1 pr-2 hover:bg-muted/50 transition-colors">
+            <button className="flex items-center gap-2 rounded-lg p-1 pr-2 hover:bg-muted/50 transition-colors" aria-label={`Kullanıcı menüsü: ${user?.name || 'Kullanıcı'}`} title="Kullanıcı menüsünü aç">
               <Avatar className="w-8 h-8">
                 <AvatarFallback className="bg-gradient-to-br from-primary to-chart-3 text-primary-foreground text-xs font-semibold">
                   {initials}
@@ -227,7 +253,7 @@ export function TopBar() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 text-sm">
+            <DropdownMenuItem className="gap-2 text-sm" onClick={() => useApp.getState().setView('settings')}>
               <UserIcon className="w-4 h-4" /> Profilim
             </DropdownMenuItem>
             <DropdownMenuItem

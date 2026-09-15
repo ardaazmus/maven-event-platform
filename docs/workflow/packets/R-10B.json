@@ -1,0 +1,13 @@
+{
+  "id": "R-10B",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "R-10 NO-GO durumunu ödeme/fatura canlı aktivasyon askısı olarak kilitlemek ve form bildirimi ile fatura teslimatı için ayrı sender/queue sözleşmesini kanonikleştirmek",
+  "rollback": "Yalnız R-10B rehber, test, plan ve status kaydını geri al; provider, ödeme, fatura, belge veya production verisini değiştirme",
+  "previous": ["R-10A"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "RELEASE-DECISION.md", "docs/workflow/README.md", "docs/superpowers/plans/2026-09-02-mavenforms-e-belge-15-dakikalik-uygulama-paketleri.md", "docs/superpowers/plans/2026-09-02-mavenforms-toplu-e-posta-teslim-edilebilirlik-ve-mail-platformlari.md", "src/lib/invoice-delivery-enqueue.ts", "src/lib/invoice-email.ts", "src/app/api/public/forms/[slug]/submissions/route.ts", "tests/r10-external-evidence-guide.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/R-10B.json", "docs/runbooks/r10-payment-invoice-hold-and-mail-separation.md", "tests/r10-payment-invoice-hold-mail-separation.test.mjs", "STATUS.md", "docs/superpowers/plans/2026-09-02-mavenforms-e-belge-15-dakikalik-uygulama-paketleri.md", "docs/superpowers/plans/2026-09-02-mavenforms-toplu-e-posta-teslim-edilebilirlik-ve-mail-platformlari.md"],
+  "acceptance": ["R-10 NO-GO canlı ödeme/fatura aktivasyonunu SUSPENDED_BY_R10 olarak korur", "Form kayıt bildirimi ile fatura teslimatı ayrı message class, sender profile, queue/idempotency ve audit sınırlarıyla tanımlanır", "Tek provider hesabı kullanımının iki ayrı kanal sözleşmesini bozmadığı açıkça yazılır", "Fatura sender aktivasyonu R-10 PASS ve manuel muhasebe veya Paraşüt v4 kaynak kapılarına bağlanır", "Public istemci fatura sender, provider credential, belge ve müşteri listesine erişemez", "Hedef test, tam regresyon, TypeScript, production build, /api/ready ve workflow verify PASS olur"],
+  "preflight": [["node", "scripts/local-ready.mjs"], ["bun", "tests/r10-payment-invoice-hold-mail-separation.test.mjs"]],
+  "checks": [["bun", "tests/r10-payment-invoice-hold-mail-separation.test.mjs"], ["node", "scripts/run-tests.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

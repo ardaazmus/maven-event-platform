@@ -1,0 +1,36 @@
+{
+  "id": "FORM-UX-39",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Alan secilmediginde sag ozellik panelini kullaniciya sonraki adimi gosteren, erisilebilir ve responsive bir bos durum haline getirmek",
+  "rollback": "Yalniz FORM-UX-39 packetini, PropertiesPanel bos durum degisikligini, regression testini ve STATUS kaydini geri al",
+  "previous": ["FORM-UX-38"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/builder/properties-panel.tsx",
+    "src/components/mavenforms/builder/field-palette.tsx"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-39.json",
+    "src/components/mavenforms/builder/properties-panel.tsx",
+    "tests/form-ux-empty-properties.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Alan secilmediginde panel kullaniciya canvas'tan alan secmesini ve yeni alan ekleme yolunu aciklar",
+    "Bos durum metni ve etkileşimleri klavye ile erisilebilir olur",
+    "Panel dar ekranlarda tasma veya sabit genislik dayatmaz",
+    "Regression, TypeScript, build, readiness, context-check ve workflow verify basarili olur"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-empty-properties.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

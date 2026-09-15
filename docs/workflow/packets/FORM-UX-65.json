@@ -1,0 +1,54 @@
+{
+  "id": "FORM-UX-65",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Unify the selected form's visual configuration by rendering the existing form theme editor inside the form appearance workspace, removing the duplicate visible theme entry while preserving legacy navigation compatibility.",
+  "rollback": "Revert only the unified appearance/theme presentation, legacy theme-to-appearance normalization, management-menu grouping, and focused regression assertions; do not change theme or appearance APIs, persisted data, public snapshots, permissions, or release gates.",
+  "previous": ["FORM-UX-64"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/components/mavenforms/views/appearance-panel.tsx",
+    "src/components/mavenforms/views/forms-list-view.tsx",
+    "tests/form-ux-settings-taxonomy.test.mjs",
+    "tests/form-ux-theme-override-scope.test.mjs",
+    "tests/theme-panel.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-65.json",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/components/mavenforms/views/appearance-panel.tsx",
+    "src/components/mavenforms/views/forms-list-view.tsx",
+    "tests/form-ux-settings-taxonomy.test.mjs",
+    "tests/form-ux-theme-override-scope.test.mjs",
+    "tests/form-ux-appearance-theme-unification.test.mjs",
+    "tests/theme-panel.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "The Görünüm workspace contains the existing form theme preset, token, typography, radius, and custom CSS editor in the same visual settings flow as Header/Footer.",
+    "The visible builder navigation and form management menu do not expose a second competing Tema editor entry.",
+    "Legacy deep-link state with formDetailTab=theme opens the unified Görünüm workspace without changing persisted data or APIs.",
+    "Appearance-specific header/footer overrides remain distinct and their public rendering behavior is unchanged.",
+    "Focused tests, TypeScript, build, readiness, context, and workflow verification pass."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/form-ux-settings-taxonomy.test.mjs"],
+    ["bun", "tests/form-ux-theme-override-scope.test.mjs"],
+    ["bun", "tests/form-ux-appearance-theme-unification.test.mjs"],
+    ["bun", "tests/theme-panel.test.mjs"],
+    ["bun", "tests/form-ux-settings-navigation.test.mjs"],
+    ["bun", "tests/form-ux-builder-controls.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

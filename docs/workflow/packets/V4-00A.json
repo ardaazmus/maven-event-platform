@@ -1,0 +1,51 @@
+{
+  "id": "V4-00A",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Güncel FORM-UX ve context kanıtları sonrasında V4 tenant veri sahipliği sınırını yeniden değerlendirmek; SaaS tahsilatı, tenant provider mutation ve abonelik billing açmamak",
+  "rollback": "Yalnız V4-00A yeniden değerlendirme ve STATUS kaydını geri al; tenant, payment, invoice, document, mail veya production verisini silme/değiştirme",
+  "previous": ["V2-09B"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "RELEASE-DECISION.md",
+    "docs/workflow/README.md",
+    "docs/workflow/packets/V4-00.json",
+    "docs/workflow/packets/FORM-UX-66.json",
+    "docs/runbooks/r10-external-evidence-guide.md",
+    "docs/runbooks/r10-first-party-pilot-and-manual-invoice.md",
+    "src/lib/release-module.ts",
+    "src/lib/r10-scope-gate.ts",
+    "src/lib/public-dto.ts",
+    "src/lib/invoice-pii-dto.ts",
+    "src/app/api/invoices/[id]/documents/[documentId]/route.ts",
+    "src/lib/payment-provider-public-config.ts",
+    "tests/v4-tenant-boundary.test.mjs",
+    "tests/form-ux-submission-form-switch.test.mjs",
+    "tests/v2-release-gate.test.mjs",
+    "tests/final-release-gate.test.mjs",
+    "tests/r10-first-party-pilot-gate.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/V4-00A.json",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "V2-09B güncel LOCAL_PASS kanıtı korunur; V4 boundary değerlendirmesi güncel release/R-10 kararını ayrıca doğrular",
+    "FORM-UX-66 ve context-check güncel durumda PASS olmalıdır; stale predecessor kanıtı bypass edilmez, yalnız güncel kontrollerle yeniden değerlendirilir",
+    "Payment, invoice, document, sender, outbox, audit, export ve public snapshot okumaları tenant/workspace sınırı olmadan kabul edilmez",
+    "R-10 NO-GO/BLOCKED korunur; subscription billing, tenant BYO provider mutation, gerçek SaaS tahsilatı ve production release açılmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/v4-tenant-boundary.test.mjs"],
+    ["bun", "tests/form-ux-submission-form-switch.test.mjs"],
+    ["bun", "tests/v2-release-gate.test.mjs"],
+    ["bun", "tests/final-release-gate.test.mjs"],
+    ["bun", "tests/r10-first-party-pilot-gate.test.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

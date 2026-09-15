@@ -1,0 +1,42 @@
+{
+  "id": "MAIL-03A-03",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Form bildirimlerindeki legacy merge tag'lerini server-side allowlist ile gerçek gönderim içeriğine çözmek",
+  "rollback": "Yalnız MAIL-03A-03 değişikliklerini, render testini ve STATUS kaydını geri al; provider veya gerçek gönderim açma",
+  "previous": ["MAIL-03A-02"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/workflow/packets/MAIL-03A-02.json",
+    "artifacts/workflow/MAIL-03A-02/verified.json",
+    "src/lib/submission-email-intents.ts",
+    "src/app/api/public/forms/[slug]/submissions/route.ts",
+    "src/lib/email-template-content.ts",
+    "tests/submission-email-intents.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/MAIL-03A-03.json",
+    "src/lib/submission-email-intents.ts",
+    "src/app/api/public/forms/[slug]/submissions/route.ts",
+    "tests/submission-email-intents.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "{form_title}, {submission_id}, {user_email}, {date} ve {entry_data} yalnız server-derived değerlerle çözülür",
+    "Bilinmeyen veya iç/sır niteliğindeki etiketler değer üretmez ve provider payload'ına taşınmaz",
+    "Admin bildirimi için entry_data yalnız yayınlanan snapshot alanlarından oluşturulur ve boyut sınırı uygulanır",
+    "Mevcut admin/user_confirmation alıcı ve varsayılan metin davranışı korunur",
+    "Truth/regresyon testleri, TypeScript, build ve readiness geçmeden faz tamamlanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/submission-email-intents.test.mjs"],
+    ["bun", "tests/notification-email-eligibility.test.mjs"],
+    ["bun", "tests/form-create-confirmation.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

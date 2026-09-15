@@ -1,0 +1,41 @@
+{
+  "id": "BADGE-17",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı için tek yüz ve çift yüz iç-pilot proof akışını, QR taraması ve yüz bütünlüğü kapılarıyla ölçülebilir hale getirmek.",
+  "rollback": "Yalnız badge-pilot contract modülü, sentetik focused testi, packet ve BADGE-17 durum satırını geri al; üretim UI, PDF/ZIP, ödeme, fatura, e-posta ve provider akışlarına dokunma.",
+  "previous": ["BADGE-16"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-09-mavenforms-badge-module-roadmap.md",
+    "docs/research-sources/2026-09-09-badge-qr-output-research-receipt.md",
+    "src/lib/badge-face-contract.ts",
+    "src/lib/badge-print-preview-contract.ts",
+    "src/lib/badge-preflight-contract.ts"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-17.json",
+    "src/lib/badge-pilot-contract.ts",
+    "tests/badge-pilot-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Tek yüz proof akışı preview ve print kanıtından sonra QR taraması olmadan kabul edilmez.",
+    "Çift yüz proof akışı front ve back baskı kanıtlarını ayrı ister; yalnız tek yüz kanıtıyla kabul edilmez.",
+    "Proof durumları yalnız tanımlı sırada ilerler; atlanan veya geri dönen durumlar reddedilir.",
+    "Pilot planı yalnız sentetik kimliklerle, internal pilot statüsünde ve provider/production dışında çalışır.",
+    "Focused test, TypeScript ve context-check geçer; ödeme/fatura/V3/V4/R-10 davranışları değişmez."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-pilot-contract.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

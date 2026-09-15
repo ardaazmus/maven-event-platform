@@ -1,0 +1,31 @@
+import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
+
+const read = path => readFileSync(path, 'utf8')
+const exportRoute = read('src/app/api/invoices/export/route.ts')
+const importRoute = read('src/app/api/invoices/import/route.ts')
+const documentRoute = read('src/app/api/invoices/[id]/documents/[documentId]/route.ts')
+const pdf = read('src/lib/providers/parasut-invoice-pdf.ts')
+const credentials = read('src/lib/payment-credentials.ts')
+const publicConfig = read('src/lib/payment-provider-public-config.ts')
+const pii = read('src/lib/invoice-pii-dto.ts')
+
+assert(exportRoute.includes('can.readInvoices'), 'invoice export must require invoice read capability')
+assert(exportRoute.includes('ctx.workspace.id'), 'invoice export must scope records to the current workspace')
+assert(exportRoute.includes("'Cache-Control': 'private, no-store'"), 'invoice export must not be publicly cached')
+assert(importRoute.includes('can.writeInvoices'), 'invoice import must require invoice write capability')
+assert(importRoute.includes('INVOICE_IMPORT_MAX_SIZE'), 'invoice import must enforce a bounded file size')
+assert(importRoute.includes('ctx.workspace.id'), 'invoice import must bind batch ownership to the current workspace')
+assert(documentRoute.includes('can.readInvoices'), 'document retrieval must require invoice read capability')
+assert(documentRoute.includes("visibility: 'private'"), 'document retrieval must require private visibility')
+assert(documentRoute.includes("readyAt: { not: null }"), 'document retrieval must require document-ready state')
+assert(documentRoute.includes("'Cache-Control': 'private, no-store'"), 'document retrieval must disable shared caching')
+assert(pdf.includes('/^https:\\/\\/[^\\s]+$/i'), 'provider PDF descriptor must accept HTTPS only')
+assert(pdf.includes("scanStatus: 'pending'"), 'provider PDF must remain pending until scanning')
+assert(pdf.includes("visibility: 'private'"), 'provider PDF must be stored privately')
+assert(credentials.includes('encrypt') && credentials.includes('decrypt'), 'payment credentials must use the encrypted credential boundary')
+assert(!publicConfig.includes('secret') && !publicConfig.includes('token'), 'payment public config must not expose secret/token fields')
+assert(pii.includes('workspaceId'), 'invoice PII DTO must retain workspace boundary')
+assert(!pii.includes('rawPayload') && !pii.includes('accessToken'), 'invoice PII DTO must not expose raw provider payload or access token')
+
+console.log('payment-invoice-security-boundary.test: PASS (R-07A)')

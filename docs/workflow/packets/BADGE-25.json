@@ -1,0 +1,40 @@
+{
+  "id": "BADGE-25",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı artifact storage durumunu mevcut authenticated private download kararına bağlamak; yalnız taraması geçmiş READY artifact'leri indirme adayı yapmak.",
+  "rollback": "Yalnız artifact delivery adapter'ını, focused testi, packet ve BADGE-25 durum satırını geri al; public URL, dosya stream'i, export action'ı, ödeme, fatura veya provider açma.",
+  "previous": ["BADGE-24"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/badge-artifact-storage-contract.ts",
+    "src/lib/badge-download-contract.ts",
+    "src/lib/badge-handoff-contract.ts",
+    "tests/badge-artifact-storage-contract.test.mjs",
+    "tests/badge-download-contract.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-25.json",
+    "src/lib/badge-artifact-delivery-contract.ts",
+    "tests/badge-artifact-delivery-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Storage descriptor ile authenticated download aynı artifactId/workspaceId/formId/private scope değerlerini kullanır.",
+    "Yalnız READY state downloadable olur; QUARANTINED ve BLOCKED mevcut ARTIFACT_NOT_READY kararıyla fail-closed durur.",
+    "Requester authentication, badge-read yetkisi, form/workspace scope ve TTL kontrolleri mevcut download sözleşmesinden aynen geçer.",
+    "Adapter public URL, storage path, PDF bytes, PII, QR payload veya provider verisi üretmez; dosya stream'i ve export action'ı açılmaz.",
+    "Focused contract testi, TypeScript ve context-check geçer."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"]
+  ],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-artifact-delivery-contract.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

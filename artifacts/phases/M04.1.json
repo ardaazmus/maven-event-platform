@@ -1,0 +1,42 @@
+{
+  "id": "M04.1",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "36ff19a1f7047ba1",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "media-api.test PASS",
+    "scope": {
+      "changedFiles": [
+        "src/app/api/media/route.ts",
+        "src/app/api/forms/[id]/media/route.ts",
+        "tests/media-api.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "no storageKey leak, scope check",
+    "acceptanceIds": [
+      "AC-MEDIA-API-01"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/media-api.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-01T22:50:12.453Z"
+}

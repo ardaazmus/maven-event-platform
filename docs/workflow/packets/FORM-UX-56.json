@@ -1,0 +1,18 @@
+{
+  "id": "FORM-UX-56",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Ayarlar responsive yan rayi icin eski breakpoint regression sozlesmesini mevcut 1280px davranisiyla hizalamak",
+  "rollback": "FORM-UX-56 packet, ui-layout regression testi ve STATUS kaydini geri al",
+  "previous": ["FORM-UX-55"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/views/settings-view.tsx", "tests/ui-layout.test.mjs", "tests/responsive-a11y.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-56.json", "tests/ui-layout.test.mjs", "STATUS.md"],
+  "acceptance": [
+    "Responsive ayarlar testi uygulamanin xl breakpoint ve 1280px matchMedia sozlesmesini dogrular",
+    "Kaydetme aksiyonu, yatay/dikey navigasyon ve canonical branding baglantisi kontrolleri korunur",
+    "Uygulama kaynak kodu, database, auth/policy, public form ve provider davranisi degismez",
+    "Regression, TypeScript, build, readiness, context-check ve workflow verify basarili olur"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]],
+  "checks": [["bun", "tests/ui-layout.test.mjs"], ["bun", "tests/responsive-a11y.test.mjs"], ["bun", "tests/form-ux-final-gate.test.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"], ["node", "scripts/context-check.mjs"]]
+}

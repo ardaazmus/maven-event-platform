@@ -1,0 +1,13 @@
+{
+  "id": "V2-01",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "First-party Maven merchant kapsamını server-side ödeme kapısına bağlamak; public request ile SaaS/first-party scope seçimini ve production mutation'ı engellemek",
+  "rollback": "Yalnız V2-01 kapsamındaki gate ve test değişikliklerini geri al; provider secret, merchant hesabı veya live mutation oluşturma",
+  "previous": ["V2-00A"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "RELEASE-DECISION.md", "docs/workflow/README.md", "docs/superpowers/plans/2026-09-06-mavenforms-release-modules-first-party-saas-roadmap.md", "docs/runbooks/r10-first-party-pilot-and-manual-invoice.md", "src/lib/r10-scope-gate.ts", "src/lib/payment-connection-gate.ts", "src/lib/payment-provider-contract.ts", "tests/payment-connection-gate.test.mjs", "tests/r10-first-party-pilot-gate.test.mjs", "tests/r10-payment-invoice-hold-mail-separation.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/V2-01.json", "src/lib/r10-scope-gate.ts", "src/lib/payment-connection-gate.ts", "tests/v2-first-party-payment-gate.test.mjs", "STATUS.md"],
+  "acceptance": ["First-party scope yalnız server-side trusted input ile kabul edilir", "SaaS scope ve public client override payment gate tarafından reddedilir", "Local/staging sandbox capability production-ready veya live payment olarak raporlanmaz", "Workspace, provider, mode ve active connection eşleşmesi korunur", "Test ve kod secret, token, PAN/CVV, PII veya gerçek merchant kimliği içermez"],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["bun", "tests/v2-first-party-payment-gate.test.mjs"], ["bun", "tests/payment-connection-gate.test.mjs"], ["bun", "tests/r10-first-party-pilot-gate.test.mjs"], ["bun", "tests/r10-payment-invoice-hold-mail-separation.test.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

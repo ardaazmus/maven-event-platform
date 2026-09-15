@@ -1,0 +1,45 @@
+{
+  "id": "R-00-05",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Webhook inbox'ındaki doğrulanmış refund/chargeback olaylarını mevcut payment transition ve invoice review handoff'una bağlamak",
+  "rollback": "Bu paketin webhook mapping/wiring ve test değişikliklerini geri al; payment, invoice, document veya delivery verisini silme veya resetleme",
+  "previous": ["R-00-04"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/lib/payment-webhook-processing.ts",
+    "src/lib/payment-state.ts",
+    "src/lib/payment-invoice-refund-handoff.ts",
+    "src/lib/payment-invoice-webhook-handoff.ts",
+    "tests/payment-webhook-processing.test.mjs",
+    "tests/payment-webhook-invoice-handoff.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R-00-05.json",
+    "src/lib/payment-webhook-processing.ts",
+    "tests/payment-webhook-processing.test.mjs",
+    "tests/payment-webhook-invoice-handoff.test.mjs",
+    "STATUS.md",
+    "docs/superpowers/plans/2026-09-02-mavenforms-e-belge-15-dakikalik-uygulama-paketleri.md"
+  ],
+  "acceptance": [
+    "Only signature-verified, tenant-scoped and payment-bound webhook metadata can produce refund/partial-refund/chargeback transitions",
+    "Mapped refund/chargeback events use the existing payment transaction and invoice review handoff boundary",
+    "Duplicate, unsupported, contradictory or incomplete provider events remain idempotent and fail-closed",
+    "Existing succeeded/failed/processing webhook behavior and invoice snapshot handoff remain unchanged"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"],
+    ["bun", "tests/payment-webhook-processing.test.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/payment-webhook-processing.test.mjs"],
+    ["bun", "tests/payment-webhook-invoice-handoff.test.mjs"],
+    ["node", "scripts/run-tests.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

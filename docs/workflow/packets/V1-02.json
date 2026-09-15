@@ -1,0 +1,13 @@
+{
+  "id": "V1-02",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "V1 kayıt sonrası standart hoş geldiniz ve yetkili ödeme bekliyor bilgi mesajı sözleşmesini notification outbox sınırında tanımlamak",
+  "rollback": "Yalnız V1-02 mesaj politikası, hedef testi, packet ve durum notunu geri al; submission, payment provider, invoice veya tenant verisini silme/değiştirme",
+  "previous": ["V1-01"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "docs/superpowers/plans/2026-09-06-mavenforms-release-modules-first-party-saas-roadmap.md", "src/lib/email-policy.ts", "src/lib/email-consent.ts", "src/lib/email-delivery-guard.ts", "src/lib/email-sender-profile.ts", "src/lib/invoice-delivery-enqueue.ts", "src/app/api/forms/[id]/notifications/route.ts", "src/app/api/forms/[id]/notifications/[notifId]/route.ts"],
+  "allowedFiles": ["docs/workflow/packets/V1-02.json", "src/lib/participant-message-policy.ts", "tests/participant-message-policy.test.mjs", "STATUS.md"],
+  "acceptance": ["Kayıt sonrası standart hoş geldiniz mesajı notification sınıfında üretilir", "Ödeme bekliyor mesajı yalnız yetkili operasyon actor’ı için ve açık alıcı kapsamıyla üretilir", "Form başlığı, kayıt yöntemi/sponsorluk ve izinli ödeme metni allowlist ile sınırlandırılır", "Recipient browser request’inden override edilemez; banka/provider secret ve raw PII mesaja girmez", "Fatura mesajı bu fazda üretilmez ve transactional invoice delivery ile karıştırılmaz", "Hedef policy testi, TypeScript, production build, /api/ready ve workflow verify geçer"],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["node", "tests/participant-message-policy.test.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

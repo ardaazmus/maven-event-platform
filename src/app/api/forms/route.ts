@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getSessionFromCookie } from '@/lib/auth'
+import { can } from '@/lib/policy'
+import { defaultFormUseProfile, FORM_USE_PROFILES } from '@/lib/form-use-profile'
 import { z } from 'zod'
 
 export async function GET(req: NextRequest) {
   const ctx = await getSessionFromCookie()
   if (!ctx) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  const auth = can.readForms(ctx as any)
+  if (!auth.allowed) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status })
   }
 
   const { searchParams } = new URL(req.url)
@@ -39,23 +45,29 @@ export async function GET(req: NextRequest) {
   })
 
   return NextResponse.json({
-    data: forms.map(f => ({
-      id: f.id,
-      title: f.title,
-      description: f.description,
-      slug: f.slug,
-      status: f.status,
-      folder: f.folder ? { id: f.folder.id, name: f.folder.name, color: f.folder.color } : null,
-      tags: f.tags.map(ft => ({ id: ft.tag.id, name: ft.tag.name, color: ft.tag.color })),
-      owner: f.owner,
-      submissionCount: f.submissionCount,
-      todaySubmissionCount: f.todaySubmissionCount,
-      responseLimit: f.responseLimit,
-      createdAt: f.createdAt,
-      updatedAt: f.updatedAt,
-      startDate: f.startDate,
-      endDate: f.endDate,
-    })),
+    data: forms.map(f => {
+      const settings = (() => { try { return JSON.parse(f.settingsJson || '{}') } catch { return {} } })()
+      return {
+        id: f.id,
+        title: f.title,
+        description: f.description,
+        slug: f.slug,
+        status: f.status,
+        folder: f.folder ? { id: f.folder.id, name: f.folder.name, color: f.folder.color } : null,
+        tags: f.tags.map(ft => ({ id: ft.tag.id, name: ft.tag.name, color: ft.tag.color })),
+        owner: f.owner,
+        submissionCount: f.submissionCount,
+        todaySubmissionCount: f.todaySubmissionCount,
+        responseLimit: f.responseLimit,
+        coverMediaId: settings.coverMediaId || null,
+        coverImageUrl: settings.coverImageUrl || null, // deprecated, kept for migration
+        coverImageAlt: settings.coverImageAlt || null,
+        createdAt: f.createdAt,
+        updatedAt: f.updatedAt,
+        startDate: f.startDate,
+        endDate: f.endDate,
+      }
+    }),
   })
 }
 
@@ -66,6 +78,8 @@ const createFormSchema = z.object({
   folderId: z.string().optional().nullable(),
   locale: z.string().optional().default('tr'),
   timezone: z.string().optional().default('Europe/Istanbul'),
+  useProfile: z.enum(FORM_USE_PROFILES).optional().default(defaultFormUseProfile()),
+  enableUserConfirmation: z.boolean().optional().default(false),
 })
 
 export async function POST(req: NextRequest) {
@@ -73,15 +87,19 @@ export async function POST(req: NextRequest) {
   if (!ctx) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+  const auth = can.writeForms(ctx as any)
+  if (!auth.allowed) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status })
+  }
 
   try {
     const body = await req.json()
     const parsed = createFormSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 })
+      return NextResponse.json({ error: parsed.error.issues[0]?.message || 'Geçersiz veri' }, { status: 400 })
     }
 
-    const { title, description, slug, folderId, locale, timezone } = parsed.data
+    const { title, description, slug, folderId, locale, timezone, useProfile, enableUserConfirmation } = parsed.data
 
     // Check slug uniqueness
     const existing = await db.form.findUnique({ where: { slug } })
@@ -89,35 +107,52 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Bu slug zaten kullanımda' }, { status: 409 })
     }
 
-    const form = await db.form.create({
-      data: {
-        workspaceId: ctx.workspace.id,
-        folderId: folderId || null,
-        ownerId: ctx.user.id,
-        createdById: ctx.user.id,
-        title,
-        description: description || null,
-        slug,
-        status: 'draft',
-        settingsJson: JSON.stringify({
-          locale,
-          timezone,
-          submitButtonText: 'Gönder',
-          successMessage: 'Formunuz başarıyla gönderildi. Teşekkürler!',
-        }),
-      },
-      include: { folder: true, tags: { include: { tag: true } } },
-    })
+    const form = await db.$transaction(async (tx) => {
+      const created = await tx.form.create({
+        data: {
+          workspaceId: ctx.workspace.id,
+          folderId: folderId || null,
+          ownerId: ctx.user.id,
+          createdById: ctx.user.id,
+          title,
+          description: description || null,
+          slug,
+          status: 'draft',
+          settingsJson: JSON.stringify({
+            locale,
+            timezone,
+            useProfile,
+            submitButtonText: 'Gönder',
+            successMessage: 'Formunuz başarıyla gönderildi. Teşekkürler!',
+          }),
+        },
+        include: { folder: true, tags: { include: { tag: true } } },
+      })
 
-    await db.auditLog.create({
-      data: {
-        workspaceId: ctx.workspace.id,
-        actorId: ctx.user.id,
-        action: 'form.create',
-        resourceType: 'form',
-        resourceId: form.id,
-        afterJson: JSON.stringify({ title: form.title, slug: form.slug }),
-      },
+      if (enableUserConfirmation) {
+        await tx.formField.create({ data: { formId: created.id, fieldKey: 'email', type: 'email', label: 'E-posta Adresi', required: true, placeholder: 'ornek@email.com', sortOrder: 1 } })
+        await tx.notification.create({
+          data: {
+            formId: created.id,
+            name: 'Kullanıcı Onayı',
+            type: 'user_confirmation',
+            enabled: true,
+            configJson: JSON.stringify({ subject: 'Yanıtınız alınmıştır: {form_title}', body: 'Form yanıtınız başarıyla alındı.' }),
+          },
+        })
+      }
+
+      await tx.auditLog.create({
+        data: {
+          workspaceId: ctx.workspace.id,
+          actorId: ctx.user.id,
+          action: 'form.create',
+          resourceType: 'form',
+          resourceId: created.id,
+          afterJson: JSON.stringify({ title: created.title, slug: created.slug, enableUserConfirmation }),
+        },
+      })
+      return created
     })
 
     return NextResponse.json({ data: form })

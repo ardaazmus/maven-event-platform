@@ -1,0 +1,43 @@
+{
+  "id": "R10-V4-15",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "OAuth PKCE/state/callback bağlama sözleşmesini provider-neutral ve secretsız metadata sınırıyla tanımlamak",
+  "rollback": "OAuth PKCE sözleşmesini ve testini geri al; mevcut Paraşüt OAuth route ve token akışını değiştirme",
+  "previous": ["R10-V4-14-R1"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/parasut-oauth.ts",
+    "src/lib/parasut-oauth-server.ts",
+    "src/app/api/integrations/parasut/oauth/start/route.ts",
+    "src/app/api/integrations/parasut/oauth/callback/route.ts",
+    "tests/parasut-oauth.test.mjs",
+    "tests/parasut-oauth-route.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-15.json",
+    "src/lib/oauth-pkce-contract.ts",
+    "tests/oauth-pkce-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Authorization URL yalnız S256 code_challenge taşır; verifier ve client secret URL’ye girmez",
+    "Callback state tek kullanımlı, süreli ve tenant/workspace/actor/redirect URI bağlamına bağlıdır",
+    "Redirect URI exact HTTPS callback ile sınırlandırılır; query/hash/credential/open redirect reddedilir",
+    "Bu faz mevcut OAuth route/token exchange, canlı Paraşüt hesabı ve R-10 production kararını açmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/oauth-pkce-contract.test.mjs"],
+    ["bun", "tests/parasut-oauth.test.mjs"],
+    ["bun", "tests/parasut-oauth-route.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

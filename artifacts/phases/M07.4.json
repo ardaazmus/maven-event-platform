@@ -1,0 +1,42 @@
+{
+  "id": "M07.4",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "286f42803512304a",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "export.test PASS",
+    "scope": {
+      "changedFiles": [
+        "src/app/api/forms/[id]/export/route.ts",
+        "src/components/mavenforms/views/submissions-view.tsx",
+        "tests/export.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "csv attachment, tenant scoped",
+    "acceptanceIds": [
+      "AC-FORM-07"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/export.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-01T23:56:05.572Z"
+}

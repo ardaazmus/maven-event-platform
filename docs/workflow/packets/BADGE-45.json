@@ -1,0 +1,35 @@
+{
+  "id": "BADGE-45",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı ekranının V1-V3 yanıt verisiyle gerçek API dönüş şekline uyumlu çalışmasını ve hatalı karışık durum üretmemesini sağlamak.",
+  "rollback": "BADGE-45 packetı, receipt ve değişikliği geri al; V1/V2/V3 ödeme-fatura sözleşmelerine, R-10 kararına, V4'e ve yaka kartı server güvenlik kapılarına dokunma.",
+  "previous": [],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/api-client.ts",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/app/api/forms/[id]/submissions/route.ts",
+    "tests/badge-ui-entry-wiring.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-45.json",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/badge-ui-submission-options.test.mjs"
+  ],
+  "acceptance": [
+    "Yaka kartı paneli, api() istemcisinin açtığı submissions dizisini doğru tüketir ve geçerli kayıt seçeneklerini gösterir.",
+    "Yanıt verisi şekli nedeniyle panelde yanlış 'Durum alınamadı' hatası görünmez.",
+    "Yaka kartı üretim, şablon ve READY-only export kapıları korunur; V1, V2, V3, R-10 ve V4 davranışları değiştirilmez.",
+    "Focused regression test ve TypeScript kontrolü geçer."
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [
+    ["node", "tests/badge-ui-submission-options.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

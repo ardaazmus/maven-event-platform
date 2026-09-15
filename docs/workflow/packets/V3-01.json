@@ -1,0 +1,13 @@
+{
+  "id": "V3-01",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Paraşüt contact/product resolution için bounded lookup, güçlü eşleşme, ambiguous manual review ve explicit create preparation sınırını provider mutation açmadan doğrulamak",
+  "rollback": "Yalnız V3-01 packetini, STATUS kaydını ve hedef kapı testini geri al; provider hesabı, canlı ödeme, fatura veya production verisini silme/değiştirme",
+  "previous": ["V3-00"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "RELEASE-DECISION.md", "docs/workflow/README.md", "docs/acceptance/v2-deferred-provider-decision.md", "docs/runbooks/r10-external-evidence-guide.md", "docs/runbooks/r10-first-party-pilot-and-manual-invoice.md", "docs/superpowers/plans/2026-09-06-mavenforms-release-modules-first-party-saas-roadmap.md", "src/lib/parasut-contact-command.ts", "src/lib/parasut-contact-command-store.ts", "src/lib/parasut-contact-worker.ts", "src/lib/parasut-product-command.ts", "src/lib/parasut-product-command-store.ts", "src/lib/providers/parasut-contact.ts", "src/lib/providers/parasut-product.ts", "src/lib/providers/parasut-v4-mappers.ts", "src/lib/r10-scope-gate.ts", "tests/v3-parasut-connection-gate.test.mjs", "tests/v2-release-gate.test.mjs", "tests/final-release-gate.test.mjs", "tests/release-decision.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/V3-01.json", "STATUS.md", "tests/v3-parasut-resolution.test.mjs"],
+  "acceptance": ["VKN/e-posta/ad/kod lookup bounded sonuç ve normalize allowlist ile sınırlanır", "Güçlü tek eşleşme command preparation’a izin verir; sıfır veya birden fazla eşleşme manual review/fail-closed olur", "Contact/product create yalnız explicit preparation olarak kalır; provider mutation, otomatik fatura, document_ready veya toplu mail dispatch açılmaz", "Workspace/company scope, idempotency, replay ve raw provider response dışarı sızmayan DTO sınırları korunur", "V2 iyzico-first ödeme, manuel fatura zinciri, ayrı billing sender ve R-10 NO-GO/BLOCKED kararı korunur", "Gerçek secret, token, PAN/CVV, raw provider response, belge içeriği ve plaintext PII test veya dokümana girmez"],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["bun", "tests/v3-parasut-resolution.test.mjs"], ["bun", "tests/v3-parasut-connection-gate.test.mjs"], ["bun", "tests/v2-release-gate.test.mjs"], ["bun", "tests/final-release-gate.test.mjs"], ["bun", "tests/release-decision.test.mjs"], ["bun", "tests/r10-first-party-pilot-gate.test.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

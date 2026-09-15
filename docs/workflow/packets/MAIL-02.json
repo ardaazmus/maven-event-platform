@@ -1,0 +1,43 @@
+{
+  "id": "MAIL-02",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Email şablonlarında allowlist tabanlı güvenli merge-tag ve server-side içerik render sözleşmesini kurmak",
+  "rollback": "Yalnız MAIL-02 packetini, content sözleşmesini, hedef testini ve STATUS kaydını geri al; form, yanıt, ödeme, fatura, mail veya production verisini silme/değiştirme",
+  "previous": ["MAIL-01"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/workflow/packets/MAIL-01.json",
+    "artifacts/workflow/MAIL-01/verified.json",
+    "src/lib/email-policy.ts",
+    "src/lib/email-template-lifecycle.ts",
+    "src/lib/email-template-policy.ts",
+    "tests/email-template-lifecycle.test.mjs",
+    "tests/email-template-policy.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/MAIL-02.json",
+    "src/lib/email-template-content.ts",
+    "tests/email-template-content.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Yalnız form adı, etkinlik adı, katılımcı adı, kayıt yöntemi/sponsorluk, ödeme durumu ve yetkili tarih/yer merge-tag'leri seçilebilir",
+    "Provider secret, token, internal id, raw provider payload, banka sırrı, kart verisi ve gereksiz PII tag olarak kabul edilmez",
+    "Text/subject render server-side yapılır; bilinmeyen tag, subject CRLF ve sınır dışı içerik fail-closed reddedilir; HTML değerleri escape edilir",
+    "Bu faz database migration, authenticated CRUD route, provider gönderimi veya R-10 release kapısı açmaz; mevcut email policy son güvenlik katmanı olarak korunur",
+    "Hedef content testi, MAIL regresyonu, TypeScript ve readiness geçmeden faz tamamlanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/email-template-content.test.mjs"],
+    ["bun", "tests/email-template-lifecycle.test.mjs"],
+    ["bun", "tests/email-policy.test.mjs"],
+    ["bun", "tests/email-template-policy.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

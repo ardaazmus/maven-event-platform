@@ -1,0 +1,40 @@
+{
+  "id": "M12.2",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "3e16fd4ec52f2394",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "security-regression.test PASS",
+    "scope": {
+      "changedFiles": [
+        "tests/security-regression.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "no PII, IDOR 403/404, public leakage 0, draft 403",
+    "acceptanceIds": [
+      "AC-SEC-01"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/security-regression.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-02T03:47:41.453Z"
+}

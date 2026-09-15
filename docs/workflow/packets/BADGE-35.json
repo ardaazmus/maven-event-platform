@@ -1,0 +1,43 @@
+{
+  "id": "BADGE-35",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Doğrulanmış yaka kartı generation job'ını snapshot/template/QR ile çalıştırıp çıktıyı yalnız karantinaya almak.",
+  "rollback": "BADGE-35 execution adapter, test ve durum satırını geri al; scan, download, export, ödeme, fatura, provider ve R-10 kapılarını açma.",
+  "previous": ["BADGE-34"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/badge-generation-job-contract.ts",
+    "src/lib/badge-template-binding-contract.ts",
+    "src/lib/badge-render-input-contract.ts",
+    "src/lib/badge-snapshot-contract.ts",
+    "src/lib/badge-pdf-document-renderer.ts",
+    "src/lib/badge-artifact-storage.ts",
+    "tests/badge-generation-job-contract.test.mjs",
+    "tests/badge-template-binding-contract.test.mjs",
+    "tests/badge-render-input-contract.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-35.json",
+    "src/lib/badge-generation-execution.ts",
+    "tests/badge-generation-execution.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Job, template ve snapshot workspace/form/template sürümü ile eşleşmeden render başlamaz; template private ve VALIDATED olmalıdır.",
+    "Snapshot allowlist değerleri ve QR credential descriptor'ı renderer'a aktarılır; hassas/ham cevaplar çıktıya taşınmaz.",
+    "Tek/çift yüz render çıktısı private storage'a PENDING/QUARANTINED olarak yazılır; scan geçişi otomatik varsayılmaz.",
+    "Render veya storage hatası fail-closed döner; public URL, e-posta, provider, matbaa ve R-10 mutasyonu yoktur.",
+    "Focused execution testi, TypeScript ve context-check geçer."
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-generation-execution.test.mjs"],
+    ["node", "--experimental-strip-types", "tests/badge-pdf-document-renderer.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

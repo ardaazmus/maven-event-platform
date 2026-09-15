@@ -6,6 +6,7 @@ import type { NextRequest } from 'next/server'
 
 const SESSION_COOKIE = 'mavenforms_session'
 const SESSION_DURATION = 30 * 24 * 60 * 60 * 1000 // 30 days
+// ponytail: 30d pilot kabulü — prod hedef 1h + refresh rotation (M01.6 docs/SESSION-POLICY.md)
 
 // Argon2id-compatible password hashing using scrypt (works on Hostinger PHP/Node shared)
 // Note: For production with high security needs, use argon2 npm package on VPS
@@ -138,7 +139,7 @@ export function setSessionCookieOnResponse(res: NextResponse, token: string, exp
   try {
     res.cookies.set(SESSION_COOKIE, token, {
       httpOnly: true,
-      secure: false, // Allow HTTP for dev; production should set secure via env
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       expires: expiresAt,
       path: '/',

@@ -1,0 +1,41 @@
+{
+  "id": "BADGE-10",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı toplu export paketi için combined PDF, kişi başı ZIP ve PII-minimal manifest sözleşmesini kurmak.",
+  "rollback": "Yalnız badge-export-contract modülü, sentetik focused testi, packet ve BADGE-10 durum satırını geri al; gerçek PDF/ZIP üretimi, medya, submission, ödeme, fatura ve e-posta verilerine dokunma.",
+  "previous": ["BADGE-09"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-09-mavenforms-badge-module-roadmap.md",
+    "docs/research-sources/2026-09-09-badge-qr-output-research-receipt.md",
+    "src/lib/badge-batch-contract.ts",
+    "src/lib/badge-contract.ts",
+    "src/lib/badge-face-contract.ts"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-10.json",
+    "src/lib/badge-export-contract.ts",
+    "tests/badge-export-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Tek yüz combined-front.pdf, çift yüz combined-duplex.pdf olarak yüz moduna bağlı adlandırılır.",
+    "ZIP yalnız başarılı kişi başı PDF artifact'larını içerir; başarısız kayıtlar manifestte nedeni ile kalır.",
+    "Manifest job/template/print-profile kapsamını, başarı/başarısız sayılarını ve opaque referansları taşır; ham yanıt, e-posta, telefon ve ödeme taşımaz.",
+    "Dosya adları NFC/case-insensitive çakışma anahtarıyla kontrol edilir; çakışma sessizce üzerine yazılmaz.",
+    "Focused test, TypeScript ve context-check geçer; ödeme/fatura/V3/V4/R-10 davranışları değişmez."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-export-contract.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

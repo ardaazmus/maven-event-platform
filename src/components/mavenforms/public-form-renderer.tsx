@@ -1,7 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { createElement, useState, useEffect } from 'react'
 import { api } from '@/lib/api-client'
+import { normalizeFieldLayout } from '@/lib/form-document'
+import { getIconComponent } from '@/lib/icon-registry'
+import { cn } from '@/lib/utils'
 import type { FormField, FormAppearance, Theme } from '@/lib/types'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -32,7 +35,6 @@ import {
 
 interface PublicFormRendererProps {
   form: {
-    id: string
     title: string
     description: string | null
     slug: string
@@ -41,6 +43,11 @@ interface PublicFormRendererProps {
     theme: (Theme & { tokens: any }) | null
     appearance: (FormAppearance & { footerLinks: any[] }) | null
   }
+}
+
+function getParentOrigin() {
+  if (typeof window === 'undefined' || window.parent === window || !document.referrer) return null
+  try { return new URL(document.referrer).origin } catch { return null }
 }
 
 export function PublicFormRenderer({ form }: PublicFormRendererProps) {
@@ -59,9 +66,11 @@ export function PublicFormRenderer({ form }: PublicFormRendererProps) {
     const sendHeight = () => {
       const h = document.documentElement.scrollHeight
       setHeight(h)
+      const target = getParentOrigin()
+      if (!target) return
       window.parent.postMessage(
-        { mavenforms: true, type: 'resize', height: h },
-        '*'
+        { mavenforms: true, type: 'resize', height: h, v: 1 },
+        target
       )
     }
     sendHeight()
@@ -97,7 +106,7 @@ export function PublicFormRenderer({ form }: PublicFormRendererProps) {
 
     setSubmitting(true)
     try {
-      await api(`/api/forms/${form.id}/submissions`, {
+      await api(`/api/public/forms/${form.slug}/submissions`, {
         method: 'POST',
         body: JSON.stringify(values),
         skipAuth: true,
@@ -105,9 +114,10 @@ export function PublicFormRenderer({ form }: PublicFormRendererProps) {
       setSubmitted(true)
       // Notify parent (embed) of submission
       if (isEmbedded) {
-        window.parent.postMessage(
-          { mavenforms: true, type: 'submit', payload: { formId: form.id } },
-          '*'
+        const target = getParentOrigin()
+        if (target) window.parent.postMessage(
+          { mavenforms: true, type: 'submit', formId: form.slug, v: 1 },
+          target
         )
       }
     } catch (err: any) {
@@ -170,20 +180,37 @@ export function PublicFormRenderer({ form }: PublicFormRendererProps) {
                 <p className="text-gray-600 mb-6">{form.description}</p>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-5 md:grid-cols-6 lg:grid-cols-12">
                 {form.fields.map((field) => (
-                  <FieldRenderer
-                    key={field.id}
-                    field={field}
-                    value={values[field.fieldKey]}
-                    error={errors[field.fieldKey]}
-                    onChange={(v) => setValues({ ...values, [field.fieldKey]: v })}
-                    primaryColor={primaryColor}
-                  />
+                  (() => {
+                    const layout = normalizeFieldLayout(field.config?.layout)
+                    return (
+                      <div
+                        key={field.fieldKey}
+                        className="min-w-0 [grid-column:var(--mf-mobile-col-start)_/_span_var(--mf-mobile-col-span)] md:[grid-column:var(--mf-tablet-col-start)_/_span_var(--mf-tablet-col-span)] lg:[grid-column:var(--mf-col-start)_/_span_var(--mf-col-span)]"
+                        style={{
+                          '--mf-col-span': layout.colSpan,
+                          '--mf-tablet-col-span': layout.tabletColSpan,
+                          '--mf-mobile-col-span': layout.mobileColSpan,
+                          '--mf-col-start': layout.breakBefore ? 1 : 'auto',
+                          '--mf-tablet-col-start': layout.breakBefore ? 1 : 'auto',
+                          '--mf-mobile-col-start': layout.breakBefore ? 1 : 'auto',
+                        } as React.CSSProperties}
+                      >
+                        <FieldRenderer
+                          field={field}
+                          value={values[field.fieldKey]}
+                          error={errors[field.fieldKey]}
+                          onChange={(v) => setValues({ ...values, [field.fieldKey]: v })}
+                          primaryColor={primaryColor}
+                        />
+                      </div>
+                    )
+                  })()
                 ))}
 
                 {form.fields.length === 0 && (
-                  <p className="text-center text-gray-500 py-8">Bu formda henüz alan yok.</p>
+                  <p className="col-span-full py-8 text-center text-gray-500">Bu formda henüz alan yok.</p>
                 )}
 
                 {form.fields.length > 0 && (
@@ -191,7 +218,7 @@ export function PublicFormRenderer({ form }: PublicFormRendererProps) {
                     type="submit"
                     size="lg"
                     disabled={submitting}
-                    className="w-full gap-2"
+                    className="col-span-full w-full gap-2"
                     style={{ backgroundColor: primaryColor, color: 'white' }}
                   >
                     {submitting ? (
@@ -224,50 +251,90 @@ function FormHeader({ app, defaultTitle, defaultDescription }: {
   defaultTitle: string
   defaultDescription: string | null
 }) {
+  const [logoFailed, setLogoFailed] = useState(false)
+  const [failedBackgroundUrl, setFailedBackgroundUrl] = useState<string | null>(null)
+  const imageBackedHeader = Boolean(app.headerBgImage) && failedBackgroundUrl !== app.headerBgImage
+  const headerAlign = app.headerAlign || 'center'
+
+  useEffect(() => {
+    if (!app.headerLogoUrl) return
+    const probe = new Image()
+    probe.onload = () => setLogoFailed(false)
+    probe.onerror = () => setLogoFailed(true)
+    probe.src = app.headerLogoUrl
+    return () => {
+      probe.onload = null
+      probe.onerror = null
+    }
+  }, [app.headerLogoUrl])
+
   return (
     <header
       style={{
+        position: imageBackedHeader ? 'relative' : undefined,
+        overflow: imageBackedHeader ? 'hidden' : undefined,
         backgroundColor: app.headerBgColor || '#ffffff',
-        backgroundImage: app.headerBgImage ? `url(${app.headerBgImage})` : undefined,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundImage: undefined,
         color: app.headerTextColor || '#1a1a1a',
-        padding: `${app.headerPadding || 32}px`,
-        textAlign: app.headerAlign || 'center',
+        padding: imageBackedHeader ? 0 : `${app.headerPadding || 32}px`,
+        textAlign: headerAlign,
       }}
     >
-      {app.headerLogoUrl && (
+      {imageBackedHeader && (
         <img
-          src={app.headerLogoUrl}
-          alt={app.headerLogoAlt || ''}
-          style={{
-            maxWidth: '100%',
-            width: app.headerLogoWidth ? `${app.headerLogoWidth}px` : 'auto',
-            height: 'auto',
-            maxHeight: '120px',
-            marginBottom: '16px',
-            display: 'block',
-            marginLeft: app.headerAlign === 'center' ? 'auto' : app.headerAlign === 'right' ? 'auto' : '0',
-            marginRight: app.headerAlign === 'center' ? 'auto' : '0',
-          }}
+          src={app.headerBgImage}
+          alt=""
+          aria-hidden="true"
+          onError={() => setFailedBackgroundUrl(app.headerBgImage)}
+          style={{ display: 'block', width: '100%', height: 'auto', maxWidth: '100%' }}
         />
       )}
-      {app.headerTitle && (
-        <h1 style={{ fontSize: '1.875rem', fontWeight: 700, margin: '0 0 8px 0', lineHeight: 1.2 }}>
-          {app.headerTitle}
-        </h1>
-      )}
-      {app.headerSubtitle && (
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 600, margin: '0 0 16px 0', opacity: 0.9 }}>
-          {app.headerSubtitle}
-        </h2>
-      )}
-      {app.headerDescription && (
-        <div
-          style={{ fontSize: '0.95rem', lineHeight: 1.6, maxWidth: '600px', margin: '0 auto', opacity: 0.85 }}
-          dangerouslySetInnerHTML={{ __html: app.headerDescription.replace(/\n/g, '<br/>') }}
-        />
-      )}
+      <div
+        style={imageBackedHeader ? {
+          position: 'absolute',
+          inset: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: headerAlign === 'left' ? 'flex-start' : headerAlign === 'right' ? 'flex-end' : 'center',
+          padding: `${app.headerPadding || 32}px`,
+          boxSizing: 'border-box',
+        } : undefined}
+      >
+        {app.headerLogoUrl && !logoFailed && (
+          <img
+            src={app.headerLogoUrl}
+            alt={app.headerLogoAlt || ''}
+            onError={() => setLogoFailed(true)}
+            style={{
+              maxWidth: '100%',
+              width: app.headerLogoWidth ? `${app.headerLogoWidth}px` : 'auto',
+              height: 'auto',
+              maxHeight: '120px',
+              marginBottom: '16px',
+              display: 'block',
+              marginLeft: headerAlign === 'center' ? 'auto' : headerAlign === 'right' ? 'auto' : '0',
+              marginRight: headerAlign === 'center' ? 'auto' : '0',
+            }}
+          />
+        )}
+        {app.headerTitle && (
+          <h1 style={{ fontSize: '1.875rem', fontWeight: 700, margin: '0 0 8px 0', lineHeight: 1.2 }}>
+            {app.headerTitle}
+          </h1>
+        )}
+        {app.headerSubtitle && (
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, margin: '0 0 16px 0', opacity: 0.9 }}>
+            {app.headerSubtitle}
+          </h2>
+        )}
+        {app.headerDescription && (
+          <div
+            style={{ fontSize: '0.95rem', lineHeight: 1.6, maxWidth: '600px', margin: '0 auto', opacity: 0.85 }}
+            dangerouslySetInnerHTML={{ __html: app.headerDescription.replace(/\n/g, '<br/>') }}
+          />
+        )}
+      </div>
     </header>
   )
 }
@@ -302,27 +369,27 @@ function ContactBar({ app }: { app: any }) {
         </div>
         <div className="flex items-center gap-2">
           {app.socialInstagram && (
-            <a href={app.socialInstagram} target="_blank" rel="noopener noreferrer" className="hover:opacity-80">
+            <a href={app.socialInstagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram" className="hover:opacity-80">
               <Instagram className="w-4 h-4" />
             </a>
           )}
           {app.socialLinkedin && (
-            <a href={app.socialLinkedin} target="_blank" rel="noopener noreferrer" className="hover:opacity-80">
+            <a href={app.socialLinkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn" className="hover:opacity-80">
               <Linkedin className="w-4 h-4" />
             </a>
           )}
           {app.socialTwitter && (
-            <a href={app.socialTwitter} target="_blank" rel="noopener noreferrer" className="hover:opacity-80">
+            <a href={app.socialTwitter} target="_blank" rel="noopener noreferrer" aria-label="X" title="X" className="hover:opacity-80">
               <Twitter className="w-4 h-4" />
             </a>
           )}
           {app.socialFacebook && (
-            <a href={app.socialFacebook} target="_blank" rel="noopener noreferrer" className="hover:opacity-80">
+            <a href={app.socialFacebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" title="Facebook" className="hover:opacity-80">
               <Facebook className="w-4 h-4" />
             </a>
           )}
           {app.socialYoutube && (
-            <a href={app.socialYoutube} target="_blank" rel="noopener noreferrer" className="hover:opacity-80">
+            <a href={app.socialYoutube} target="_blank" rel="noopener noreferrer" aria-label="YouTube" title="YouTube" className="hover:opacity-80">
               <Youtube className="w-4 h-4" />
             </a>
           )}
@@ -334,6 +401,20 @@ function ContactBar({ app }: { app: any }) {
 
 function FormFooter({ app }: { app: any }) {
   const links = app.footerLinks || []
+  const [logoFailed, setLogoFailed] = useState(false)
+
+  useEffect(() => {
+    if (!app.footerLogoUrl) return
+    const probe = new Image()
+    probe.onload = () => setLogoFailed(false)
+    probe.onerror = () => setLogoFailed(true)
+    probe.src = app.footerLogoUrl
+    return () => {
+      probe.onload = null
+      probe.onerror = null
+    }
+  }, [app.footerLogoUrl])
+
   return (
     <footer
       style={{
@@ -343,10 +424,11 @@ function FormFooter({ app }: { app: any }) {
       }}
     >
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 max-w-3xl mx-auto">
-        {app.footerLogoUrl && (
+        {app.footerLogoUrl && !logoFailed && (
           <img
             src={app.footerLogoUrl}
             alt="Logo"
+            onError={() => setLogoFailed(true)}
             style={{ maxHeight: '40px', width: 'auto' }}
           />
         )}
@@ -382,6 +464,7 @@ function FieldRenderer({ field, value, error, onChange, primaryColor }: {
   primaryColor: string
 }) {
   const config = field.config || {}
+  const decoration = config.decoration
 
   if (field.type === 'section') {
     return (
@@ -395,12 +478,18 @@ function FieldRenderer({ field, value, error, onChange, primaryColor }: {
   if (field.type === 'page_break') return null
 
   return (
-    <div className="space-y-1.5">
-      <Label className="text-sm font-medium flex items-center gap-1">
-        {field.label}
-        {field.required && <span style={{ color: primaryColor }}>*</span>}
-      </Label>
-      {field.description && <p className="text-xs text-gray-500">{field.description}</p>}
+    <div className={cn(
+      'space-y-1.5',
+      decoration?.position !== 'top' && 'flex items-start gap-3',
+      decoration?.position === 'right' && 'flex-row-reverse',
+    )}>
+      {decoration && <FieldDecorationView decoration={decoration} />}
+      <div className={decoration?.position !== 'top' ? 'min-w-0 flex-1' : undefined}>
+        <Label className="text-sm font-medium flex items-center gap-1">
+          {field.label}
+          {field.required && <span style={{ color: primaryColor }}>*</span>}
+        </Label>
+        {field.description && <p className="text-xs text-gray-500">{field.description}</p>}
 
       {['text', 'email', 'phone', 'number', 'date', 'time'].includes(field.type) && (
         <Input
@@ -482,12 +571,15 @@ function FieldRenderer({ field, value, error, onChange, primaryColor }: {
       )}
 
       {field.type === 'rating' && (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1" role="group" aria-label="Puanlama">
           {[...Array(config.max || 10)].map((_, i) => (
             <button
               key={i}
               type="button"
               onClick={() => onChange(i + 1)}
+              aria-label={`${i + 1} yıldız`}
+              aria-pressed={(i + 1) === Number(value || 0)}
+              title={`${i + 1} yıldız`}
               className="text-2xl"
               style={{ color: (i + 1) <= (value || 0) ? '#f59e0b' : '#d1d5db' }}
             >
@@ -498,7 +590,26 @@ function FieldRenderer({ field, value, error, onChange, primaryColor }: {
       )}
 
       {field.helpText && <p className="text-xs text-gray-500">{field.helpText}</p>}
-      {error && <p className="text-xs text-red-600">{error}</p>}
+        {error && <p className="text-xs text-red-600">{error}</p>}
+      </div>
     </div>
   )
+}
+
+function FieldDecorationView({ decoration }: { decoration: any }) {
+  const sizeClass = decoration.size === 'lg' ? 'h-10 w-10' : decoration.size === 'sm' ? 'h-5 w-5' : 'h-7 w-7'
+  if (decoration.source === 'media' && decoration.mediaUrl) {
+    return (
+      <img
+        src={decoration.mediaUrl}
+        alt={decoration.decorative ? '' : decoration.altText || 'Alan görseli'}
+        aria-hidden={decoration.decorative ? true : undefined}
+        className={cn(sizeClass, 'shrink-0 rounded-md object-contain')}
+      />
+    )
+  }
+  return createElement(getIconComponent(decoration.iconName), {
+    'aria-hidden': decoration.decorative ? true : undefined,
+    className: cn(sizeClass, 'shrink-0 text-[var(--mf-primary)]'),
+  })
 }

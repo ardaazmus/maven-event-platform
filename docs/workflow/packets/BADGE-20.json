@@ -1,0 +1,42 @@
+{
+  "id": "BADGE-20",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı giriş kararını authenticated submission-read ve workspace/form scope ile server endpoint'ine bağlamak.",
+  "rollback": "Yalnız badge capability route'u, route truth testi, packet ve BADGE-20 durum satırını geri al; badge üretimi, PDF/export, ödeme, fatura veya provider açma.",
+  "previous": ["BADGE-19"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/auth.ts",
+    "src/lib/policy.ts",
+    "src/lib/db.ts",
+    "src/lib/badge-entry-surface-contract.ts",
+    "src/components/mavenforms/views/forms-list-view.tsx",
+    "src/components/mavenforms/views/submissions-view.tsx"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-20.json",
+    "src/app/api/forms/[id]/badges/route.ts",
+    "tests/badge-entry-route.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Endpoint yalnız authenticated submission-read ve aynı workspace içindeki form için cevap verir.",
+    "Draft/paused/archived form veya uygun kayıt yoksa giriş kararı visible dönmez; üretim action'ı açılmaz.",
+    "Yanıt yalnız badge giriş capability'si ve sayısal eligible kayıt özeti taşır; PII, QR payload, provider veya dosya URL'si taşımaz.",
+    "Form detay ve yanıt seçim yüzeyleri aynı entry-surface contract kararını kullanır.",
+    "Focused route truth testi, TypeScript ve context-check geçer; ödeme/fatura/V3/V4/R-10 davranışları değişmez."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-entry-route.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "id": "R10-V4-05",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Medya, belge, yaka kartı şablonu ve sertifika amaçlarını quarantine/clean/ready/rejected/archived geçişleriyle ortak sözleşmede ayırmak",
+  "rollback": "Asset purpose/state sözleşmesini ve testlerini geri al; mevcut medya kayıtlarını, dosyaları ve route davranışını değiştirme",
+  "previous": ["R10-V4-04-R1"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/research-sources/2026-09-11-ozelapp-r10-v4-guvenli-entegrasyon-research-receipt.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/lib/media.ts",
+    "src/lib/file-policy.ts",
+    "src/lib/badge-template-contract.ts",
+    "tests/media-asset.test.mjs",
+    "tests/media-upload.test.mjs",
+    "tests/badge-template-contract.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-05.json",
+    "src/lib/media.ts",
+    "src/lib/file-policy.ts",
+    "tests/media-asset-state.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Form medya, invoice document, badge template ve certificate amaçları typed allowlist ile birbirinden ayrılır",
+    "Quarantine/clean/ready/rejected/archived state geçişleri fail-closed ortak matriste tanımlıdır",
+    "Geçersiz purpose/state ve yasak geçiş reddedilir; mevcut upload ve badge template sözleşmeleri değişmeden kalır",
+    "Bu faz yalnız yerel sözleşme üretir; dosya yükleme, AV çağrısı, storage migration ve production mutation yapmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"],
+    ["bun", "tests/media-asset.test.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/media-asset-state.test.mjs"],
+    ["bun", "tests/media-asset.test.mjs"],
+    ["bun", "tests/media-upload.test.mjs"],
+    ["bun", "tests/badge-template-contract.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

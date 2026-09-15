@@ -1,0 +1,46 @@
+{
+  "id": "R10-V4-08",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "PDF/PNG/JPEG/WebP/XLSX dosya kararlarını magic bytes, MIME, boyut ve XLSX archive sınırlarıyla ortak validator'a bağlamak",
+  "rollback": "Secure upload validator ve testlerini geri al; mevcut invoice/media/badge route ve dosyalarını değiştirme",
+  "previous": ["R10-V4-07"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/research-sources/2026-09-11-ozelapp-r10-v4-guvenli-entegrasyon-research-receipt.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/lib/invoice-document-validation.ts",
+    "src/lib/file-policy.ts",
+    "tests/invoice-document-filetype.test.mjs",
+    "tests/invoice-document-archive.test.mjs",
+    "tests/invoice-document-upload-gate.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-08.json",
+    "src/lib/invoice-document-validation.ts",
+    "tests/secure-file-policy.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "PDF, PNG, JPEG ve WebP için extension/MIME/magic/size uyuşmazlığı fail-closed reddedilir",
+    "XLSX ortak validator üzerinden archive yapısı, entry ve decompression sınırlarıyla doğrulanır",
+    "Başarılı sonuç yalnız kind, MIME, size ve SHA-256 metadata döndürür; dosya içeriğini echo etmez",
+    "Bu faz yalnız yerel validator ve test üretir; storage, AV, provider ve production release açılmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"],
+    ["bun", "tests/invoice-document-filetype.test.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/secure-file-policy.test.mjs"],
+    ["bun", "tests/invoice-document-filetype.test.mjs"],
+    ["bun", "tests/invoice-document-archive.test.mjs"],
+    ["bun", "tests/invoice-document-upload-gate.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

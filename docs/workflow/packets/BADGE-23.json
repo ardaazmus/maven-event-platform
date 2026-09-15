@@ -1,0 +1,40 @@
+{
+  "id": "BADGE-23",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı render planı ile private artifact kaydı arasındaki provider-bağımsız execution result sözleşmesini tanımlamak; gerçek dosya üretimi ve export açmamak.",
+  "rollback": "Yalnız render execution result sözleşmesini, focused testi, packet ve BADGE-23 durum satırını geri al; dosya yazımı, storage path, PDF dependency, export action'ı, ödeme, fatura veya provider açma.",
+  "previous": ["BADGE-22"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/badge-pdf-render-port.ts",
+    "src/lib/badge-download-contract.ts",
+    "src/lib/badge-export-contract.ts",
+    "src/lib/badge-preflight-contract.ts",
+    "tests/badge-pdf-render-port.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-23.json",
+    "src/lib/badge-pdf-render-result.ts",
+    "tests/badge-pdf-render-result.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Başarılı sonuç yalnız eşleşen workspace/form/template/snapshot/output kimlikleri, yüz modu/sayfa sayısı ve private artifact kimliği taşıyabilir.",
+    "Başarılı sonuçta artifactId zorunlu, visibility private ve delivery artifact-store-only olmalıdır; path, URL, PDF bytes, PII veya provider verisi taşınmaz.",
+    "Başarısız sonuçta güvenli hata kodu zorunludur ve artifactId/başarı metadata'sı kabul edilmez.",
+    "Plan-sonuç kapsamı, outputId ve yüz/sayfa eşleşmesi fail-closed doğrulanır; sahte READY sonucu üretilemez.",
+    "Focused contract testi, TypeScript ve context-check geçer."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"]
+  ],
+  "checks": [
+    ["node", "--experimental-strip-types", "tests/badge-pdf-render-result.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

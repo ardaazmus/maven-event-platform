@@ -1,0 +1,44 @@
+{
+  "id": "R10-V4-10",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Medya varlıklarında replace/archive/delete kararlarını aktif kullanım ve sürüm bağımlılıklarıyla fail-closed görünür kılmak",
+  "rollback": "Varlık yaşam döngüsü sözleşmesini ve testini geri al; mevcut medya route ve depolama davranışını değiştirme",
+  "previous": ["R10-V4-09"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/lib/media.ts",
+    "src/lib/badge-version-audit-contract.ts",
+    "src/lib/badge-artifact-storage-contract.ts",
+    "prisma/schema.prisma",
+    "tests/badge-version-audit-contract.test.mjs",
+    "tests/badge-artifact-storage-contract.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-10.json",
+    "src/lib/media-lifecycle-contract.ts",
+    "tests/media-lifecycle-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Aktif bağımlılığı olan asset için in-place delete reddedilir ve replace kararı yeni immutable version olarak ifade edilir",
+    "Archive ve delete kararları state, visibility ve dependency sayısıyla açıklanır",
+    "Unreferenced private quarantine/rejected/archived asset dışında hard delete fail-closed kalır",
+    "Bu faz yalnız provider-neutral yerel karar sözleşmesi ve test üretir; DB migration, storage silme veya production mutation açılmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/media-lifecycle-contract.test.mjs"],
+    ["bun", "tests/badge-version-audit-contract.test.mjs"],
+    ["bun", "tests/badge-artifact-storage-contract.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

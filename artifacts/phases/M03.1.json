@@ -1,0 +1,43 @@
+{
+  "id": "M03.1",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "8dd4a4793b91a2a8",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "storage.test PASS",
+    "scope": {
+      "changedFiles": [
+        ".gitignore",
+        "storage/media/.gitkeep",
+        "src/lib/media.ts",
+        "tests/storage.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "no PII, storage not public",
+    "acceptanceIds": [
+      "AC-MEDIA-STORAGE-01"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/storage.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-01T22:18:35.622Z"
+}

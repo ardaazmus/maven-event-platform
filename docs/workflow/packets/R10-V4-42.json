@@ -1,0 +1,45 @@
+{
+  "id": "R10-V4-42",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Dış kanıt intake ve expiry politikasını provider, DNS/TLS, AV/KMS, legal ve review kayıtlarını ayıran saf sözleşmede doğrulamak",
+  "rollback": "External evidence sözleşmesi ve testini geri al; dış portal, provider, DNS, AV/KMS, legal kayıt veya release flag mutation'ına dokunma",
+  "previous": ["R10-V4-41"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "docs/runbooks/r10-external-evidence-guide.md",
+    "src/lib/r10-scope-gate.ts",
+    "src/lib/r10-p0-gate-registry.ts",
+    "tests/r10-external-evidence-guide.test.mjs",
+    "tests/r10-evidence-model.test.mjs",
+    "tests/r10-p0-gate-registry.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-42.json",
+    "src/lib/external-evidence-intake.ts",
+    "tests/external-evidence-intake.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Evidence kaydı owner/system/environment/scope/evidence class/status/expiry/verification/artifact hash/decision alanlarını bounded ve strict kabul eder",
+    "Provider, DNS/TLS, AV/KMS, legal ve independent review kanıtları aynı formatta izlenir fakat birbirine veya release kararına otomatik yükseltilmez",
+    "Verified + PASS + gelecekteki expiry + canonical hash olmadan evidence usable sayılmaz; unknown/blocked/expired/expiry yok review veya NO-GO kalır",
+    "Secret, token, PAN/CVV, PII, raw provider payload ve serbest notlar reddedilir; dış sistem, dosya veya release mutation yapılmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/external-evidence-intake.test.mjs"],
+    ["bun", "tests/r10-external-evidence-guide.test.mjs"],
+    ["bun", "tests/r10-evidence-model.test.mjs"],
+    ["bun", "tests/r10-p0-gate-registry.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

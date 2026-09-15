@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { api } from '@/lib/api-client'
+import { api, apiWithMeta } from '@/lib/api-client'
 import type { Submission, SubmissionStatus, FormListItem } from '@/lib/types'
 import { useApp } from '@/lib/store'
 import { Card } from '@/components/ui/card'
@@ -46,6 +46,8 @@ import {
   Tag,
   Loader2,
   Edit3,
+  ExternalLink,
+  AlertTriangle,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -65,17 +67,40 @@ const paymentConfig: Record<string, { label: string; color: string }> = {
   refunded: { label: 'İade', color: 'text-gray-600 dark:text-gray-400' },
 }
 
+type SelectedFormSummary = {
+  title: string
+  slug: string
+  status: string
+  coverMediaId: string | null
+  coverImageUrl: string | null
+  submissionCount: number
+  fieldCount: number
+  updatedAt: string
+  todaySubmissionCount: number
+  statusCounts: Record<string, number>
+}
+
+type SubmissionPageMeta = {
+  page: number
+  pageSize: number
+  total: number
+  totalPages: number
+}
+
 export function SubmissionsView() {
-  const { selectedFormId, setView } = useApp()
+  const { selectedFormId, setSelectedFormId, setView, user } = useApp()
   const [forms, setForms] = useState<FormListItem[]>([])
   const [selectedForm, setSelectedForm] = useState<string | null>(null)
+  const [summary, setSummary] = useState<SelectedFormSummary | null>(null)
   const [submissions, setSubmissions] = useState<Submission[]>([])
   const [selected, setSelected] = useState<Submission | null>(null)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [paymentUpdating, setPaymentUpdating] = useState(false)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -85,45 +110,65 @@ export function SubmissionsView() {
   useEffect(() => {
     if (selectedFormId) {
       setSelectedForm(selectedFormId)
-    } else if (forms.length > 0 && !selectedForm) {
+    } else if (forms.length > 0) {
       // Prefer published forms with submissions
       const publishedWithSubs = forms.find(f => f.status === 'published' && f.submissionCount > 0)
       const published = forms.find(f => f.status === 'published')
-      setSelectedForm((publishedWithSubs || published || forms[0]).id)
+      const defaultFormId = (publishedWithSubs || published || forms[0]).id
+      setSelectedForm(current => current || defaultFormId)
     }
-  }, [forms, selectedFormId, selectedForm])
+  }, [forms, selectedFormId])
+
+  // M07.2: selectedForm değişince eski formun görünür verisi temizlenir;
+  // request effect kendi AbortController'ı ile eski isteği iptal eder.
+  useEffect(() => {
+    setPage(1)
+    setSummary(null)
+    setSubmissions([])
+    setSelected(null)
+  }, [selectedForm])
 
   useEffect(() => {
     if (!selectedForm) return
-    loadSubmissions()
-  }, [selectedForm, page, statusFilter])
+    const ctrl = new AbortController()
+    const timer = setTimeout(() => loadSubmissions(ctrl.signal), search ? 300 : 0)
+    return () => {
+      clearTimeout(timer)
+      ctrl.abort()
+    }
+  }, [selectedForm, page, statusFilter, search])
 
   useEffect(() => {
-    const t = setTimeout(() => {
-      if (selectedForm) loadSubmissions()
-    }, 300)
-    return () => clearTimeout(t)
-  }, [search])
+    if (!selectedForm) {
+      setSummary(null)
+      return
+    }
+    let active = true
+    api<SelectedFormSummary>(`/api/forms/${selectedForm}/summary`)
+      .then(data => { if (active) setSummary(data) })
+      .catch(() => { if (active) setSummary(null) })
+    return () => { active = false }
+  }, [selectedForm])
 
-  const loadSubmissions = async () => {
+  const loadSubmissions = async (signal?: AbortSignal) => {
     if (!selectedForm) return
     setLoading(true)
+    setLoadError(null)
     try {
       const params = new URLSearchParams()
       params.set('page', String(page))
       params.set('pageSize', '20')
       if (statusFilter !== 'all') params.set('status', statusFilter)
       if (search) params.set('search', search)
-      const data = await api<{ data: Submission[]; meta: any }>(`/api/forms/${selectedForm}/submissions?${params.toString()}`)
-      // The API returns data directly, not {data, meta}
-      const subs = Array.isArray(data) ? data : (data as any).data || []
-      const meta = (data as any).meta || { page: 1, totalPages: 1 }
-      setSubmissions(subs)
-      setTotalPages(meta.totalPages || 1)
+      const response = await apiWithMeta<Submission[], SubmissionPageMeta>(`/api/forms/${selectedForm}/submissions?${params.toString()}`, { signal } as any)
+      setSubmissions(Array.isArray(response.data) ? response.data : [])
+      setTotalPages(Math.max(1, response.meta?.totalPages || 1))
     } catch (err: any) {
+      if (err?.name === 'AbortError' || signal?.aborted) return
+      setLoadError(err?.message || 'Yanıtlar alınırken beklenmeyen bir hata oluştu.')
       toast({ title: 'Yanıtlar yüklenemedi', description: err.message, variant: 'destructive' })
     } finally {
-      setLoading(false)
+      if (!signal?.aborted) setLoading(false)
     }
   }
 
@@ -141,14 +186,63 @@ export function SubmissionsView() {
     }
   }
 
-  const handleExport = (format: string) => {
-    toast({ title: `${format.toUpperCase()} export başlatıldı`, description: 'İndirme linki e-posta ile gönderilecek' })
+  const updatePaymentStatus = async (subId: string, paymentStatus: 'pending' | 'paid') => {
+    setPaymentUpdating(true)
+    try {
+      await api(`/api/forms/${selectedForm}/submissions/${subId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ paymentStatus }),
+      })
+      toast({ title: 'Manuel ödeme durumu güncellendi', description: paymentStatus === 'paid' ? 'Ödendi' : 'Ödenmedi / bekliyor' })
+      await loadSubmissions()
+      if (selected?.id === subId) setSelected({ ...selected, paymentStatus })
+    } catch (err: any) {
+      toast({ title: 'Ödeme durumu güncellenemedi', description: err.message, variant: 'destructive' })
+    } finally {
+      setPaymentUpdating(false)
+    }
+  }
+
+  const handleExport = async (format: string) => {
+    if (!selectedForm) return
+    try {
+      const res = await fetch(`/api/forms/${selectedForm}/export?format=${format}`, { credentials: 'include' })
+      if (!res.ok) throw new Error(await res.text())
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${selectedForm}-${format}.${format === 'xlsx' ? 'xlsx' : 'csv'}`
+      a.click()
+      URL.revokeObjectURL(url)
+      toast({ title: 'Export hazır', description: `${format.toUpperCase()} indirildi` })
+    } catch (e: any) {
+      toast({ title: 'Export hatası', description: e.message, variant: 'destructive' })
+    }
+  }
+
+  const handleEmail = () => {
+    const email = selected?.values.find(value => value.field.type === 'email')?.value?.value
+    if (typeof email === 'string' && email) window.location.href = `mailto:${encodeURIComponent(email)}`
+    else toast({ title: 'E-posta bulunamadı', description: 'Bu yanıtta e-posta alanı yok.', variant: 'destructive' })
+  }
+
+  const handleDelete = async () => {
+    if (!selected || !selectedForm) return
+    try {
+      await api(`/api/forms/${selectedForm}/submissions/${selected.id}`, { method: 'DELETE' })
+      setSelected(null)
+      toast({ title: 'Yanıt silindi' })
+      loadSubmissions()
+    } catch (err: any) {
+      toast({ title: 'Silme hatası', description: err.message, variant: 'destructive' })
+    }
   }
 
   return (
-    <div className="flex h-[calc(100vh-4rem)]">
+    <div className="flex min-h-[calc(100vh-4rem)] flex-col lg:flex-row">
       {/* Form selector sidebar */}
-      <div className="hidden lg:flex w-60 shrink-0 border-r border-border bg-muted/20 flex-col">
+      <div className="hidden w-60 shrink-0 border-r border-border bg-muted/20 lg:sticky lg:top-0 lg:flex lg:h-[calc(100vh-4rem)] lg:flex-col">
         <div className="p-3 border-b border-border">
           <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => setView('forms')}>
             <FileText className="w-4 h-4" />
@@ -158,8 +252,11 @@ export function SubmissionsView() {
         <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
           {forms.map((form) => (
             <button
+              type="button"
               key={form.id}
-              onClick={() => { setSelectedForm(form.id); setPage(1) }}
+              onClick={() => { setSelectedFormId(form.id, 'submissions'); setSelectedForm(form.id); setPage(1) }}
+              aria-current={selectedForm === form.id ? 'page' : undefined}
+              aria-label={`${form.title}, ${form.submissionCount} yanıt`}
               className={cn(
                 'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors text-left',
                 selectedForm === form.id
@@ -183,14 +280,90 @@ export function SubmissionsView() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="min-w-0 flex-1">
+        {/* M07.3: the selected form's real published surface stays above its analytics and responses. */}
+        {selectedForm && (() => {
+          const f = forms.find(x => x.id === selectedForm)
+          const current = summary || f
+          if (!current) return null
+          const isPublished = current.status === 'published' && Boolean(current.slug)
+          return (
+            <section aria-labelledby="selected-form-title" className="space-y-4 border-b border-border bg-muted/10 p-4 sm:p-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 id="selected-form-title" className="truncate text-base font-semibold">{current.title}</h2>
+                    <Badge variant={isPublished ? 'default' : 'secondary'}>{isPublished ? 'Yayında' : 'Yayınlanmadı'}</Badge>
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">Yayınlanan formun kullanıcıların gördüğü canlı hali</p>
+                </div>
+                {isPublished && (
+                  <Button asChild variant="outline" size="sm" className="w-full shrink-0 gap-1.5 sm:w-auto">
+                    <a href={`/forms/${encodeURIComponent(current.slug)}`} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-3.5 w-3.5" /> Yeni sekmede aç
+                    </a>
+                  </Button>
+                )}
+              </div>
+              {isPublished ? (
+                <div className="overflow-hidden rounded-xl border border-border bg-background shadow-sm">
+                  <iframe
+                    title={`${current.title} canlı form`}
+                    src={`/forms/${encodeURIComponent(current.slug)}?embed=1`}
+                    className="block h-[min(620px,70vh)] min-h-[420px] w-full border-0"
+                    loading="lazy"
+                    sandbox="allow-forms allow-scripts allow-same-origin allow-popups"
+                  />
+                </div>
+              ) : (
+                <div className="rounded-xl border border-dashed border-border bg-background p-6 text-center text-sm text-muted-foreground">
+                  Bu formun canlı görünümünü görmek için önce yayınlayın.
+                </div>
+              )}
+            </section>
+          )
+        })()}
+
+        {selectedForm && (() => {
+          const f = forms.find(x => x.id === selectedForm)
+          const current = summary || f
+          if (!current) return null
+          const counts = summary?.statusCounts || {}
+          const stats = [
+            { label: 'Toplam yanıt', value: current.submissionCount },
+            { label: 'Bugün', value: summary?.todaySubmissionCount ?? f?.todaySubmissionCount ?? 0 },
+            { label: 'Yeni', value: counts.new || 0 },
+            { label: 'Onaylanan', value: counts.approved || 0 },
+          ]
+          return (
+            <section aria-label="Form istatistikleri" className="border-b border-border p-4 sm:p-6">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-sm font-semibold">Form istatistikleri</h2>
+                  <p className="text-xs text-muted-foreground">Seçili formun güncel yanıt özeti</p>
+                </div>
+                <span className="text-xs text-muted-foreground">{summary?.fieldCount ?? 0} alan</span>
+              </div>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {stats.map(stat => (
+                  <div key={stat.label} className="rounded-lg border border-border bg-muted/20 p-3">
+                    <div className="text-lg font-semibold tabular-nums">{stat.value}</div>
+                    <div className="text-xs text-muted-foreground">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        })()}
+
         {/* Toolbar */}
-        <div className="p-4 border-b border-border space-y-3 bg-background/80 backdrop-blur">
+        <div className="space-y-3 border-b border-border bg-background/80 p-4 backdrop-blur sm:p-6">
           <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1 max-w-md">
+            <div className="relative min-w-0 max-w-md flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 placeholder="Yanıtlarda ara..."
+                aria-label="Yanıtlarda ara"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9"
@@ -211,7 +384,7 @@ export function SubmissionsView() {
                 <SelectItem value="archived">Arşiv</SelectItem>
               </SelectContent>
             </Select>
-            <div className="flex gap-1">
+            <div className="flex flex-wrap gap-1">
               <Button
                 variant="outline"
                 size="sm"
@@ -237,7 +410,7 @@ export function SubmissionsView() {
         </div>
 
         {/* Submissions table */}
-        <div className="flex-1 overflow-auto">
+        <div className="overflow-x-auto p-4 sm:p-6">
           {loading ? (
             <div className="p-4 space-y-2">
               {[...Array(8)].map((_, i) => (
@@ -246,18 +419,29 @@ export function SubmissionsView() {
                 </Card>
               ))}
             </div>
+          ) : loadError ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-destructive/10">
+                <AlertTriangle className="h-8 w-8 text-destructive" />
+              </div>
+              <h3 className="mb-1 text-lg font-semibold">Veri yüklenemedi</h3>
+              <p className="mb-4 max-w-md text-sm text-muted-foreground">Yanıtlar alınırken bir sorun oluştu. Bağlantıyı kontrol edip tekrar deneyin.</p>
+              <Button type="button" variant="outline" size="sm" onClick={() => void loadSubmissions()}>
+                Tekrar dene
+              </Button>
+            </div>
           ) : submissions.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full py-16 text-center">
               <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
                 <Inbox className="w-8 h-8 text-muted-foreground" />
               </div>
-              <h3 className="text-lg font-semibold mb-1">Yanıt bulunamadı</h3>
+              <h3 className="text-lg font-semibold mb-1">{search || statusFilter !== 'all' ? 'Filtreye uygun yanıt yok' : 'Henüz yanıt alınmadı'}</h3>
               <p className="text-sm text-muted-foreground">
-                {search ? 'Arama kriterlerinize uygun yanıt yok.' : 'Henüz yanıt alınmadı.'}
+                {search || statusFilter !== 'all' ? 'Arama veya durum filtresini değiştirip tekrar deneyin.' : 'Bu form henüz bir yanıt almadı.'}
               </p>
             </div>
           ) : (
-            <div className="rounded-lg border border-border overflow-hidden m-4">
+            <div className="min-w-[720px] overflow-hidden rounded-lg border border-border">
               <table className="w-full text-sm">
                 <thead className="bg-muted/50 sticky top-0">
                   <tr>
@@ -336,7 +520,7 @@ export function SubmissionsView() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between p-4 border-t border-border">
+          <div className="flex items-center justify-between border-t border-border p-4">
             <span className="text-xs text-muted-foreground">Sayfa {page} / {totalPages}</span>
             <div className="flex gap-1">
               <Button
@@ -388,6 +572,7 @@ export function SubmissionsView() {
                   <div className="flex flex-wrap gap-1.5">
                     {Object.entries(statusConfig).map(([key, cfg]) => (
                       <button
+                        type="button"
                         key={key}
                         onClick={() => updateStatus(selected.id, key as SubmissionStatus)}
                         className={cn(
@@ -401,6 +586,21 @@ export function SubmissionsView() {
                     ))}
                   </div>
                 </Card>
+
+                {(user?.role === 'owner' || user?.role === 'admin' || user?.role === 'accounting') && (
+                  <Card className="p-4">
+                    <Label className="text-xs text-muted-foreground mb-2 block">Manuel ödeme takibi</Label>
+                    <p className="mb-3 text-xs text-muted-foreground">Bu işaret personel kontrolüdür; ödeme sağlayıcısı doğrulaması değildir.</p>
+                    <div className="flex flex-wrap gap-2">
+                      <Button type="button" size="sm" disabled={paymentUpdating} variant={selected.paymentStatus === 'paid' ? 'default' : 'outline'} onClick={() => updatePaymentStatus(selected.id, 'paid')}>
+                        Ödendi
+                      </Button>
+                      <Button type="button" size="sm" disabled={paymentUpdating} variant={selected.paymentStatus !== 'paid' ? 'secondary' : 'outline'} onClick={() => updatePaymentStatus(selected.id, 'pending')}>
+                        Ödenmedi / Bekliyor
+                      </Button>
+                    </div>
+                  </Card>
+                )}
 
                 {/* Metadata */}
                 <div className="grid grid-cols-2 gap-3 text-xs">
@@ -459,13 +659,13 @@ export function SubmissionsView() {
 
                 {/* Actions */}
                 <div className="flex gap-2 pt-2 border-t border-border">
-                  <Button variant="outline" size="sm" className="gap-1.5 flex-1">
+                  <Button variant="outline" size="sm" className="gap-1.5 flex-1" onClick={handleEmail}>
                     <Mail className="w-3.5 h-3.5" /> E-posta
                   </Button>
-                  <Button variant="outline" size="sm" className="gap-1.5 flex-1">
-                    <Download className="w-3.5 h-3.5" /> PDF
+                  <Button variant="outline" size="sm" className="gap-1.5 flex-1" onClick={() => window.print()}>
+                    <Download className="w-3.5 h-3.5" /> PDF için yazdır
                   </Button>
-                  <Button variant="outline" size="sm" className="gap-1.5 text-destructive hover:text-destructive">
+                  <Button variant="outline" size="sm" className="gap-1.5 text-destructive hover:text-destructive" onClick={handleDelete}>
                     <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 </div>

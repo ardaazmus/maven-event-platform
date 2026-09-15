@@ -1,0 +1,52 @@
+{
+  "id": "R-00-07B",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "iYzico refund/cancel/chargeback provider sözleşmesini doğrulanmış capability ve event sınırıyla fail-closed hale getirmek",
+  "rollback": "Bu paketin iYzico contract/capability ve test değişikliklerini geri al; payment, invoice, document veya delivery verisini silme veya resetleme",
+  "previous": ["R-00-06B"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/OzelAPP_Derin_Arastirma_2026-09-03/02_iyzico.md",
+    "docs/OzelAPP_Derin_Arastirma_2026-09-03/05_PaymentOrder_ve_Mutabakat.md",
+    "src/lib/payment-webhook-processing.ts",
+    "src/lib/payment-provider-contract.ts",
+    "src/lib/iyzico-retrieve.ts",
+    "src/app/api/webhooks/iyzico/[connectionId]/route.ts",
+    "tests/payment-webhook-processing.test.mjs",
+    "tests/payment-webhook-route-truth.test.mjs",
+    "tests/iyzico-retrieve.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R-00-07B.json",
+    "src/lib/payment-webhook-processing.ts",
+    "src/lib/payment-provider-contract.ts",
+    "src/lib/iyzico-retrieve.ts",
+    "src/app/api/webhooks/iyzico/[connectionId]/route.ts",
+    "tests/payment-webhook-processing.test.mjs",
+    "tests/iyzico-retrieve.test.mjs",
+    "STATUS.md",
+    "docs/superpowers/plans/2026-09-02-mavenforms-e-belge-15-dakikalik-uygulama-paketleri.md"
+  ],
+  "acceptance": [
+    "iYzico refund/cancel/chargeback event veya capability bilgisi resmi contract doğrulanmadan refund mutation'a yol açmaz",
+    "Bilinmeyen, çelişkili, imzasız, eksik correlation veya tenant/connection kapsamı dışı iYzico sonuçları ignored/blocked kalır",
+    "Doğrulanmış iYzico ödeme ve retrieve SUCCESS/FAILURE davranışı korunur; payment-to-invoice handoff yalnız ortak verified state boundary üzerinden çalışır",
+    "Cancel, refund ve chargeback kavramları karıştırılmaz; invoice silme, otomatik credit note/iptal ve raw provider payload persist edilmez"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"],
+    ["bun", "tests/payment-webhook-processing.test.mjs"],
+    ["bun", "tests/iyzico-retrieve.test.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/payment-webhook-processing.test.mjs"],
+    ["bun", "tests/iyzico-retrieve.test.mjs"],
+    ["node", "-e", "const fs=require('node:fs');const path=require('node:path');const {spawnSync}=require('node:child_process');const failed=[];for(const name of fs.readdirSync('tests').filter(n=>n.endsWith('.test.mjs')).sort()){const file=path.join('tests',name);const source=fs.readFileSync(file,'utf8');const command=source.includes('../src/')?'bun':process.execPath;const result=spawnSync(command,[file],{stdio:'inherit'});if(result.status!==0)failed.push(name)}if(failed.length){console.error('full-suite failures:',failed.join(','));process.exit(1)}console.log('full-suite: PASS')"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

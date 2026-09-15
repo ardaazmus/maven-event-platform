@@ -1,0 +1,47 @@
+{
+  "id": "V4-06",
+  "title": "Suspend/reactivate ve tenant veri koruması",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Tenant aboneliği askıya alındığında yayın, yeni form, silme ve public erişim kapılarını; izinli export ve veri korunmasını provider-neutral olarak doğrulamak.",
+  "rollback": "Yeni suspend/reactivate kararı kullanılmadığında mevcut tenant entitlement ve subscription-state davranışları değişmeden kalır; policy yalnız karar üretir, veri silmez ve public mutation yapmaz.",
+  "previous": ["V4-05"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-06-mavenforms-release-modules-first-party-saas-roadmap.md",
+    "src/lib/subscription-state.ts",
+    "src/lib/tenant-entitlement.ts",
+    "src/lib/public-dto.ts",
+    "tests/v4-tenant-boundary.test.mjs",
+    "tests/v4-tenant-entitlement.test.mjs",
+    "tests/export.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/V4-06.json",
+    "src/lib/tenant-suspension-policy.ts",
+    "tests/v4-suspend-reactivate.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Suspended tenant public form, publish, yeni form ve silme action'larında server kararında fail-closed olur",
+    "İzinli export rol ve export permission ile devam eder; form/yanıt/fatura/audit verisi silinmez",
+    "Subscription/suspend mutation tenant admin olmayan aktörlere açılmaz",
+    "Reactivate yalnız korunmuş published snapshot ve idempotency state ile kabul edilir",
+    "Reactivate kararı önceki form, payment/invoice ve outbox state'inin korunmasını şart koşar",
+    "Karar provider mutation, secret, PII veya veri mutasyonu yapmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/v4-suspend-reactivate.test.mjs"],
+    ["bun", "tests/v4-tenant-entitlement.test.mjs"],
+    ["bun", "tests/v4-tenant-boundary.test.mjs"],
+    ["bun", "tests/export.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

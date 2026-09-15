@@ -1,0 +1,41 @@
+{
+  "id": "M05.1",
+  "status": "PASSED",
+  "executor": "alice",
+  "verifier": "bob",
+  "manifestChecksum": "ba487b64501c5563",
+  "evidence": {
+    "preflight": "health 200 ready 200",
+    "test": "media-picker.test PASS",
+    "scope": {
+      "changedFiles": [
+        "src/components/mavenforms/media-picker.tsx",
+        "tests/media-picker.test.mjs"
+      ]
+    },
+    "redaction": {
+      "envNames": [
+        "DATABASE_URL"
+      ]
+    },
+    "review": "no PII, scope form/global, alt, upload",
+    "acceptanceIds": [
+      "AC-MEDIA-PICKER-01"
+    ]
+  },
+  "commandResults": [
+    {
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "cmd": "bunx tsc --noEmit",
+      "exit": 0
+    },
+    {
+      "cmd": "bun tests/media-picker.test.mjs",
+      "exit": 0
+    }
+  ],
+  "createdAt": "2026-09-01T23:18:02.743Z"
+}

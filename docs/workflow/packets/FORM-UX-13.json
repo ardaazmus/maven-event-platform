@@ -1,0 +1,13 @@
+{
+  "id": "FORM-UX-13",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "E-posta şablonlarındaki Düzenle action'ının gerçek editor state'ine bağlı olduğunu ve oturum içi taslak kaydının açıkça belirtildiğini regression testine bağlamak",
+  "rollback": "Yalnız hedef settings action testini ve packet kaydını geri al; SMTP, şablon, form, ödeme, fatura veya yanıt verisini silme/değiştirme",
+  "previous": ["FORM-UX-12-R1"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/views/settings-view.tsx", "src/components/mavenforms/email-template-editor.tsx"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-13.json", "tests/form-ux-settings-actions.test.mjs", "STATUS.md"],
+  "acceptance": ["Her e-posta şablonu Düzenle action'ı seçili template state'ini açar", "Editor onClose/onSave akışına bağlıdır ve kaydın bu aşamada oturum içi olduğu kullanıcıya bildirilir", "SMTP ve gerçek provider gönderimi kapalı kalır", "Hedef regression testi ve context-check geçer"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["bun", "tests/form-ux-settings-actions.test.mjs"], ["node", "scripts/context-check.mjs"]]
+}

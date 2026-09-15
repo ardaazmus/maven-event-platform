@@ -1,0 +1,58 @@
+{
+  "id": "V4-07",
+  "title": "V4 SaaS release ve tenant isolation kapısı",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "V4 tenant izolasyonu, BYO payment/invoice/mail, destek onayı ve ayrı platform aboneliği kanıtlarını release kararına bağlamak; eksik dış kanıtlar nedeniyle production kararını NO-GO tutmak.",
+  "rollback": "Release gate yalnız karar ve kanıt özeti üretir; V4 production, tenant adına tahsilat veya provider mutation açılmaz. Yeni test ve doküman değişiklikleri geri alınabilir.",
+  "previous": ["V4-06"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "RELEASE-DECISION.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-06-mavenforms-release-modules-first-party-saas-roadmap.md",
+    "src/lib/tenant-entitlement.ts",
+    "src/lib/tenant-invoice-mail.ts",
+    "src/lib/tenant-payment-connection.ts",
+    "src/lib/support-access-policy.ts",
+    "src/lib/subscription-state.ts",
+    "src/lib/tenant-suspension-policy.ts",
+    "tests/v4-tenant-boundary.test.mjs",
+    "tests/v4-tenant-byo-payment.test.mjs",
+    "tests/v4-tenant-byo-invoice-mail.test.mjs",
+    "tests/v4-support-break-glass.test.mjs",
+    "tests/v4-external-subscription.test.mjs",
+    "tests/v4-suspend-reactivate.test.mjs",
+    "tests/final-release-gate.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/V4-07.json",
+    "tests/v4-release-gate.test.mjs",
+    "STATUS.md",
+    "RELEASE-DECISION.md"
+  ],
+  "acceptance": [
+    "Cross-tenant provider, invoice/document, recipient, payment status ve sender access fail-closed kanıtlanır",
+    "Tenant end-customer tahsilatı ile MavenForms platform aboneliği ayrı domain olarak release kararında görünür",
+    "BYO payment/invoice/mail, support consent ve suspend/reactivate kanıtları aynı V4 gate içinde eşlenir",
+    "Live provider, real email, production TLS, backup/restore, legal/DPA ve incident response kanıtı yoksa release NO-GO kalır",
+    "R-10 kapısı gevşetilmez; gate yalnız yerel karar ve dış kanıt eksikliğini raporlar"
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/v4-release-gate.test.mjs"],
+    ["bun", "tests/v4-tenant-boundary.test.mjs"],
+    ["bun", "tests/v4-tenant-byo-payment.test.mjs"],
+    ["bun", "tests/v4-tenant-byo-invoice-mail.test.mjs"],
+    ["bun", "tests/v4-support-break-glass.test.mjs"],
+    ["bun", "tests/v4-external-subscription.test.mjs"],
+    ["bun", "tests/v4-suspend-reactivate.test.mjs"],
+    ["bun", "tests/final-release-gate.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

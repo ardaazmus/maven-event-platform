@@ -1,0 +1,49 @@
+{
+  "id": "R-01",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Audit read modelini workspace-scope ve redacted DTO ile güvenli hale getirmek",
+  "rollback": "Bu paketin audit redaction/read-route ve test değişikliklerini geri al; audit kayıtlarını, payment, invoice, document veya delivery verisini silme",
+  "previous": ["R-00-07A"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/audit/route.ts",
+    "src/lib/policy.ts",
+    "prisma/schema.prisma",
+    "src/lib/invoice-document-ready-persistence.ts",
+    "src/lib/invoice-import-apply.ts",
+    "src/lib/invoice-delivery-resend.ts",
+    "tests/submission-audit-transaction.test.mjs",
+    "tests/security-regression.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R-01.json",
+    "src/app/api/audit/route.ts",
+    "src/lib/audit-redaction.ts",
+    "tests/audit-read-redaction.test.mjs",
+    "STATUS.md",
+    "docs/superpowers/plans/2026-09-02-mavenforms-e-belge-15-dakikalik-uygulama-paketleri.md"
+  ],
+  "acceptance": [
+    "Audit GET authenticated ve audit.read yetkili workspace scope dışında kayıt döndürmez",
+    "Actor email/name, PII, token, secret, card data, raw provider payload ve document content DTO'dan çıkarılır veya güvenli maskelenir",
+    "beforeJson/afterJson parse edilemeyen veya hassas anahtar içeren kayıtlar route'u kırmadan güvenli redacted sonuç üretir",
+    "Audit DTO bounded kalır ve public route veya export response ile karışmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"],
+    ["bun", "tests/submission-audit-transaction.test.mjs"],
+    ["bun", "tests/security-regression.test.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/audit-read-redaction.test.mjs"],
+    ["bun", "tests/submission-audit-transaction.test.mjs"],
+    ["bun", "tests/security-regression.test.mjs"],
+    ["node", "scripts/run-tests.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

@@ -1,19 +1,11 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 
-const inter = Inter({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
+// Self-hosted fallback — no Google Fonts network at build (M00.2)
+// CSS variables preserved: --font-geist-sans / --font-geist-mono resolved in globals.css
+const inter = { variable: "--font-geist-sans" } as const;
+const jetbrainsMono = { variable: "--font-geist-mono" } as const;
 
 export const metadata: Metadata = {
   title: "MavenForms — Modern Form Platform",

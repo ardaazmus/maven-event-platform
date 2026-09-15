@@ -1,0 +1,15 @@
+{
+  "id": "V1-00",
+  "status": "READY",
+  "lifecycle": "SUPERSEDED",
+  "supersededBy": "V1-00A",
+  "timeboxMinutes": 15,
+  "goal": "V1 Maven iç kullanım sürümü için server-side modül/entitlement kararını tanımlamak; kayıt/form operasyonunu açık, online ödeme, fatura, Paraşüt ve SaaS capability'lerini kapalı tutmak",
+  "rollback": "Yalnız V1 modül resolverı, hedef testi, packet ve durum notunu geri al; mevcut form, ödeme, fatura ve tenant verisini silme veya değiştirme",
+  "previous": ["R-10C"],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "RELEASE-ROADMAP.md", "AI-RELEASE-EXECUTION-PLAN.md", "docs/workflow/README.md", "docs/superpowers/plans/2026-09-06-mavenforms-release-modules-first-party-saas-roadmap.md", "src/lib/r10-scope-gate.ts", "src/lib/payment-business-model.ts"],
+  "allowedFiles": ["docs/workflow/packets/V1-00.json", "src/lib/release-module.ts", "tests/release-module.test.mjs", "STATUS.md"],
+  "acceptance": ["V1 kayıt/form, manuel ödeme durumu ve katılımcı bildirimleri açık karar verir", "V1 online payment, manual invoice, Paraşüt, transactional invoice delivery ve SaaS kararlarını server-side kapalı verir", "Karar browser/request içinden gelen sürüm veya scope değeriyle override edilemez", "R-10 global NO-GO korunur ve V1 modül kapısı live payment açmaz", "Hedef test, TypeScript, production build, /api/ready ve workflow verify geçer"],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["node", "tests/release-module.test.mjs"], ["node", "node_modules/typescript/bin/tsc", "--noEmit"], ["bun", "run", "build"], ["node", "scripts/local-ready.mjs"]]
+}

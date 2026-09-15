@@ -1,0 +1,28 @@
+{
+  "id": "M12.4",
+  "previous": [
+    "M12.3"
+  ],
+  "allowedFiles": [
+    "RELEASE-DECISION.md",
+    "tests/release-decision.test.mjs",
+    "scripts/phase-gate.mjs",
+    "scripts/phase-evidence.mjs"
+  ],
+  "requiredCommands": [
+    "bun run lint",
+    "bunx tsc --noEmit",
+    "bun tests/release-decision.test.mjs"
+  ],
+  "requiredEvidence": [
+    "preflight",
+    "test",
+    "scope",
+    "redaction",
+    "review"
+  ],
+  "acceptanceIds": [
+    "AC-RELEASE-01"
+  ],
+  "checksum": "cb45862f4f910519"
+}

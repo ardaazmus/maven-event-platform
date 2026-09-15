@@ -1,0 +1,36 @@
+{
+  "id": "BADGE-00-R1",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Sağlanan ayrıntılı yaka kartı araştırmasını mevcut BADGE kararına bağlamak; QR token, public kartvizit, çıktı ID'si, export-first sınırı ve V1-V4/R-10 etkisini kanonik planla hizalamak.",
+  "rollback": "Yalnız bu araştırma kaydı, yaka kartı planındaki güncelleme ve BADGE durum bağlantısını geri al; form, yanıt, ödeme, fatura, medya ve yayın verilerine dokunma.",
+  "previous": [],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-09-mavenforms-badge-module-roadmap.md",
+    "docs/research-sources/2026-09-09-badge-qr-output-research-receipt.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-00-R1.json",
+    "docs/superpowers/plans/2026-09-09-mavenforms-badge-module-roadmap.md",
+    "docs/research-sources/2026-09-09-badge-qr-output-research-receipt.md",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Araştırma kaydı kaynak dosyasını hash ve bağlayıcı kararlarla sabitler.",
+    "QR token, public card URL/vCard ve secure token anlamları ayrıdır; tek payload semantik karışıklığı reddedilmiştir.",
+    "PDF output ID, QR token'dan ayrıdır ve dosya adı çakışma/Windows/ZIP kuralları planlanmıştır.",
+    "Tekil/toplu export, private scope, snapshot, preflight, idempotency ve matbaa handoff sınırı planla hizalanmıştır.",
+    "R-10 bu FORM-UX uzantısının başlangıç kapısı değildir; ödeme/fatura/V3/V4 ana sırası ve güvenlik sınırları korunur.",
+    "Context-check ve workflow verify geçer."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"]
+  ],
+  "checks": [
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

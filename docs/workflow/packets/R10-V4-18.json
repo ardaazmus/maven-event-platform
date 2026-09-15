@@ -1,0 +1,44 @@
+{
+  "id": "R10-V4-18",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "İmzalı webhook, replay, duplicate ve out-of-order olaylarını ağsız sentetik fixture sözleşmesinde görünür kılmak",
+  "rollback": "Webhook fixture sözleşmesini ve testini geri al; gerçek inbox, route ve provider davranışlarını değiştirme",
+  "previous": ["R10-V4-17"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/lib/payment-webhook-signatures.ts",
+    "src/lib/payment-webhook-processing.ts",
+    "prisma/schema.prisma",
+    "tests/payment-webhook-signatures.test.mjs",
+    "tests/payment-webhook-processing.test.mjs",
+    "tests/payment-webhook-schema.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-18.json",
+    "src/lib/webhook-test-fixtures.ts",
+    "tests/webhook-test-fixtures.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Fixture üretimi imzalı ve imzasız olayları, duplicate/replay kimliğini ve out-of-order sırasını deterministic taşır",
+    "İmzasız veya değiştirilmiş body doğrulanmaz; duplicate key aynı kalır ve sıra reducer öncesinde gözlemlenebilir",
+    "Fixture sentetik metadata ile sınırlıdır; gerçek inbox/DB mutation, network ve provider credential kullanmaz",
+    "Bu faz R-10 production kararını ve gerçek ödeme sağlayıcılarını açmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/webhook-test-fixtures.test.mjs"],
+    ["bun", "tests/payment-webhook-signatures.test.mjs"],
+    ["bun", "tests/payment-webhook-processing.test.mjs"],
+    ["bun", "tests/payment-webhook-schema.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

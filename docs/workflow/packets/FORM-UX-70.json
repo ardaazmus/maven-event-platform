@@ -1,0 +1,30 @@
+{
+  "id": "FORM-UX-70",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Güncel ürün önceliğini bootstrap durumunda açıkça V1, yaka kartı, V2 ve V3 önce; V4 en son olacak şekilde kaydetmek ve envanter kapısını bu kararla hizalamak.",
+  "rollback": "Öncelik notu ve packet kaydını geri al; uygulama koduna, V1/V2/V3/yaka kartı davranışına, V4 koduna ve R-10 kararına dokunma.",
+  "previous": [],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "tests/form-ux-inventory-gate.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-70.json",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "STATUS.md V1, yaka kartı, V2 ve V3 zincirlerinin V4'ten önceki öncelik olduğunu; V4-00'ın R-10 ve ürün sırası nedeniyle HELD olduğunu açıkça gösterir.",
+    "V4 kapsamı geri alınmaz veya genişletilmez; R-10 NO-GO/BLOCKED kalır.",
+    "Envanter kapısı, TypeScript ve context-check geçer."
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-inventory-gate.test.mjs"],
+    ["bun", "run", "tsc", "--", "--noEmit"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

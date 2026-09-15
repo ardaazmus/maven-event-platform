@@ -1,0 +1,46 @@
+{
+  "id": "R10-V4-25",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Payment wizard’ını builder ödeme paneline bağlayıp hosted checkout, tutar/para birimi ve provider kanıt durumunu görünür kılmak",
+  "rollback": "Payment wizard bileşeni, builder bağlantısı ve testini geri al; provider, credential, payment order ve DB mutation yapma",
+  "previous": ["R10-V4-24"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/components/mavenforms/connection-wizard.tsx",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/lib/payment-connection-gate.ts",
+    "src/lib/payment-checkout-contract.ts",
+    "tests/payment-panel-truth.test.mjs",
+    "tests/payment-checkout-contract.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-25.json",
+    "src/components/mavenforms/payment-connection-wizard.tsx",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/payment-connection-wizard.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Payment wizard ortak shell üzerinden hosted checkout only, iyzico-first provider ve test/sandbox sınırını açıkça gösterir",
+    "Tutar pozitif güvenli sayı, para birimi allowlist ve provider evidence durumu doğrulanmadan etkinleştirme iddiası gösterilmez",
+    "Wizard builder ödeme panelinde görünür; mevcut güvenlik notu, planlandı durumu ve disabled ayarlar korunur",
+    "Bileşen network, DB, credential veya gerçek ödeme başlatmaz; R-10/V4 live kapısı değişmez"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/payment-connection-wizard.test.mjs"],
+    ["bun", "tests/payment-panel-truth.test.mjs"],
+    ["bun", "tests/payment-checkout-contract.test.mjs"],
+    ["bun", "tests/r10-production-guard-integration.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

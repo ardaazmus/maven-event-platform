@@ -1,0 +1,41 @@
+{
+  "id": "MAIL-03-03",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "E-posta şablonu editöründe olay, alıcı ve kanal bağlamını görünür kılmak",
+  "rollback": "Yalnız MAIL-03-03 packetini, editor/context değişikliğini, context wiring testini ve STATUS kaydını geri al; SMTP credential, provider veya gerçek alıcı verisini değiştirme",
+  "previous": ["MAIL-03-02"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/workflow/packets/MAIL-03-02.json",
+    "artifacts/workflow/MAIL-03-02/verified.json",
+    "src/components/mavenforms/email-template-editor.tsx",
+    "src/components/mavenforms/views/settings-view.tsx",
+    "tests/email-template-editor-preview.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/MAIL-03-03.json",
+    "src/components/mavenforms/email-template-editor.tsx",
+    "src/components/mavenforms/views/settings-view.tsx",
+    "tests/email-template-editor-context.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Her SMTP şablonu editörde olay, alıcı, kanal sınıfı ve gönderici bağlamını gösterir",
+    "Bildirim/ödeme/fatura ayrımı kullanıcıya açıkça anlatılır; şablon fatura veya ödeme kanıtı olarak sunulmaz",
+    "Bağlam yalnız tanımlı operasyonel metadata'dır; SMTP secret, provider token, internal id ve PII taşınmaz",
+    "Context wiring testi, önceki preview/tag/content testleri, TypeScript ve readiness geçmeden faz tamamlanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/email-template-editor-context.test.mjs"],
+    ["bun", "tests/email-template-editor-preview.test.mjs"],
+    ["bun", "tests/email-template-editor-tags.test.mjs"],
+    ["bun", "tests/email-template-content.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

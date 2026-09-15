@@ -1,0 +1,35 @@
+{
+  "id": "CONTEXT-00",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "STATUS.md bootstrap katmanını 6 KB sınırına indirirken geçmiş faz kanıtlarını ve karar kayıtlarını kaybetmemek; context-check, packet discovery ve diğer IDE yönlendirmelerini yeniden çalışır hale getirmek",
+  "rollback": "Yalnız CONTEXT-00 packetini, kısa STATUS bootstrap dosyasını ve oluşturulacak tarihçe yönlendirmesini geri al; geçmiş receipt, kaynak, uygulama, form, yanıt, ödeme veya fatura verisini silme/değiştirme",
+  "previous": ["FORM-UX-07"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "scripts/context-check.mjs",
+    "scripts/workflow.mjs",
+    "docs/workflow/packets/FORM-UX-07.json",
+    "docs/workflow/packets/V4-00.json"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/CONTEXT-00.json",
+    "STATUS.md",
+    "docs/workflow/status-history.md",
+    "scripts/context-check.mjs"
+  ],
+  "acceptance": [
+    "STATUS.md kanonik güncel faz, blocker, son receipt ve sonraki READY packet bilgisini 6 KB bootstrap sınırında taşır",
+    "Önceki fazların tarihçe/kanıt kayıtları silinmez; status-history yönlendirmesiyle gerektiğinde progressive disclosure üzerinden erişilebilir kalır",
+    "context-check PASS verir ve tüm READY packet read yolları mevcut kalır; diğer IDE adapter kuralları bozulmaz",
+    "V4-00 yalnız context bootstrap kapısı geçtikten sonra yeniden READY değerlendirilir; R-10 NO-GO, provider mutation ve canlı SaaS sınırları değişmez"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

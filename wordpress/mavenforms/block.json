@@ -1,0 +1,11 @@
+{
+  "apiVersion": 3,
+  "name": "mavenforms/form",
+  "title": "MavenForms",
+  "category": "embed",
+  "icon": "feedback",
+  "description": "Embed a published MavenForms form (iframe/inline). Only public slug/mode.",
+  "attributes": { "slug": { "type": "string" }, "mode": { "type": "string", "default": "iframe" } },
+  "editorScript": "file:./block.js",
+  "render": "file:./render.php"
+}

@@ -1,0 +1,44 @@
+{
+  "id": "R10-V4-01",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "R-10/V4 kanıt sınıflarını ve runtime karar durumlarını tek normalize, provider-neutral sözleşmede toplamak",
+  "rollback": "Yeni kanıt sözleşmesi ve testini geri al; mevcut ödeme, fatura, belge, mail ve V4 davranışlarını değiştirme",
+  "previous": ["R10-V4-00"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/research-sources/2026-09-11-ozelapp-r10-v4-guvenli-entegrasyon-research-receipt.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "docs/runbooks/r10-external-evidence-guide.md",
+    "src/lib/r10-scope-gate.ts",
+    "tests/r10-first-party-pilot-gate.test.mjs",
+    "tests/v4-release-gate.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-01.json",
+    "src/lib/r10-scope-gate.ts",
+    "tests/r10-evidence-model.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "E0-E6 kanıt sınıfları tek bir typed/serializable modelden doğrulanabilir",
+    "LOCAL_PASS, PILOT_PASS ve RELEASE_PASS runtime kararları kanıt sınıfından ayrı tutulur",
+    "Geçersiz veya eksik kanıt kaydı null/fail-closed döner; mevcut R-10 production NO-GO ve V4 canlı kapısı değişmez",
+    "Yeni sözleşme mevcut first-party pilot gate davranışını değiştirmez ve testle kanıtlanır"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"],
+    ["bun", "tests/r10-first-party-pilot-gate.test.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/r10-evidence-model.test.mjs"],
+    ["bun", "tests/r10-first-party-pilot-gate.test.mjs"],
+    ["bun", "tests/v4-release-gate.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

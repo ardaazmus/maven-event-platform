@@ -1,0 +1,50 @@
+{
+  "id": "R10-V4-28",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Fatura teslimat e-postası ile form bildirimini ayrı transactional kanal ve sender profili olarak görünür bir wizard sözleşmesine bağlamak",
+  "rollback": "Transactional mail wizard ve invoice center bağlantısını geri al; mevcut mail şablonlarını, manuel fatura fallback’ini ve gerçek teslimat sınırlarını değiştirme",
+  "previous": ["R10-V4-27"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/components/mavenforms/connection-wizard.tsx",
+    "src/components/mavenforms/views/invoice-center-view.tsx",
+    "src/components/mavenforms/email-template-editor.tsx",
+    "src/lib/tenant-invoice-mail.ts",
+    "src/lib/invoice-delivery-gate.ts",
+    "src/lib/invoice-document-ready-delivery.ts",
+    "tests/email-template-editor-context.test.mjs",
+    "tests/r10-payment-invoice-hold-mail-separation.test.mjs",
+    "tests/v2-invoice-delivery-manual.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-28.json",
+    "src/components/mavenforms/transactional-mail-wizard.tsx",
+    "src/components/mavenforms/views/invoice-center-view.tsx",
+    "tests/transactional-mail-wizard.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Wizard fatura transactional kanalını form notification kanalından ve ayrı sender profilinden ayırır",
+    "Belge-ready, transactional sender, alıcı ve outbox kanıtı olmadan teslimat etkinliği iddiası gösterilmez",
+    "Wizard invoice center’da görünür; manuel fatura ve ayrı fatura maili fallback sınırı korunur",
+    "Bileşen network, DB, provider, credential veya gerçek mail mutation yapmaz; R-10 canlı teslimat kapalı kalır"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/transactional-mail-wizard.test.mjs"],
+    ["bun", "tests/email-template-editor-context.test.mjs"],
+    ["bun", "tests/r10-payment-invoice-hold-mail-separation.test.mjs"],
+    ["bun", "tests/v2-invoice-delivery-manual.test.mjs"],
+    ["bun", "tests/invoice-document-ready-route.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

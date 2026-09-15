@@ -1,0 +1,14 @@
+{
+  "id": "FORM-UX-12-R1",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "FORM-UX-12 immutable receipt'iyle uyumlu durum kaydını yeniden kapatmak ve sonraki FORM-UX kapısına temiz predecessor sağlamak",
+  "rollback": "Yalnız durum satırını ve bu revalidation packetini geri al; form, medya, ödeme, fatura veya yanıt verisini silme/değiştirme",
+  "previous": [],
+  "revalidationReason": "FORM-UX-12 receipt'i verify sonrasında STATUS.md'nin context bootstrap sınırını korumak için kısaltılması nedeniyle stale; bu packet yalnız güncel durum kaydını yeniden kapatır.",
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "artifacts/workflow/FORM-UX-12/verified.json"],
+  "allowedFiles": ["docs/workflow/packets/FORM-UX-12-R1.json", "STATUS.md"],
+  "acceptance": ["FORM-UX-12 receipt'inin changedFiles durumu mevcut baseline ile uyumludur", "FORM-UX-12 durum satırı LOCAL_PASS olarak kapatılır", "Context ve workflow metadata kapıları geçer; uygulama kodu ve veri değişmez"],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["node", "scripts/context-check.mjs"]]
+}

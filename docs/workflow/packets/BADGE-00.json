@@ -1,0 +1,39 @@
+{
+  "id": "BADGE-00",
+  "status": "READY",
+  "lifecycle": "SUPERSEDED",
+  "supersededBy": "BADGE-00-R1",
+  "timeboxMinutes": 15,
+  "goal": "Yaka kartı modülünün tekil/toplu üretim, matbaa çıktısı ve tek/çift yüz davranışını ana ürün sırasını değiştirmeden kanonik tasarım kararı ve mikro-faz sözleşmesi olarak tanımlamak.",
+  "rollback": "Yalnız yaka kartı karar kaydı, plan bağlantısı ve BADGE-00 durum notunu geri al; form, yanıt, ödeme, fatura ve yayın verilerine dokunma.",
+  "previous": ["FORM-UX-65"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "RELEASE-ROADMAP.md",
+    "docs/superpowers/plans/2026-09-06-mavenforms-release-modules-first-party-saas-roadmap.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/BADGE-00.json",
+    "docs/superpowers/plans/2026-09-09-mavenforms-badge-module-roadmap.md",
+    "RELEASE-ROADMAP.md",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Tekil ve toplu yaka kartı üretimi ile matbaa için export-first yaklaşımı açıkça tanımlıdır.",
+    "Tek yüz/çift yüz veri modeli, arka yüz yokken boş sayfa üretmeme ve duplex flip/orientation seçimi tanımlıdır.",
+    "PDF arka planı, dinamik alan, QR, custom ölçü, bleed/safe area, preflight ve yazdırma kanıtı sınırları ayrıdır.",
+    "Doğrudan matbaa API gönderimi otomatik varsayım olarak açılmamış; gelecekte adapter ve açık kullanıcı onayı gerektiren ertelenmiş bir yetenek olarak işaretlenmiştir.",
+    "Yaka kartı iş akışı ana PAY → manuel fatura → Paraşüt → belge → teslimat → pilot → FORM-UX → SAAS sırasını değiştirmez ve V2/V4 release kapısı değildir.",
+    "Araştırma kaynakları, doğrulanmış sektör davranışı ile MavenForms tasarım önerisini birbirinden ayırır.",
+    "Context-check ve workflow verify geçer."
+  ],
+  "preflight": [
+    ["node", "scripts/context-check.mjs"]
+  ],
+  "checks": [
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

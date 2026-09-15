@@ -1,0 +1,48 @@
+{
+  "id": "CTX-02",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Tarihçede superseded veya legacy olarak kapanmış receipt'siz packet kayıtlarını açıkça SUPERSEDED işaretleyerek IDE ve sonraki workflow seçimlerinde yanlış aktif faz seçimini önlemek.",
+  "rollback": "Yalnız legacy packet durum işaretlerini, testini ve bu packet kaydını geri al; uygulama koduna, V1/V2/V3/yaka kartı davranışına, V4'e ve R-10'a dokunma.",
+  "previous": [],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/workflow/status-history.md",
+    "tests/workflow-legacy-packets.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/CTX-02.json",
+    "STATUS.md",
+    "tests/workflow-legacy-packets.test.mjs",
+    "docs/workflow/packets/BADGE-00.json",
+    "docs/workflow/packets/BADGE-01.json",
+    "docs/workflow/packets/FORM-UX-04.json",
+    "docs/workflow/packets/FORM-UX-05.json",
+    "docs/workflow/packets/FORM-UX-05A.json",
+    "docs/workflow/packets/FORM-UX-15.json",
+    "docs/workflow/packets/FORM-UX-15-R1.json",
+    "docs/workflow/packets/FORM-UX-24.json",
+    "docs/workflow/packets/FORM-UX-30.json",
+    "docs/workflow/packets/FORM-UX-69.json",
+    "docs/workflow/packets/V1-00.json",
+    "docs/workflow/packets/V1-04.json",
+    "docs/workflow/packets/V2-00.json",
+    "docs/workflow/packets/V2-04C.json",
+    "docs/workflow/packets/V2-09.json",
+    "docs/workflow/packets/V3-01A.json",
+    "docs/workflow/packets/V3-01B.json"
+  ],
+  "acceptance": [
+    "Receipt'siz olduğu doğrulanan eski packet kayıtları SUPERSEDED durumunu taşır.",
+    "Güncel LOCAL_PASS packet'leri ve uygulama kaynakları değişmez.",
+    "Legacy packet hijyen testi ve context-check geçer."
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [
+    ["bun", "tests/workflow-legacy-packets.test.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

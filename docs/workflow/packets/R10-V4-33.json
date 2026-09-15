@@ -1,0 +1,50 @@
+{
+  "id": "R10-V4-33",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Provider ve callback URL'leri için SSRF, açık yönlendirme ve callback state abuse sözleşmesi oluşturmak",
+  "rollback": "URL/state güvenlik sözleşmesi ve testini geri al; mevcut route ve provider akışlarına mutation ekleme",
+  "previous": ["R10-V4-32"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/superpowers/plans/2026-09-11-r10-v4-guvenli-entegrasyon-wizard-simulasyon-mikro-faz-plani.md",
+    "src/lib/payment-callback-contract.ts",
+    "src/lib/oauth-pkce-contract.ts",
+    "src/lib/parasut-oauth.ts",
+    "src/lib/parasut-oauth-server.ts",
+    "src/app/api/integrations/parasut/oauth/start/route.ts",
+    "src/app/api/integrations/parasut/oauth/callback/route.ts",
+    "tests/parasut-oauth.test.mjs",
+    "tests/parasut-oauth-route.test.mjs",
+    "tests/payment-callback-contract.test.mjs",
+    "tests/stripe-retrieve.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/R10-V4-33.json",
+    "src/lib/external-url-safety-contract.ts",
+    "tests/external-url-safety-contract.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Provider URL'leri yalnız güvenli HTTPS ve public hostname kurallarından geçer; private, loopback, link-local ve metadata hedefleri reddedilir",
+    "Redirect URL yalnız önceden izinli origin ve exact callback path ile kabul edilir; fragment, userinfo ve açık yönlendirme reddedilir",
+    "Callback state eksik, farklı, süresi geçmiş, yeniden kullanılmış veya binding uyuşmazlığında fail-closed olur; state değeri dışarı sızmaz",
+    "Sözleşme pure olur; network, DNS, DB, dosya, provider veya gerçek veri mutation yapmaz"
+  ],
+  "preflight": [
+    ["node", "scripts/local-ready.mjs"]
+  ],
+  "checks": [
+    ["bun", "tests/external-url-safety-contract.test.mjs"],
+    ["bun", "tests/parasut-oauth.test.mjs"],
+    ["bun", "tests/parasut-oauth-route.test.mjs"],
+    ["bun", "tests/payment-callback-contract.test.mjs"],
+    ["bun", "tests/stripe-retrieve.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

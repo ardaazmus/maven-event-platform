@@ -1,0 +1,36 @@
+{
+  "id": "FORM-UX-43",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Formlar ekranindaki tekrarlanan Yeni Form aksiyonunu kaldirip ana olusturma aksiyonunu tekilleştirmek",
+  "rollback": "Yalniz FORM-UX-43 packetini, forms listesi klasor paneli degisikligini, regression testini ve STATUS kaydini geri al",
+  "previous": ["FORM-UX-42"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/sidebar.tsx",
+    "src/components/mavenforms/views/forms-list-view.tsx"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-43.json",
+    "src/components/mavenforms/views/forms-list-view.tsx",
+    "tests/form-ux-single-create-action.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Formlar klasor panelinde ikinci Yeni Form butonu bulunmaz",
+    "Uygulama seviyesindeki Yeni Form aksiyonu ve bos liste olusturma aksiyonu korunur",
+    "Form listeleme, klasor secimi ve yeni form dialogu ayni state akisini kullanir",
+    "Regression, TypeScript, build, readiness, context-check ve workflow verify basarili olur"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-single-create-action.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

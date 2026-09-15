@@ -90,8 +90,8 @@ export function AuditView() {
           <h2 className="text-xl font-bold mb-1">Denetim Kayıtları</h2>
           <p className="text-sm text-muted-foreground">Tüm sistem aktiviteleri ve değişiklikler</p>
         </div>
-        <Button variant="outline" size="sm" className="gap-1.5">
-          <Download className="w-3.5 h-3.5" /> Export
+        <Button variant="outline" size="sm" className="gap-1.5" disabled aria-label="Denetim kayıtlarını dışa aktarma (yakında)" title="Denetim kayıtlarını dışa aktarma (yakında)">
+          <Download className="w-3.5 h-3.5" /> Export (yakında)
         </Button>
       </div>
 

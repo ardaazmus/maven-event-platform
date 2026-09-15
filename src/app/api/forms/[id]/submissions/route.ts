@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getSessionFromCookie } from '@/lib/auth'
+import { can } from '@/lib/policy'
 
 interface RouteParams {
   params: Promise<{ id: string }>
@@ -9,6 +10,8 @@ interface RouteParams {
 export async function GET(req: NextRequest, { params }: RouteParams) {
   const ctx = await getSessionFromCookie()
   if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const _auth = can.readSubmissions(ctx as any)
+  if (!_auth.allowed) return NextResponse.json({ error: _auth.error }, { status: _auth.status })
 
   const { id } = await params
   const form = await db.form.findFirst({ where: { id, workspaceId: ctx.workspace.id } })
@@ -16,8 +19,8 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 
   const { searchParams } = new URL(req.url)
   const status = searchParams.get('status')
-  const page = parseInt(searchParams.get('page') || '1')
-  const pageSize = parseInt(searchParams.get('pageSize') || '20')
+  const page = Math.max(1, Math.min(10000, Number.parseInt(searchParams.get('page') || '1', 10) || 1))
+  const pageSize = Math.max(1, Math.min(100, Number.parseInt(searchParams.get('pageSize') || '20', 10) || 20))
   const search = searchParams.get('search')
 
   const where: any = { formId: id }
@@ -57,7 +60,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
       values: s.values.map(v => ({
         id: v.id,
         fieldId: v.fieldId,
-        value: JSON.parse(v.valueJson || '{}'),
+        value: (() => { try { return JSON.parse(v.valueJson || '{}') } catch { return { value: null } } })(),
         normalizedText: v.normalizedText,
         field: v.field,
       })),
@@ -68,74 +71,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 
 // Public submission
 export async function POST(req: NextRequest, { params }: RouteParams) {
-  const { id } = await params
-
-  const form = await db.form.findFirst({
-    where: { id, status: 'published', deletedAt: null },
-    include: { fields: { where: { adminOnly: false } } },
-  })
-
-  if (!form) return NextResponse.json({ error: 'Form bulunamadı veya yayında değil' }, { status: 404 })
-
-  try {
-    const body = await req.json()
-
-    // Idempotency check via publicToken or header
-    const idempotencyKey = req.headers.get('Idempotency-Key')
-    if (idempotencyKey) {
-      const existing = await db.submission.findUnique({ where: { publicToken: idempotencyKey } })
-      if (existing) {
-        return NextResponse.json({ data: { id: existing.id, status: 'duplicate' } })
-      }
-    }
-
-    const submission = await db.submission.create({
-      data: {
-        formId: id,
-        publicToken: idempotencyKey || `sub_${Date.now()}_${Math.random().toString(36).slice(2, 12)}`,
-        status: 'new',
-        locale: form.settingsJson ? JSON.parse(form.settingsJson).locale || 'tr' : 'tr',
-        source: 'web',
-        ipHash: req.headers.get('x-forwarded-for')?.split(',')[0] || null,
-        userAgentHash: req.headers.get('user-agent') || null,
-      },
-    })
-
-    // Save values
-    const values: any[] = []
-    for (const field of form.fields) {
-      const v = body[field.fieldKey]
-      if (v !== undefined && v !== null && v !== '') {
-        values.push({
-          submissionId: submission.id,
-          fieldId: field.id,
-          valueJson: JSON.stringify({ value: v }),
-          normalizedText: typeof v === 'string' ? v : JSON.stringify(v),
-        })
-      }
-    }
-
-    if (values.length > 0) {
-      await db.submissionValue.createMany({ data: values })
-    }
-
-    // Update form counter
-    await db.form.update({
-      where: { id },
-      data: {
-        submissionCount: { increment: 1 },
-        todaySubmissionCount: { increment: 1 },
-      },
-    })
-
-    const settings = JSON.parse(form.settingsJson || '{}')
-    return NextResponse.json({
-      data: {
-        id: submission.id,
-        successMessage: settings.successMessage || 'Formunuz başarıyla gönderildi. Teşekkürler!',
-      },
-    })
-  } catch (e) {
-    return NextResponse.json({ error: 'Gönderim hatası' }, { status: 500 })
-  }
+  // Anonymous writes must use the slug-based public endpoint. Keeping an
+  // internal-id write route would expose a second, harder-to-audit boundary.
+  return NextResponse.json({ error: 'Public gönderim URLsi kullanılmalıdır' }, { status: 410 })
 }

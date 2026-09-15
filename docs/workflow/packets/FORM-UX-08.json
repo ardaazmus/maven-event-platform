@@ -1,0 +1,41 @@
+{
+  "id": "FORM-UX-08",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Form Builder ayarlar ekranının üst chrome alanlarında clipping ve üst üste binmeyi gidererek toolbar/tab/panel scroll sınırlarını netleştirmek; masaüstü ve dar viewportlarda ayarlar içeriğinin tamamının erişilebilir kalmasını sağlamak",
+  "rollback": "Yalnız FORM-UX-08 packetini, hedef layout testini ve form-builder-view içindeki dört sınırlı className düzeltmesini geri al; form, yanıt, medya, ödeme, fatura veya yayın verisini silme/değiştirme",
+  "previous": ["FORM-UX-07"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/components/mavenforms/app-shell.tsx",
+    "tests/form-ux-final-gate.test.mjs",
+    "tests/ui-layout.test.mjs",
+    "tests/responsive-a11y.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-08.json",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "tests/form-ux-settings-layout.test.mjs"
+  ],
+  "acceptance": [
+    "Builder root, toolbar, tab strip ve aktif ayarlar paneli flex shrink/min-height sınırlarını açıkça tanımlar; üst chrome kendi yüksekliğini korur",
+    "Ayarlar içeriği kendi dikey scroll alanında kalır; tabs kullanılabilir yüksekliğini korur ve üst yatay clipping/overlay oluşmaz",
+    "Dar viewportta tab strip yatay kaydırılabilir kalır; form ayarlarının altındaki içerik erişilebilir olur",
+    "Form verisi, route/store/API sözleşmesi ve public/private güvenlik sınırları değişmez",
+    "Hedef layout gate, mevcut UI/responsive regresyonları, TypeScript, production build ve readiness geçmeden faz tamamlanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-settings-layout.test.mjs"],
+    ["bun", "tests/form-ux-final-gate.test.mjs"],
+    ["bun", "tests/ui-layout.test.mjs"],
+    ["bun", "tests/responsive-a11y.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"]
+  ]
+}

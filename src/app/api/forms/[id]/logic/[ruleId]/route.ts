@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getSessionFromCookie } from '@/lib/auth'
+import { can } from '@/lib/policy'
 
 interface RouteParams {
   params: Promise<{ id: string; ruleId: string }>
@@ -9,6 +10,8 @@ interface RouteParams {
 export async function PATCH(req: NextRequest, { params }: RouteParams) {
   const ctx = await getSessionFromCookie()
   if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const _auth = can.writeForms(ctx as any)
+  if (!_auth.allowed) return NextResponse.json({ error: _auth.error }, { status: _auth.status })
 
   const { id, ruleId } = await params
   const form = await db.form.findFirst({ where: { id, workspaceId: ctx.workspace.id } })
@@ -29,6 +32,8 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
 export async function DELETE(req: NextRequest, { params }: RouteParams) {
   const ctx = await getSessionFromCookie()
   if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const _auth = can.writeForms(ctx as any)
+  if (!_auth.allowed) return NextResponse.json({ error: _auth.error }, { status: _auth.status })
 
   const { id, ruleId } = await params
   const form = await db.form.findFirst({ where: { id, workspaceId: ctx.workspace.id } })

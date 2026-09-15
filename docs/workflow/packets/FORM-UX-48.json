@@ -1,0 +1,37 @@
+{
+  "id": "FORM-UX-48",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "Formlar akilli klasorlerinde desteklenen filtreleri calistirmak ve veri modeli desteklemeyen aksiyonlari sahte tiklanabilirlikten cikarmak",
+  "rollback": "Yalniz FORM-UX-48 packetini, forms listesi akilli filtre degisikligini, regression testini ve STATUS kaydini geri al",
+  "previous": ["FORM-UX-47"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "src/components/mavenforms/views/forms-list-view.tsx",
+    "src/lib/types.ts"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/FORM-UX-48.json",
+    "src/components/mavenforms/views/forms-list-view.tsx",
+    "tests/form-ux-smart-filters.test.mjs",
+    "STATUS.md"
+  ],
+  "acceptance": [
+    "Bugun yanit alanlar filtresi todaySubmissionCount verisiyle calisir",
+    "Cok aktif filtresi mevcut submissionCount verisiyle calisir",
+    "Ucretli formlar odeme verisi yokken etkisiz buton olarak gorunmez ve kurulum durumu aciklanir",
+    "Normal listeleme, klasor/status/search filtreleri ve secili form ozeti korunur",
+    "Regression, TypeScript, build, readiness, context-check ve workflow verify basarili olur"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["bun", "tests/form-ux-smart-filters.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+    ["bun", "run", "build"],
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"]
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "BADGE-38-R1",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "BADGE-38 UI doğruluğunu, BADGE-39 template upload hazırlığında değişen ortak builder/test dosyalarıyla yeniden doğrulamak.",
+  "rollback": "Yalnız BADGE-38 evidence revalidation receipt ve durum bağlantısını geri al; yeni template upload davranışını geri alma.",
+  "previous": [],
+  "reads": ["AGENTS.md", "PROJECT_CONTEXT.md", "STATUS.md", "docs/workflow/README.md", "src/components/mavenforms/views/form-builder-view.tsx", "tests/badge-ui-entry-wiring.test.mjs"],
+  "allowedFiles": ["docs/workflow/packets/BADGE-38-R1.json", "src/components/mavenforms/views/form-builder-view.tsx", "tests/badge-ui-entry-wiring.test.mjs", "STATUS.md"],
+  "acceptance": ["Paneldeki private output, scan ve authenticated download açıklaması güncel kodla korunur.", "Önceki UI davranışı ve TypeScript/context kanıtı yeniden geçer; yeni template upload kapsamı bu receipt ile sahiplenilmez."],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["node", "--experimental-strip-types", "tests/badge-ui-entry-wiring.test.mjs"], ["bun", "run", "tsc", "--", "--noEmit"], ["node", "scripts/context-check.mjs"]]
+}

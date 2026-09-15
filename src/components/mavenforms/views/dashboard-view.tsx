@@ -76,9 +76,17 @@ function StatCard({
 }) {
   return (
     <Card
-      className="p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer group relative overflow-hidden animate-in-fade"
+      className="p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary group relative overflow-hidden animate-in-fade"
       style={{ animationDelay: `${delay}ms` }}
       onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={(event) => {
+        if ((event.key === 'Enter' || event.key === ' ') && onClick) {
+          event.preventDefault()
+          onClick()
+        }
+      }}
     >
       <div className={cn('absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity', color)} />
       <div className="relative">
@@ -230,8 +238,6 @@ export function DashboardView() {
           icon={FileText}
           label="Toplam Form"
           value={stats.totalForms}
-          trend="+2"
-          trendUp
           color="bg-violet-500/10 text-violet-600 dark:text-violet-400"
           delay={0}
           onClick={() => setView('forms')}
@@ -248,8 +254,6 @@ export function DashboardView() {
           icon={Inbox}
           label="Bugünkü Yanıt"
           value={stats.todaySubmissions}
-          trend="+18%"
-          trendUp
           color="bg-blue-500/10 text-blue-600 dark:text-blue-400"
           delay={100}
           onClick={() => setView('submissions')}
@@ -273,9 +277,7 @@ export function DashboardView() {
         <StatCard
           icon={CreditCard}
           label="Bu Ay Ödeme"
-          value={`₺${stats.paymentTotal.toLocaleString('tr-TR')}`}
-          trend="+24%"
-          trendUp
+          value={stats.paymentTotal === null ? '—' : `₺${stats.paymentTotal.toLocaleString('tr-TR')}`}
           color="bg-cyan-500/10 text-cyan-600 dark:text-cyan-400"
           delay={250}
           onClick={() => setView('reports')}
@@ -396,6 +398,19 @@ export function DashboardView() {
                 </div>
               </div>
             </div>
+            <div className="rounded-lg border border-border/60 p-3 space-y-2">
+              <div className="flex items-center justify-between text-xs font-medium">
+                <span>E-posta teslimatı</span>
+                <span className="text-muted-foreground">{data.deliverability.deliveryRatePercent === null ? 'Kanıt yok' : `%${data.deliverability.deliveryRatePercent} teslim`}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                <span>Kabul edildi: <strong className="text-foreground">{data.deliverability.accepted}</strong></span>
+                <span>Teslim edildi: <strong className="text-foreground">{data.deliverability.delivered}</strong></span>
+                <span>Bekleyen: <strong className="text-foreground">{data.deliverability.queued + data.deliverability.sending}</strong></span>
+                <span>Hatalı: <strong className="text-foreground">{data.deliverability.failed}</strong></span>
+              </div>
+              {data.deliverability.marketingPaused && <div className="text-[10px] text-amber-600">Marketing gönderimleri duraklatıldı.</div>}
+            </div>
           </div>
         </Card>
       </div>
@@ -465,7 +480,7 @@ export function DashboardView() {
               <h3 className="font-semibold">Son Yanıtlar</h3>
               <p className="text-xs text-muted-foreground">Son 5 yanıt</p>
             </div>
-            <Button variant="ghost" size="sm" className="gap-1 text-xs" onClick={() => setView('submissions')}>
+            <Button variant="ghost" size="sm" className="gap-1 text-xs" onClick={() => setView('submissions')} aria-label="Tüm yanıtları gör" title="Tüm yanıtları gör">
               <ArrowRight className="w-3 h-3" />
             </Button>
           </div>

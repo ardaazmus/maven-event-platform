@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { type ReactNode, useEffect, useState } from 'react'
 import { api } from '@/lib/api-client'
+import { MediaSourceField } from '@/components/mavenforms/media-source-field'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -38,6 +39,7 @@ import { cn } from '@/lib/utils'
 
 interface AppearanceData {
   headerEnabled: boolean
+  headerLogoMediaId?: string | null
   headerLogoUrl: string | null
   headerLogoAlt: string | null
   headerLogoWidth: number | null
@@ -45,6 +47,7 @@ interface AppearanceData {
   headerSubtitle: string | null
   headerDescription: string | null
   headerBgColor: string
+  headerBgMediaId?: string | null
   headerBgImage: string | null
   headerTextColor: string
   headerAlign: 'left' | 'center' | 'right'
@@ -61,6 +64,7 @@ interface AppearanceData {
   socialFacebook: string | null
   socialYoutube: string | null
   footerEnabled: boolean
+  footerLogoMediaId?: string | null
   footerLogoUrl: string | null
   footerText: string | null
   footerBgColor: string
@@ -72,11 +76,21 @@ interface AppearanceData {
 
 interface AppearancePanelProps {
   formId: string
+  formSlug: string
   formTitle: string
   formDescription: string | null
+  themePanel?: ReactNode
 }
 
-export function AppearancePanel({ formId, formTitle, formDescription }: AppearancePanelProps) {
+function mediaIdFromValue(value: string | null) {
+  return value?.match(/^\/api\/media\/([^/?]+)(?:\?.*)?$/)?.[1] || null
+}
+
+function externalUrlValue(value: string | null) {
+  return value?.startsWith('https://') ? value : ''
+}
+
+export function AppearancePanel({ formId, formSlug, formTitle, formDescription, themePanel }: AppearancePanelProps) {
   const [data, setData] = useState<AppearanceData | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -91,6 +105,19 @@ export function AppearancePanel({ formId, formTitle, formDescription }: Appearan
 
   const update = (key: keyof AppearanceData, value: any) => {
     setData((prev) => (prev ? { ...prev, [key]: value } : prev))
+  }
+
+  const updateMediaSource = (mediaKey: keyof AppearanceData, urlKey: keyof AppearanceData, id: string | null) => {
+    setData((prev) => {
+      if (!prev) return prev
+      const previousUrl = prev[urlKey]
+      const fallbackUrl = typeof previousUrl === 'string' && previousUrl.startsWith('/api/media/') ? null : previousUrl
+      return { ...prev, [mediaKey]: id, [urlKey]: id ? null : fallbackUrl }
+    })
+  }
+
+  const updateExternalMediaUrl = (mediaKey: keyof AppearanceData, urlKey: keyof AppearanceData, value: string) => {
+    setData((prev) => (prev ? { ...prev, [mediaKey]: null, [urlKey]: value || null } : prev))
   }
 
   const handleSave = async () => {
@@ -122,28 +149,35 @@ export function AppearancePanel({ formId, formTitle, formDescription }: Appearan
     )
   }
 
+  const headerLogoMediaId = data.headerLogoMediaId || mediaIdFromValue(data.headerLogoUrl)
+  const headerLogoPreview = headerLogoMediaId
+    ? `/api/media/${headerLogoMediaId}?formId=${formId}`
+    : externalUrlValue(data.headerLogoUrl)
+
   return (
     <ScrollArea className="flex-1">
       <div className="max-w-3xl mx-auto p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold">Görünüm & Header/Footer</h2>
+            <h2 className="text-lg font-semibold">Görünüm ve tema</h2>
             <p className="text-sm text-muted-foreground">
-              Formun üst ve alt alanlarını özelleştirin. Resim, metin, iletişim ve sosyal medya ekleyin.
+              Formun tüm görsel ayarlarını tek alanda yönetin: tema, resim, metin, iletişim ve sosyal medya.
             </p>
           </div>
           <div className="flex gap-2">
-            <a href={`/forms/${formId}?preview=1`} target="_blank" rel="noopener noreferrer">
+            <a href={`/forms/${encodeURIComponent(formSlug)}?preview=1`} target="_blank" rel="noopener noreferrer">
               <Button variant="outline" size="sm" className="gap-1.5">
                 <Eye className="w-3.5 h-3.5" /> Önizle
               </Button>
             </a>
             <Button size="sm" className="gap-1.5" onClick={handleSave} disabled={saving}>
               {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-              Kaydet
+              Görünümü kaydet
             </Button>
           </div>
         </div>
+
+        {themePanel && <div className="rounded-xl border border-border/70 bg-muted/10 p-4">{themePanel}</div>}
 
         {/* HEADER SECTION */}
         <Card className="p-5 space-y-4">
@@ -166,18 +200,21 @@ export function AppearancePanel({ formId, formTitle, formDescription }: Appearan
               {/* Logo */}
               <div className="space-y-2">
                 <Label className="text-xs flex items-center gap-1.5">
-                  <ImageIcon className="w-3 h-3" /> Logo URL (PNG, JPG, SVG, WebP)
+                  <ImageIcon className="w-3 h-3" /> Logo — Yükle veya seç
                 </Label>
-                <Input
-                  value={data.headerLogoUrl || ''}
-                  onChange={(e) => update('headerLogoUrl', e.target.value)}
-                  placeholder="https://example.com/logo.png"
-                  className="text-sm"
+                <MediaSourceField
+                  formId={formId}
+                  mediaId={headerLogoMediaId}
+                  externalUrl={externalUrlValue(data.headerLogoUrl) || null}
+                  onMediaChange={(id) => updateMediaSource('headerLogoMediaId', 'headerLogoUrl', id)}
+                  onExternalUrlChange={(value) => updateExternalMediaUrl('headerLogoMediaId', 'headerLogoUrl', value)}
+                  externalPlaceholder="https://example.com/logo.png"
+                  label="Logo kaynağı"
                 />
-                {data.headerLogoUrl && (
+                {(headerLogoMediaId || externalUrlValue(data.headerLogoUrl)) && (
                   <div className="flex items-center gap-3 p-2 rounded-lg border border-border">
                     <img
-                      src={data.headerLogoUrl}
+                      src={headerLogoPreview}
                       alt="Logo preview"
                       className="max-h-16 w-auto"
                       onError={(e) => (e.currentTarget.style.display = 'none')}
@@ -194,23 +231,28 @@ export function AppearancePanel({ formId, formTitle, formDescription }: Appearan
                     </div>
                   </div>
                 )}
-                <Input
-                  value={data.headerLogoAlt || ''}
-                  onChange={(e) => update('headerLogoAlt', e.target.value)}
-                  placeholder="Logo alt metni (erişilebilirlik)"
-                  className="text-xs h-8"
-                />
+                {(headerLogoMediaId || externalUrlValue(data.headerLogoUrl)) && <div className="space-y-1">
+                  <Label className="text-xs">Logo alt metni</Label>
+                  <Input
+                    value={data.headerLogoAlt || ''}
+                    onChange={(e) => update('headerLogoAlt', e.target.value)}
+                    placeholder="Görselin amacını açıklayın"
+                    className="text-xs h-8"
+                  />
+                  <p className="text-[11px] text-muted-foreground">Dekoratif logo için boş bırakabilirsiniz.</p>
+                </div>}
               </div>
 
               {/* Title */}
               <div className="space-y-2">
-                <Label className="text-xs">Başlık</Label>
+                <Label className="text-xs">Üst bölüm başlığı</Label>
                 <Input
                   value={data.headerTitle || ''}
                   onChange={(e) => update('headerTitle', e.target.value)}
                   placeholder={formTitle}
                   className="text-sm"
                 />
+                <p className="text-[11px] text-muted-foreground">Form ayarlarındaki addan bağımsızdır; yalnızca header içinde gösterilir.</p>
               </div>
 
               {/* Subtitle */}
@@ -226,7 +268,7 @@ export function AppearancePanel({ formId, formTitle, formDescription }: Appearan
 
               {/* Description */}
               <div className="space-y-2">
-                <Label className="text-xs">Açıklama (HTML destekler)</Label>
+                <Label className="text-xs">Üst bölüm açıklaması (HTML destekler)</Label>
                 <Textarea
                   value={data.headerDescription || ''}
                   onChange={(e) => update('headerDescription', e.target.value)}
@@ -234,11 +276,13 @@ export function AppearancePanel({ formId, formTitle, formDescription }: Appearan
                   rows={3}
                   className="text-sm"
                 />
-                <p className="text-[10px] text-muted-foreground">Satır sonu için Enter, HTML etiketleri desteklenir</p>
+                <p className="text-[11px] text-muted-foreground">Form açıklamasından bağımsızdır; yalnızca header içinde gösterilir. Satır sonu için Enter kullanılabilir.</p>
               </div>
 
               {/* Colors */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <p className="text-[11px] text-muted-foreground">Bu renkler yalnızca formun header bölümünü özelleştirir. Genel form renkleri, yazı tipi ve köşe yuvarlaklığı Tema ve stil bölümünden yönetilir.</p>
+                <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label className="text-xs">Arka Plan Rengi</Label>
                   <div className="flex items-center gap-2">
@@ -271,16 +315,20 @@ export function AppearancePanel({ formId, formTitle, formDescription }: Appearan
                     />
                   </div>
                 </div>
+                </div>
               </div>
 
               {/* Background Image */}
               <div className="space-y-2">
-                <Label className="text-xs">Arka Plan Resmi URL (opsiyonel)</Label>
-                <Input
-                  value={data.headerBgImage || ''}
-                  onChange={(e) => update('headerBgImage', e.target.value)}
-                  placeholder="https://example.com/bg.jpg"
-                  className="text-sm"
+                <Label className="text-xs">Arka Plan Resmi — Yükle veya seç</Label>
+                <MediaSourceField
+                  formId={formId}
+                  mediaId={data.headerBgMediaId || mediaIdFromValue(data.headerBgImage)}
+                  externalUrl={externalUrlValue(data.headerBgImage) || null}
+                  onMediaChange={(id) => updateMediaSource('headerBgMediaId', 'headerBgImage', id)}
+                  onExternalUrlChange={(value) => updateExternalMediaUrl('headerBgMediaId', 'headerBgImage', value)}
+                  externalPlaceholder="https://example.com/bg.jpg"
+                  label="Arka plan görseli kaynağı"
                 />
               </div>
 
@@ -444,13 +492,16 @@ export function AppearancePanel({ formId, formTitle, formDescription }: Appearan
               <Separator />
               <div className="space-y-2">
                 <Label className="text-xs flex items-center gap-1.5">
-                  <ImageIcon className="w-3 h-3" /> Footer Logo URL
+                  <ImageIcon className="w-3 h-3" /> Footer Logo — Yükle veya seç
                 </Label>
-                <Input
-                  value={data.footerLogoUrl || ''}
-                  onChange={(e) => update('footerLogoUrl', e.target.value)}
-                  placeholder="https://example.com/footer-logo.png"
-                  className="text-sm"
+                <MediaSourceField
+                  formId={formId}
+                  mediaId={data.footerLogoMediaId || mediaIdFromValue(data.footerLogoUrl)}
+                  externalUrl={externalUrlValue(data.footerLogoUrl) || null}
+                  onMediaChange={(id) => updateMediaSource('footerLogoMediaId', 'footerLogoUrl', id)}
+                  onExternalUrlChange={(value) => updateExternalMediaUrl('footerLogoMediaId', 'footerLogoUrl', value)}
+                  externalPlaceholder="https://example.com/footer-logo.png"
+                  label="Footer logo kaynağı"
                 />
               </div>
               <div className="space-y-2">
