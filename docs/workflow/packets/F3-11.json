@@ -1,0 +1,32 @@
+{
+  "id": "F3-11",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F3-3.4 delivery: POST /api/invoices/[id]/deliveries queued intent + Idempotency-Key resend aynı satırı döner",
+  "rollback": "Yalnız F3-11 packet, deliveries route ve testi geri al; schema ve veriye dokunma",
+  "previous": ["F3-10"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/invoices/[id]/issue/route.ts",
+    "src/lib/policy.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/08_FATURA_EBELGE.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F3-11.json",
+    "src/app/api/invoices/[id]/deliveries/route.ts",
+    "tests/invoice-delivery.test.mjs"
+  ],
+  "acceptance": [
+    "Issued invoice delivery 201 queued döner",
+    "Aynı Idempotency-Key resend aynı satırı 200 döner"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/invoice-delivery.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

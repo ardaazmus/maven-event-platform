@@ -1,0 +1,32 @@
+{
+  "id": "F3-04",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F3-3.2 model: bağımsız Invoice aggregate + InvoiceRelation zinciri (migration ayrı)",
+  "rollback": "Yalnız F3-04 packet, schema ekini ve model testini geri al; migration ve veriye dokunma",
+  "previous": ["F3-03"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "prisma/schema.prisma",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/08_FATURA_EBELGE.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F3-04.json",
+    "prisma/schema.prisma",
+    "tests/invoice-model.test.mjs"
+  ],
+  "acceptance": [
+    "Invoice order/customer bağı + numara/tip/tutar ile tanımlıdır",
+    "InvoiceRelation kaynak/hedef + cancel/credit/replacement tipi taşır"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/invoice-model.test.mjs"],
+    ["bun", "x", "prisma", "validate"]
+  ]
+}

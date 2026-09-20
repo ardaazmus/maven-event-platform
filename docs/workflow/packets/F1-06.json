@@ -1,0 +1,35 @@
+{
+  "id": "F1-06",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F1 event listeleme: events.read/write capability + saf scope helper + workspace-scoped GET /api/events + wrong-org unit negative",
+  "rollback": "Yalnız F1-06 packet, policy eki, scope helper, route ve testi geri al; schema ve veriye dokunma",
+  "previous": ["F1-05"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/lib/policy.ts",
+    "src/lib/auth.ts",
+    "src/app/api/folders/route.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F1-06.json",
+    "src/lib/policy.ts",
+    "src/lib/event-scope.ts",
+    "src/app/api/events/route.ts",
+    "tests/event-scope.test.mjs"
+  ],
+  "acceptance": [
+    "GET /api/events yalnız kendi workspace eventlerini döner; anon 401, yetkisiz rol 403",
+    "Scope helper wrong-org eşleşmede 404 üretir (unit kanıt)"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/event-scope.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

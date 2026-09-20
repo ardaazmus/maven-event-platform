@@ -1,0 +1,28 @@
+{
+  "id": "F0-02",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F0 kanıt bütünlüğü: makine-okunur evidence registry + live/ready/delivered/paid/issued kanıt sözlüğü",
+  "rollback": "Yalnız F0-02 packet ve iki evidence dosyasını geri al; STATUS, veri ve migrationa dokunma",
+  "previous": ["F0-01"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/11_YOL_HARITASI.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/14_KABUL_TEST_MATRISI.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/12_GELISTIRME_KONTROL_SISTEMI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F0-02.json",
+    "docs/workflow/evidence-registry.json",
+    "docs/workflow/evidence-dictionary.md"
+  ],
+  "acceptance": [
+    "Registry her capability için tek state taşır ve F0-01 receiptine bağlanır",
+    "Sözlük live/ready/delivered/paid/issued için kanıt sınıfı tanımlar; mock production sayılmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["node", "scripts/local-ready.mjs"], ["node", "scripts/context-check.mjs"]]
+}

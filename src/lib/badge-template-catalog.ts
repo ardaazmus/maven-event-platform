@@ -2,9 +2,11 @@ import { readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
 // @ts-expect-error Node strip-types tests require explicit TypeScript extensions.
 import { createBadgeTemplateStorageKey } from './badge-template-contract.ts'
+import type { BadgeTemplateFormat } from './badge-template-contract.ts'
 
 const SAFE_ID = /^[A-Za-z0-9_-]{1,128}$/u
 const MAX_TEMPLATES = 50
+const STORED_FORMATS: readonly BadgeTemplateFormat[] = ['pdf', 'png', 'jpeg', 'webp']
 
 export type BadgeTemplateCatalogItem = Readonly<{
   templateId: string
@@ -12,12 +14,13 @@ export type BadgeTemplateCatalogItem = Readonly<{
   workspaceId: string
   formId: string
   originalName: string
+  format: BadgeTemplateFormat
   pageCount: 1 | 2
   widthPt: number
   heightPt: number
   visibility: 'private'
   validationStatus: 'VALIDATED'
-}> 
+}>
 
 function isSafeId(value: string) {
   return SAFE_ID.test(value)
@@ -30,22 +33,27 @@ function catalogRoot(rootDir: string, workspaceId: string, formId: string) {
 }
 
 async function readCatalogItem(rootDir: string, workspaceId: string, formId: string, templateId: string, versionId: string) {
-  const storageKey = createBadgeTemplateStorageKey({ workspaceId, formId, templateId, versionId })
   const root = path.resolve(rootDir)
-  const manifestPath = path.resolve(root, `${storageKey}.json`)
-  if (!manifestPath.startsWith(`${root}${path.sep}`)) return null
-  try {
-    const manifest = JSON.parse(await readFile(manifestPath, 'utf8')) as Partial<BadgeTemplateCatalogItem> & { storageKey?: unknown }
-    if (
-      manifest.templateId !== templateId || manifest.versionId !== versionId || manifest.workspaceId !== workspaceId || manifest.formId !== formId ||
-      manifest.visibility !== 'private' || manifest.validationStatus !== 'VALIDATED' || manifest.storageKey !== storageKey ||
-      (manifest.pageCount !== 1 && manifest.pageCount !== 2) || typeof manifest.originalName !== 'string' ||
-      !Number.isFinite(manifest.widthPt) || !Number.isFinite(manifest.heightPt)
-    ) return null
-    return manifest as BadgeTemplateCatalogItem
-  } catch {
-    return null
+  for (const format of STORED_FORMATS) {
+    const storageKey = createBadgeTemplateStorageKey({ workspaceId, formId, templateId, versionId }, format)
+    const manifestPath = path.resolve(root, `${storageKey}.json`)
+    if (!manifestPath.startsWith(`${root}${path.sep}`)) return null
+    try {
+      const manifest = JSON.parse(await readFile(manifestPath, 'utf8')) as Partial<BadgeTemplateCatalogItem> & { storageKey?: unknown; format?: unknown }
+      const manifestFormat = manifest.format ?? (format === 'pdf' ? 'pdf' : null)
+      if (
+        manifest.templateId !== templateId || manifest.versionId !== versionId || manifest.workspaceId !== workspaceId || manifest.formId !== formId ||
+        manifest.visibility !== 'private' || manifest.validationStatus !== 'VALIDATED' || manifest.storageKey !== storageKey ||
+        manifestFormat !== format ||
+        (manifest.pageCount !== 1 && manifest.pageCount !== 2) || typeof manifest.originalName !== 'string' ||
+        !Number.isFinite(manifest.widthPt) || !Number.isFinite(manifest.heightPt)
+      ) continue
+      return { ...manifest, format } as BadgeTemplateCatalogItem
+    } catch {
+      continue
+    }
   }
+  return null
 }
 
 export async function listBadgeTemplates(input: Readonly<{ workspaceId: string; formId: string; rootDir: string }>) {

@@ -1,0 +1,34 @@
+{
+  "id": "F0-06",
+  "status": "READY",
+  "lifecycle": "SUPERSEDED",
+  "supersededBy": "F0-06A",
+  "timeboxMinutes": 15,
+  "goal": "F0 kilit: lint/typecheck/build/ready kanıtıyla evidence registry F0 LOCAL_PASS kapatılır",
+  "rollback": "Yalnız F0-06 packet ve evidence registry değişimini geri al; kod ve veriye dokunma",
+  "previous": ["F0-05"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "package.json",
+    "docs/workflow/evidence-registry.json",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/11_YOL_HARITASI.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/14_KABUL_TEST_MATRISI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F0-06.json",
+    "docs/workflow/evidence-registry.json"
+  ],
+  "acceptance": [
+    "lint, typecheck, build ve /api/ready kanıtı registry kaydına bağlanır",
+    "F0 sonrası F1 başlatılabilir"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/context-check.mjs"],
+    ["node", "scripts/local-ready.mjs"],
+    ["bun", "run", "lint"],
+    ["bunx", "tsc", "--noEmit"]
+  ]
+}

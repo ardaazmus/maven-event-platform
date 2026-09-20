@@ -1,0 +1,684 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>MavenForms Platform Core Ana Planı</title><style>body{font-family:Inter,Arial,sans-serif;max-width:1180px;margin:40px auto;padding:0 28px;color:#172033;line-height:1.55}h1{color:#0f766e;border-bottom:2px solid #dbe8e6;padding-bottom:10px}h2{margin-top:36px;color:#164e63}h3{color:#334155}table{border-collapse:collapse;width:100%;margin:18px 0;font-size:14px}th,td{border:1px solid #cbd5e1;padding:8px;vertical-align:top}th{background:#e6fffb;text-align:left}code{background:#f1f5f9;padding:2px 4px;border-radius:4px}pre{background:#0f172a;color:#e2e8f0;padding:16px;overflow:auto}a{color:#0369a1}p{max-width:1000px}</style></head><body><h1>MavenForms → Maven Event Platform Ana Planı</h1>
+<p><strong>Rapor tarihi:</strong> 17 Eylül 2026  </p>
+<p><strong>İncelenen ana kaynak:</strong> <code>mavenform-main-son.zip</code>  </p>
+<p><strong>Amaç:</strong> MavenForms&#x27;u kayıt/form ürünü sınırından çıkarıp Maven Event Platform&#x27;un güvenli çekirdeğine dönüştürmek; Event Floor Plan Studio ile ortak kavram, veritabanı sahipliği ve API/event sözleşmesi kurmak; manuel finans süreçlerinden canlı ödeme ve e-belgeye, en son da Multi-Tenant yapıya ilerlemek.</p>
+<h2>Teslimatın ana kararı</h2>
+<p>MavenForms <strong>doğrudan bugünkü haliyle etkinlik platformu çekirdeği değildir</strong>, fakat doğru bir yeniden sınırlandırmayla çekirdek için en güçlü başlangıç kod tabanıdır. Form yayınlama/snapshot, başvuru, RBAC, denetim kaydı, ödeme sağlayıcı sözleşmeleri, webhook/retrieve, özel belge güvenliği, transactional outbox, fatura belge akışı ve badge üretimi yeniden kullanılabilir. Eksik olan ana katman; <code>Event</code>, <code>Person</code>, <code>Registration</code>, <code>Order</code>, kalıcı manuel ödeme defteri ve muhasebe belgesi yaşam döngüsüdür.</p>
+<p>Bu paket kaynak kodu değiştirmez. Kod envanterini, sorun kaydını, hedef veri modelini, entegrasyon sözleşmelerini, finans akışlarını, yönetim ekranlarını ve uygulanabilir faz planını teslim eder.</p>
+<h2>Okuma sırası</h2>
+<ol>
+<li><code>01_YONETICI_OZETI.md</code></li>
+<li><code>03_GUNCEL_REPO_DENETIMI.md</code></li>
+<li><code>04_MAVENFORMS_KAPSAM_UYUMU.md</code></li>
+<li><code>05_HEDEF_MIMARI.md</code></li>
+<li><code>06_KANONIK_VERI_MODELI.md</code></li>
+<li><code>07_MANUEL_ODEME.md</code> ve <code>08_FATURA_EBELGE.md</code></li>
+<li><code>09_FLOOR_EDITOR_ENTEGRASYONU.md</code></li>
+<li><code>11_YOL_HARITASI.md</code></li>
+<li><code>12_GELISTIRME_KONTROL_SISTEMI.md</code></li>
+</ol>
+<h2>Kanıt sınıfları</h2>
+<table><thead><tr><th>Etiket</th><th>Anlamı</th></tr></thead><tbody>
+<tr><td>Kod kanıtı</td><td>ZIP içindeki şema, rota, test veya belge doğrudan incelendi.</td></tr>
+<tr><td>Yerel doğrulama</td><td>Bağımlılık istemeyen seçili test komutu çalıştırıldı.</td></tr>
+<tr><td>Sektör kanıtı</td><td>Resmî ürün, standart veya kamu kaynağına dayanır.</td></tr>
+<tr><td>Öneri</td><td>Maven Event Platform için tasarım kararıdır; mevcut özellik iddiası değildir.</td></tr>
+<tr><td>Canlı kanıt gerekli</td><td>Sağlayıcı hesabı, staging, mali müşavir/hukuk veya gerçek saha doğrulaması olmadan tamamlanmış sayılmaz.</td></tr>
+</tbody></table>
+<h2>Kaynak bütünlüğü</h2>
+<p>ZIP SHA-256: <code>9943a87ee88e0d55cd4dff1c936c5411c22194024a6e58ca8bb1ce60e19a1232</code>. Arşiv yorumunda <code>b314e07ca746d1cabfafc32da2d7c26ef3eda34f</code> değeri bulunur; <code>.git</code> verisi olmadığı için bu değer doğrulanmış commit iddiası olarak kullanılmamıştır.</p>
+<hr>
+<h1>MavenForms → Maven Event Platform Ana Planı</h1>
+<p><strong>Rapor tarihi:</strong> 17 Eylül 2026  </p>
+<p><strong>İncelenen ana kaynak:</strong> <code>mavenform-main-son.zip</code>  </p>
+<p><strong>Amaç:</strong> MavenForms&#x27;u kayıt/form ürünü sınırından çıkarıp Maven Event Platform&#x27;un güvenli çekirdeğine dönüştürmek; Event Floor Plan Studio ile ortak kavram, veritabanı sahipliği ve API/event sözleşmesi kurmak; manuel finans süreçlerinden canlı ödeme ve e-belgeye, en son da Multi-Tenant yapıya ilerlemek.</p>
+<h2>Sonuç</h2>
+<p>MavenForms, Maven Event Platform&#x27;un <strong>uygulama temeli ve operasyon çekirdeği</strong> olabilir. <code>Form</code> nesnesi platformun merkezine konmamalıdır. Merkez; etkinlik, kişi, kayıt, sipariş ve finans zinciri olmalıdır. Form bu zincirde veri toplama aracıdır. Bu ayrım yapılmadan Floor Editor, biletleme, program, sponsor, konaklama ve mobil deneyim gibi modüller yine birbirinden kopar.</p>
+<h2>Bugün ne kadarını karşılıyor?</h2>
+<table><thead><tr><th>Alan</th><th>Durum</th><th>Karar</th></tr></thead><tbody>
+<tr><td>Form oluşturma, yayın snapshot&#x27;ı ve başvuru</td><td>Güçlü ve yeniden kullanılabilir</td><td>Registration intake motoru olur.</td></tr>
+<tr><td>Kimlik, rol, audit</td><td>Kısmen güçlü</td><td>Tek şirket pilotunda korunur; oturum ve workspace seçimi sertleştirilir.</td></tr>
+<tr><td>Ödeme altyapısı</td><td>Yerel sözleşme seviyesi güçlü, production kanıtı yok</td><td>`Order/Payment/Allocation` modeline taşınır.</td></tr>
+<tr><td>Manuel ödeme</td><td>Yetersiz</td><td>Başvurudaki durum alanı yerine kalıcı finans hareketi gerekir.</td></tr>
+<tr><td>Fatura belge güvenliği</td><td>Güçlü temel</td><td>Fatura tekil `PaymentOrder` eki olmaktan çıkarılır.</td></tr>
+<tr><td>Paraşüt</td><td>Adapter ve sözleşme hazırlığı var</td><td>Canlı hesap/staging kanıtından önce açılmaz.</td></tr>
+<tr><td>Badge</td><td>Üretim/export güvenliği güçlü</td><td>Ticket ve check-in modeli eklenmeden onsite modülü sayılmaz.</td></tr>
+<tr><td>E-posta/outbox</td><td>Güçlü temel</td><td>Form bağımlılığı kaldırılıp genel domain outbox&#x27;a genişletilir.</td></tr>
+<tr><td>Event/venue/session/speaker</td><td>Yok</td><td>Çekirdek yeniden kurulumunun parçasıdır.</td></tr>
+<tr><td>Floor plan ve oturma</td><td>Ayrı projede kısmi</td><td>Platform çekirdeğine API/event ile bağlanır.</td></tr>
+<tr><td>Multi-Tenant ürün</td><td>Erken sözleşmeler var, release yok</td><td>Son ürün kapısıdır. Veri izolasyonu kontrolleri baştan korunur.</td></tr>
+</tbody></table>
+<h2>Beş zorunlu mimari karar</h2>
+<ol>
+<li><strong>MavenForms kod tabanı evrimleştirilir; form şeması evrensel domain yapılmaz.</strong></li>
+<li><strong>İlk sürüm tek şirket içindir.</strong> Mevcut <code>Workspace</code>, sabit iç organizasyon adaptörü olarak kullanılabilir. Yeni kayıtlar yine <code>organizationId/workspaceId</code> taşır; bu gelecekte büyük veri göçünü önler.</li>
+<li><strong>PostgreSQL ve modüler monolit ilk hedeftir.</strong> Modüller aynı cluster&#x27;da ayrı şema/table ownership ile çalışır; başka modülün tablosuna doğrudan yazmaz.</li>
+<li><strong>Finans zinciri:</strong> <code>Order → Payment → PaymentAllocation → Invoice/Document → Delivery</code>. Manuel ve sağlayıcı ödemeleri aynı defterde farklı kaynak türleridir.</li>
+<li><strong>Multi-Tenant son kapıdır.</strong> Provisioning, tenant self-service, custom domain, tenant billing, tenant-a özgü provider hesabı ve RLS release&#x27;i ancak iç pilot, canlı ödeme, fatura gönderimi ve Floor Editor entegrasyonu kanıtlandıktan sonra açılır.</li>
+</ol>
+<h2>İlk 90 günlük hedef</h2>
+<p>İlk 90 günde amaç genel Event Management ürününü bitirmek değildir. Çalışan ve ölçülebilir iç akış şu olmalıdır:</p>
+<p><code>Etkinlik oluştur → kayıt formu bağla → kişi/kayıt üret → sipariş çıkar → havale/nakit/çek/PO ödemesini kanıtıyla kaydet → kısmi/tam ödeme ve kalan bakiye hesapla → manuel fatura talebi ve belge kontrolü → badge üret → Floor Editor&#x27;da katılımcıyı/alanı eşleştir → audit ve raporla.</code></p>
+<p>Bu akış tamamlanmadan sanal POS, otomatik e-fatura veya Multi-Tenant açılması ürün borcunu büyütür.</p>
+<hr>
+<h1>MavenForms → Maven Event Platform Ana Planı</h1>
+<p><strong>Rapor tarihi:</strong> 17 Eylül 2026  </p>
+<p><strong>İncelenen ana kaynak:</strong> <code>mavenform-main-son.zip</code>  </p>
+<p><strong>Amaç:</strong> MavenForms&#x27;u kayıt/form ürünü sınırından çıkarıp Maven Event Platform&#x27;un güvenli çekirdeğine dönüştürmek; Event Floor Plan Studio ile ortak kavram, veritabanı sahipliği ve API/event sözleşmesi kurmak; manuel finans süreçlerinden canlı ödeme ve e-belgeye, en son da Multi-Tenant yapıya ilerlemek.</p>
+<h2>Sektörde ortak ürün omurgası</h2>
+<p>Cvent, EventsAir, Swoogo, Swapcard ve Eventleaf&#x27;in resmî ürün yüzeyleri birlikte okunduğunda kapsam beş yaşam döngüsünde toplanır:</p>
+<table><thead><tr><th>Yaşam döngüsü</th><th>Sektör modülleri</th></tr></thead><tbody>
+<tr><td>Planlama</td><td>Etkinlik portföyü, bütçe, görev, venue/hall, tedarikçi, floor plan, envanter</td></tr>
+<tr><td>Satış ve kayıt</td><td>Event site, kayıt, bilet/fiyat, promosyon, grup kaydı, waitlist, ödeme, fatura</td></tr>
+<tr><td>İçerik</td><td>Program, session/track, speaker, abstract/CFP, hakemlik, doküman/proceedings</td></tr>
+<tr><td>Saha</td><td>Check-in, badge, koltuk/masa/stant, erişim kontrolü, session attendance, kiosk/offline</td></tr>
+<tr><td>Etkileşim ve gelir</td><td>Mobil uygulama, bildirim, networking, matchmaking, sponsor/exhibitor, lead retrieval, survey, analytics/CRM</td></tr>
+</tbody></table>
+<p>EventsAir; kayıt, bütçe, lojistik, speaker, abstract, sponsor/exhibitor, konaklama, check-in/badge, networking, analytics ve ödeme işlemesini aynı ürün ailesinde listeler. Swoogo; kayıt, event hub, lojistik, mobil uygulama, session/speaker, REST API, webhook ve çok sayıda ödeme gateway&#x27;ini birlikte sunar. Swapcard&#x27;ın odağı sponsor/exhibitor çalışma alanı, lead capture, networking ve ROI&#x27;dir. Bu dağılım, “Event Management”ın yalnız form+bilet olmadığını gösterir.</p>
+<h2>Sektör doğruları ve platforma etkisi</h2>
+<ol>
+<li><strong>Başvuru, kişi ve kayıt farklıdır.</strong> Bir kişi birden çok etkinliğe kayıt olabilir; aynı etkinlikte kayıt revize olabilir; bir grup siparişi birden çok katılımcı yaratabilir.</li>
+<li><strong>Sipariş ödeme ile aynı şey değildir.</strong> Sipariş borcu; ödeme tahsilatı; allocation ise ödemenin hangi borçlara dağıldığıdır. Cvent&#x27;in offline ödeme akışı ödeme detayını girip gerekirse dağıtmayı ayrı adımlar olarak ele alır.</li>
+<li><strong>Offline ödeme bir istisna alanı değil, finans hareketidir.</strong> Cvent çek, satın alma emri ve offline payment seçeneklerini; offline ödeme kaydı ve toplu importu; partial payment&#x27;ı ayrı yetenekler olarak sunar. Manuel kayıt mutabakat, düzeltme ve audit gerektirir.</li>
+<li><strong>Fatura ile ödeme bağı gevşektir.</strong> Fatura ödeme öncesi düzenlenebilir, kısmi tahsil edilebilir, iptal/itiraz/iade/credit note ilişkileri taşıyabilir. Tek PaymentOrder&#x27;a tek Invoice kısıtı gerçek yaşam döngüsünü karşılamaz.</li>
+<li><strong>Badge check-in değildir.</strong> Badge bir çıktı/tanıtıcıdır; check-in ise zaman, kapı, cihaz, operatör, event/session ve tekrar politikasına sahip attendance hareketidir.</li>
+<li><strong>Floor plan satışla eşzamanlı envanter yönetir.</strong> Seats.io örneğinde hold token, booking ve release farklı işlemlerdir. Erken release double-booking riski taşır. Maven&#x27;da <code>AVAILABLE/HELD/RESERVED/BOOKED/BLOCKED</code> ve süreli hold gerekir.</li>
+<li><strong>API ve webhook ürün özelliğidir.</strong> Swoogo 140+ REST endpoint ile event, registrant, session, speaker ve sponsor yönetimini; webhook ile kayıt ve check-in değişikliklerini entegrasyon yüzeyi sayar.</li>
+<li><strong>Dağıtık akış en az bir kez teslim varsayar.</strong> Webhook tekrar gelebilir ve sırası garanti edilmeyebilir. İdempotency, inbox/outbox, retrieve/reconciliation ve durum geçiş kontrolü zorunludur.</li>
+<li><strong>Kart verisi platforma girmemelidir.</strong> Hosted/redirect ödeme sayfası kapsamı azaltır; PCI SSC yine e-ticaret sayfasının script saldırılarına karşı korunmasını ister.</li>
+<li><strong>Kişisel veri amacı event bağlamında tutulmalıdır.</strong> Kayıt, badge, networking, pazarlama ve sponsor lead paylaşımı aynı amaç değildir; aydınlatma/tercih/saklama politikası ayrı tutulur.</li>
+</ol>
+<h2>Rakiplerden alınacak ürün dersi</h2>
+<table><thead><tr><th>Ürün</th><th>Güçlü sinyal</th><th>Maven kararı</th></tr></thead><tbody>
+<tr><td>Cvent</td><td>Registration + offline/partial payment + diagramming entegrasyonu</td><td>Sipariş/ödeme/floor envanteri aynı event kimliğine bağlanmalı.</td></tr>
+<tr><td>EventsAir</td><td>Planlama, içerik, lojistik, konaklama, onsite tek ekosistem</td><td>Ana platform modül kataloğu geniş tutulmalı, teslim sırası dar tutulmalı.</td></tr>
+<tr><td>Swoogo</td><td>Özelleştirilebilir kayıt + açık API/webhook + çok gateway</td><td>MavenForms form motoru korunur; public API ürünün erken parçası olur.</td></tr>
+<tr><td>Swapcard</td><td>Exhibitor center, lead capture, networking ve ROI</td><td>Sponsor/exhibitor ayrı bounded context olmalı.</td></tr>
+<tr><td>Eventleaf</td><td>Badge/check-in, booth sale, abstract, engagement</td><td>Badge mevcut gücünün yanına attendance ve booth inventory eklenmeli.</td></tr>
+<tr><td>Seats.io</td><td>Hold/book/release ve orderId</td><td>Floor Editor bağlantısı süreli rezervasyon ve idempotent booking kullanmalı.</td></tr>
+</tbody></table>
+<p>Kaynakların tam listesi <code>15_KAYNAKLAR_VE_SINIRLAR.md</code> içindedir.</p>
+<hr>
+<h1>MavenForms → Maven Event Platform Ana Planı</h1>
+<p><strong>Rapor tarihi:</strong> 17 Eylül 2026  </p>
+<p><strong>İncelenen ana kaynak:</strong> <code>mavenform-main-son.zip</code>  </p>
+<p><strong>Amaç:</strong> MavenForms&#x27;u kayıt/form ürünü sınırından çıkarıp Maven Event Platform&#x27;un güvenli çekirdeğine dönüştürmek; Event Floor Plan Studio ile ortak kavram, veritabanı sahipliği ve API/event sözleşmesi kurmak; manuel finans süreçlerinden canlı ödeme ve e-belgeye, en son da Multi-Tenant yapıya ilerlemek.</p>
+<h2>Teknik envanter</h2>
+<p>Güncel ZIP&#x27;te 49 Prisma modeli, 70 API route handler, 389 TypeScript/TSX dosyası ve 456 adet <code>.mjs</code> test dosyası vardır. Test adlarında ödeme 75, fatura 77, badge 46, e-posta 36, Paraşüt 25 ve form UX 55 kez kapsanır; kategoriler çakışabilir. Kod tabanı küçük bir demo değildir.</p>
+<h2>Korunacak güçlü parçalar</h2>
+<ul>
+<li>Yayınlanmış form snapshot&#x27;ı ve public allowlist yaklaşımı.</li>
+<li>Workspace kapsamlı RBAC ve audit log temeli.</li>
+<li>PaymentOrder, PaymentAttempt, webhook inbox, retrieve/reconciliation ve idempotency sözleşmeleri.</li>
+<li>InvoiceRecipientSnapshot, line snapshot, belge quarantine/scan/decision ve delivery intent yaklaşımı.</li>
+<li>Transactional outbox, retry/lease/dead-letter düşüncesi.</li>
+<li>Dosya MIME/size/hash/archive bomb ve private visibility kontrolleri.</li>
+<li>Badge template, render, QR, PDF/ZIP, artifact ve READY-only dağıtım zinciri.</li>
+<li>Paraşüt bağlantı/sağlık/contact/product/invoice adapter hazırlıkları.</li>
+</ul>
+<h2>Kritik sorunlar</h2>
+<table><thead><tr><th>No</th><th>Seviye</th><th>Kod kanıtı</th><th>Etki</th><th>Gerekli değişiklik</th></tr></thead><tbody>
+<tr><td>1</td><td>Kritik</td><td>`Submission.paymentStatus` yalnız string</td><td>Manuel tahsilat tutar, yöntem, tarih, referans, kanıt ve onay taşımaz.</td><td>Immutable PaymentEntry/Payment ledger.</td></tr>
+<tr><td>2</td><td>Kritik</td><td>Manuel durum evaluator&#x27;ı `unpaid/paid/review/refunded`; API `pending/authorized/paid/failed/refunded/partially_refunded`</td><td>İki farklı ödeme dili vardır.</td><td>Tek kanonik ödeme durumu ve kaynak türü.</td></tr>
+<tr><td>3</td><td>Kritik</td><td>Invoice candidate çoğunlukla `PaymentOrder.status=succeeded` ister</td><td>Manuel ödenmiş kayıt doğal biçimde fatura akışına giremez.</td><td>Order balance ve allocation tabanlı adaylık.</td></tr>
+<tr><td>4</td><td>Yüksek</td><td>`InvoiceRecord.paymentOrderId @unique`</td><td>Avans, çoklu ödeme, iade faturası/credit note, replacement zinciri zorlaşır.</td><td>Invoice bağımsız aggregate + relation chain.</td></tr>
+<tr><td>5</td><td>Yüksek</td><td>Form odaklı `PaymentOrder.formId` zorunlu</td><td>Sponsorluk, stand, konaklama, grup siparişi gibi form dışı kalemler finansı kullanamaz.</td><td>Order ve OrderItem ilk sınıf model.</td></tr>
+<tr><td>6</td><td>Kritik</td><td>Event/Person/Registration/Ticket yok</td><td>Platform domain&#x27;i kurulmamış.</td><td>Canonical event core.</td></tr>
+<tr><td>7</td><td>Yüksek</td><td>`OutboxEvent` form ve submission zorunlu</td><td>Floor plan, order, invoice, attendance event&#x27;leri genel outbox&#x27;ı kullanamaz.</td><td>Generic IntegrationOutbox.</td></tr>
+<tr><td>8</td><td>Yüksek</td><td>Public submission idempotency `publicToken` global; payload hash yok</td><td>Aynı anahtar farklı form/payload ile sessiz duplicate olabilir.</td><td>Scope + request hash + stored response.</td></tr>
+<tr><td>9</td><td>Yüksek</td><td>Response limit transaction öncesi `submissionCount` ile kontrol</td><td>Eşzamanlı istek kapasiteyi aşabilir.</td><td>DB transaction/lock veya inventory counter.</td></tr>
+<tr><td>10</td><td>Yüksek</td><td>SQLite pilot tabanı</td><td>Finans eşzamanlılığı, worker ve gelecek RLS için zayıf hedef.</td><td>PostgreSQL migration rehearsal.</td></tr>
+<tr><td>11</td><td>Yüksek</td><td>30 günlük raw DB session token</td><td>Token sızıntısı ve iptal kontrolü riski.</td><td>Hashli session, kısa access, refresh rotation, explicit workspace.</td></tr>
+<tr><td>12</td><td>Yüksek</td><td>İlk aktif workspace sessiz seçilir</td><td>Birden çok üyelikte yanlış bağlam riski.</td><td>Workspace/org claim ve kullanıcı seçimi.</td></tr>
+<tr><td>13</td><td>Yüksek</td><td>`scripts/context-check.mjs`, bulunmayan `scripts/local-ready.mjs` ister</td><td>Resmî geliştirme kapısı güncel ZIP&#x27;te çalışmıyor; çok sayıda packet de aynı dosyaya bağlı.</td><td>Önce paket bütünlüğünü düzelt.</td></tr>
+<tr><td>14</td><td>Orta</td><td>Package&#x27;da birleştirilmiş `test` scripti yok</td><td>456 testin standart CI yürütümü belirsiz.</td><td>Tek kanonik runner ve CI matrisi.</td></tr>
+<tr><td>15</td><td>Orta</td><td>STATUS `R10-V4-26-44 PASS` ve `R10-V4-44 WIP` der</td><td>Release gerçeği çelişkili.</td><td>Tek makine-okunur evidence registry.</td></tr>
+<tr><td>16</td><td>Yüksek</td><td>Badge var, attendance/check-in domain&#x27;i yok</td><td>Badge scan adı dosya AV taramasıyla karışabilir; saha giriş kaydı yok.</td><td>CheckInEvent ve AccessPolicy.</td></tr>
+<tr><td>17</td><td>Yüksek</td><td>Workspace tenant özellikleri erken büyümüş</td><td>Tek şirket çekirdeği bitmeden SaaS karmaşıklığı yaratıyor.</td><td>SaaS provisioning/release&#x27;i dondur, izolasyonu koru.</td></tr>
+</tbody></table>
+<h2>Yerel doğrulama sonucu</h2>
+<p>Seçili bağımsız testlerden <code>badge-contract</code>, <code>manual-payment-status</code>, <code>payment-state</code> ve <code>invoice-state</code> geçti. <code>invoice-manual-chain</code> doğrudan Node çalıştırmasında <code>@/lib</code> alias çözülmediği için çalışmadı; bu sonuç iş kuralı hatası kanıtı değildir, standart test harness eksikliğinin kanıtıdır. <code>context:check</code>, ZIP&#x27;te <code>scripts/local-ready.mjs</code> bulunmadığı için BLOCKED oldu. <code>node_modules</code> yoktu; build/lint/typecheck ve canlı servis çalıştırması yapılmadı.</p>
+<h2>Release gerçeği</h2>
+<p>Repo&#x27;nun kendi <code>STATUS.md</code> dosyası üretimi <code>NO-GO/BLOCKED</code> olarak tanımlar. Canlı provider, AV/quarantine, sender domain, staging, backup/restore ve hukuk/muhasebe kanıtları olmadan “hazır” iddiası kurulamaz. Bu rapor da aynı ayrımı korur: sözleşme testi başarısı, gerçek tahsilat veya yasal e-belge gönderimi değildir.</p>
+<hr>
+<h1>MavenForms → Maven Event Platform Ana Planı</h1>
+<p><strong>Rapor tarihi:</strong> 17 Eylül 2026  </p>
+<p><strong>İncelenen ana kaynak:</strong> <code>mavenform-main-son.zip</code>  </p>
+<p><strong>Amaç:</strong> MavenForms&#x27;u kayıt/form ürünü sınırından çıkarıp Maven Event Platform&#x27;un güvenli çekirdeğine dönüştürmek; Event Floor Plan Studio ile ortak kavram, veritabanı sahipliği ve API/event sözleşmesi kurmak; manuel finans süreçlerinden canlı ödeme ve e-belgeye, en son da Multi-Tenant yapıya ilerlemek.</p>
+<h2>Ölçüm yöntemi</h2>
+<p>Her ihtiyaç dört seviyeden biriyle değerlendirilmiştir: <strong>Yeniden kullan</strong>, <strong>Dönüştür</strong>, <strong>Yeni geliştir</strong>, <strong>Canlı kanıt bekliyor</strong>. Bu bir pazarlama yüzdesi değil, iş paketleme karar aracıdır.</p>
+<table><thead><tr><th>Event Platform ihtiyacı</th><th>Mevcut karşılık</th><th>Seviye</th><th>Hedef</th></tr></thead><tbody>
+<tr><td>Organizasyon, kullanıcı, rol</td><td>Workspace/Member/RBAC</td><td>Dönüştür</td><td>Tek şirket modu; final fazda tenant provisioning.</td></tr>
+<tr><td>Event katalog/occurrence</td><td>Yok</td><td>Yeni geliştir</td><td>Event, occurrence, timezone, status, owner.</td></tr>
+<tr><td>Venue/hall/floor plan</td><td>Ayrı EFPS</td><td>Dönüştür</td><td>EFPS sahibi; core Event ID kullanır.</td></tr>
+<tr><td>Kişi/kurum/contact</td><td>Submission values, EFPS Company/Attendee</td><td>Yeni geliştir</td><td>Canonical Person/OrganizationParty.</td></tr>
+<tr><td>Form/builder</td><td>Güçlü</td><td>Yeniden kullan</td><td>FormDefinition + EventFormBinding.</td></tr>
+<tr><td>Registration</td><td>Submission kısmi</td><td>Dönüştür</td><td>Registration aggregate, history, approval, group.</td></tr>
+<tr><td>Ticket/entitlement</td><td>Yok</td><td>Yeni geliştir</td><td>TicketType, Entitlement, Ticket.</td></tr>
+<tr><td>Pricing/promo/tax</td><td>Form pricing JSON kısmi</td><td>Dönüştür</td><td>PriceList, PriceRule, Discount, TaxSnapshot.</td></tr>
+<tr><td>Order/order item</td><td>PaymentOrder ödeme odaklı</td><td>Yeni geliştir</td><td>Order, OrderItem, balance.</td></tr>
+<tr><td>Manuel ödeme</td><td>Scalar status</td><td>Yeni geliştir</td><td>PaymentEntry + evidence + approval + allocation.</td></tr>
+<tr><td>Online ödeme</td><td>Stripe/iyzico hazırlığı</td><td>Dönüştür + canlı kanıt</td><td>Hosted checkout, webhook, retrieve, refund.</td></tr>
+<tr><td>Fatura kontrol</td><td>Güçlü belge akışı, dar ilişki</td><td>Dönüştür</td><td>Invoice aggregate, document chain, delivery.</td></tr>
+<tr><td>e-Fatura/e-Arşiv</td><td>Paraşüt hazırlığı</td><td>Canlı kanıt bekliyor</td><td>Provider adapter, inbox, PDF/XML, legal reconciliation.</td></tr>
+<tr><td>Badge</td><td>Güçlü üretim zinciri</td><td>Yeniden kullan</td><td>Ticket/participant snapshot&#x27;tan üret.</td></tr>
+<tr><td>Check-in/attendance</td><td>Yok</td><td>Yeni geliştir</td><td>Event/session/door movement, offline sync.</td></tr>
+<tr><td>Program/session/speaker</td><td>Yok</td><td>Yeni geliştir</td><td>Content module.</td></tr>
+<tr><td>Abstract/review</td><td>Formla başlanabilir</td><td>Yeni geliştir</td><td>Submission/review/scheduling bounded context.</td></tr>
+<tr><td>Sponsor/exhibitor/lead</td><td>EFPS Company kısmi</td><td>Yeni geliştir</td><td>Contract/package/booth/lead consent.</td></tr>
+<tr><td>Communication</td><td>Email/outbox güçlü</td><td>Dönüştür</td><td>Event audience, consent, template, channel.</td></tr>
+<tr><td>Survey/poll</td><td>Form motoru kullanılabilir</td><td>Dönüştür</td><td>Event/session survey binding + analytics.</td></tr>
+<tr><td>Analytics/export</td><td>Form raporu kısmi</td><td>Dönüştür</td><td>Event metrics/read models; financial reconciliation.</td></tr>
+<tr><td>CRM/integration API</td><td>Webhook türü kısmi</td><td>Dönüştür</td><td>Versioned API, inbox/outbox, external ID map.</td></tr>
+<tr><td>Accommodation/travel</td><td>Yok</td><td>Yeni geliştir</td><td>İhtiyaç doğrulanırsa ayrı modül.</td></tr>
+<tr><td>Mobile attendee app</td><td>Yok</td><td>Yeni geliştir</td><td>Sonraki ürün dalgası.</td></tr>
+<tr><td>Multi-Tenant SaaS</td><td>Erken modeller/gates</td><td>Final faz</td><td>Tenant lifecycle, billing, custom domain, RLS.</td></tr>
+</tbody></table>
+<h2>MavenForms&#x27;un çekirdekte karşılayabileceği kesin kapsam</h2>
+<p>Doğru refactor sonrasında MavenForms şu çekirdekleri doğrudan taşıyabilir: kimlik ve yetki, form şeması ve yayınlama, kayıt intake, sipariş/ödeme/fatura workflow&#x27;ları, güvenli dosya, bildirim/outbox, badge üretimi, audit ve entegrasyon adaptörleri. Program, abstract, sponsor/exhibitor, floor plan, onsite attendance ve mobil deneyim ayrı modüllerdir; MavenForms bunların kimlik/olay/finans servislerini sağlar.</p>
+<h2>Çekirdek olamayacağı durum</h2>
+<p>Eğer <code>Submission</code> kişi, kayıt, sipariş, bilet ve fatura yerine kullanılmaya devam ederse MavenForms yalnız bir form uygulaması olarak kalır. Dönüşümün başarı ölçütü yeni ekran sayısı değil, bu kavramların bağımsız kimlik ve yaşam döngüsüne sahip olmasıdır.</p>
+<hr>
+<h1>MavenForms → Maven Event Platform Ana Planı</h1>
+<p><strong>Rapor tarihi:</strong> 17 Eylül 2026  </p>
+<p><strong>İncelenen ana kaynak:</strong> <code>mavenform-main-son.zip</code>  </p>
+<p><strong>Amaç:</strong> MavenForms&#x27;u kayıt/form ürünü sınırından çıkarıp Maven Event Platform&#x27;un güvenli çekirdeğine dönüştürmek; Event Floor Plan Studio ile ortak kavram, veritabanı sahipliği ve API/event sözleşmesi kurmak; manuel finans süreçlerinden canlı ödeme ve e-belgeye, en son da Multi-Tenant yapıya ilerlemek.</p>
+<h2>Mimari biçim</h2>
+<p>İlk hedef <strong>modüler monolit + PostgreSQL + ayrı worker süreçleri</strong>dir. Bu, küçük ekipte deploy ve transaction maliyetini düşük tutarken modül sınırlarını korur. Her modül tekil çalışabilmek için kendi API&#x27;sini, migration sahipliğini, inbox/outbox&#x27;ını ve read projection&#x27;ını taşır.</p>
+<pre>
+flowchart TB
+  UI[Admin / Public / Onsite] --&gt; BFF[API Gateway ve BFF]
+  BFF --&gt; CORE[Event ve Identity Core]
+  BFF --&gt; REG[Forms ve Registration]
+  BFF --&gt; COM[Commerce ve Finance]
+  BFF --&gt; FLOOR[Floor Plan Module]
+  CORE --&gt; BUS[Outbox / Inbox Event Bus]
+  REG --&gt; BUS
+  COM --&gt; BUS
+  FLOOR --&gt; BUS
+  CORE --&gt; PG[(PostgreSQL - sahipli şemalar)]
+  REG --&gt; PG
+  COM --&gt; PG
+  FLOOR --&gt; PG
+</pre>
+<h2>Bounded context ve tablo sahipliği</h2>
+<table><thead><tr><th>Modül</th><th>Sahip olduğu kavramlar</th><th>Başka modüllere sunduğu sözleşme</th></tr></thead><tbody>
+<tr><td>Identity/Organization</td><td>User, Organization, Membership, Role</td><td>actor/org context, permission check</td></tr>
+<tr><td>Event Core</td><td>Event, Occurrence, Venue reference, Person, Party</td><td>event/person canonical IDs</td></tr>
+<tr><td>Forms</td><td>FormDefinition, FormVersion, Field, Theme</td><td>published form snapshot</td></tr>
+<tr><td>Registration</td><td>Registration, RegistrationAnswer, Group</td><td>registration lifecycle events</td></tr>
+<tr><td>Commerce</td><td>CatalogItem, Price, Order, OrderItem</td><td>balance and fulfillment intent</td></tr>
+<tr><td>Payments</td><td>Payment, Attempt, ManualEvidence, Allocation, Refund</td><td>verified financial movement</td></tr>
+<tr><td>Invoicing</td><td>Invoice, Line, Relation, Document, Delivery</td><td>legal/document lifecycle</td></tr>
+<tr><td>Floor Plan</td><td>Venue, Hall, Plan, Geometry, Space/Seat inventory, Hold</td><td>inventory and assignment API</td></tr>
+<tr><td>Onsite</td><td>Ticket, Credential, CheckInEvent, Device</td><td>entry/attendance events</td></tr>
+<tr><td>Messaging</td><td>Template, Audience, Consent, Outbox, Delivery</td><td>provider-neutral communication</td></tr>
+<tr><td>Content</td><td>Session, Track, Speaker, Abstract, Review</td><td>agenda and program APIs</td></tr>
+</tbody></table>
+<h2>Ortak veritabanı kuralı</h2>
+<p>Tek PostgreSQL cluster kullanılabilir; ancak “ortak DB” herkesin her tabloya yazması değildir.</p>
+<ul>
+<li>Her tablo için tek owner modül vardır.</li>
+<li>Uygulama kodu başka modülün tablosuna write yapmaz.</li>
+<li>Cross-module okuma API/read model üzerinden yapılır.</li>
+<li>Aynı transaction gereken ilk sürüm akışları modüler monolitte application service ile yürütülür.</li>
+<li>Bağımsız deploy gerektiğinde event/outbox sözleşmesi korunur ve yerel projection kullanılır.</li>
+<li>Finans tabloları append ağırlıklı ve auditli olur; hard delete yapılmaz.</li>
+<li>PostgreSQL geçişi tamamlanmadan canlı finans açılmaz.</li>
+</ul>
+<h2>API yaklaşımı</h2>
+<ul>
+<li>Versioned REST command/query yüzeyi: <code>/api/v1/...</code>.</li>
+<li>Her mutation <code>Idempotency-Key</code>, actor, organization ve correlation id taşır.</li>
+<li>Kaynak sürümü için <code>ETag/If-Match</code> veya explicit version kullanılır.</li>
+<li>Webhook&#x27;lar signature, timestamp tolerance, inbox uniqueness ve retrieve ile doğrulanır.</li>
+<li>Integration event envelope: <code>eventId</code>, <code>eventType</code>, <code>schemaVersion</code>, <code>occurredAt</code>, <code>organizationId</code>, <code>aggregateType</code>, <code>aggregateId</code>, <code>correlationId</code>, <code>causationId</code>, payload.</li>
+<li>PII event payloadına gelişigüzel kopyalanmaz; gerekli projection ayrı amaç ve saklama süresiyle tutulur.</li>
+</ul>
+<h2>Tek şirket modu ve Multi-Tenant ayrımı</h2>
+<p>Faz 1-8&#x27;de tek bir iç organization provision edilir; kullanıcı tenant seçmez, platform aboneliği ve custom domain yoktur. Yine de yeni tablolarda organization scope bulunur ve repository filtreleri zorunludur. Bu, SaaS özelliği değildir; güvenli veri şeklidir. Multi-Tenant son fazda provisioning, izolasyon kanıtı, RLS, tenant billing, BYO provider, support access ve domain routing açılır.</p>
+<hr>
+<h1>MavenForms → Maven Event Platform Ana Planı</h1>
+<p><strong>Rapor tarihi:</strong> 17 Eylül 2026  </p>
+<p><strong>İncelenen ana kaynak:</strong> <code>mavenform-main-son.zip</code>  </p>
+<p><strong>Amaç:</strong> MavenForms&#x27;u kayıt/form ürünü sınırından çıkarıp Maven Event Platform&#x27;un güvenli çekirdeğine dönüştürmek; Event Floor Plan Studio ile ortak kavram, veritabanı sahipliği ve API/event sözleşmesi kurmak; manuel finans süreçlerinden canlı ödeme ve e-belgeye, en son da Multi-Tenant yapıya ilerlemek.</p>
+<h2>Çekirdek model</h2>
+<table><thead><tr><th>Entity</th><th>Sorumluluk</th><th>Ana ilişki</th></tr></thead><tbody>
+<tr><td>Organization</td><td>Veri ve politika kapsamı</td><td>Users, Events, provider connections</td></tr>
+<tr><td>Event</td><td>Ürün/operasyon üst kimliği</td><td>Occurrences, forms, price lists, plans</td></tr>
+<tr><td>EventOccurrence</td><td>Tarih, saat, timezone, venue/hall</td><td>sessions, inventory, check-in</td></tr>
+<tr><td>Person</td><td>Tek gerçek kişi kaydı</td><td>registrations, contacts, credentials</td></tr>
+<tr><td>Registration</td><td>Kişinin event&#x27;e katılım başvurusu</td><td>form snapshot, answers, status history</td></tr>
+<tr><td>TicketType</td><td>Satılabilir/atanabilir katılım hakkı tipi</td><td>price, capacity, entitlements</td></tr>
+<tr><td>Ticket</td><td>Verilmiş katılım hakkı</td><td>registration/order item/check-in</td></tr>
+<tr><td>Order</td><td>Alacak/borç ve müşteri bağlamı</td><td>items, payments, invoices</td></tr>
+<tr><td>OrderItem</td><td>Fiyat/tax/discount snapshot</td><td>ticket, booth, sponsorship, service</td></tr>
+<tr><td>Payment</td><td>Manuel veya provider tahsilat/çıkış hareketi</td><td>attempts, evidence, refunds</td></tr>
+<tr><td>PaymentAllocation</td><td>Ödemenin sipariş/faturaya dağılımı</td><td>amount and reversal chain</td></tr>
+<tr><td>Invoice</td><td>Mali belge iş akışı</td><td>lines, relations, documents, delivery</td></tr>
+<tr><td>InvoiceRelation</td><td>İptal/iade/credit/debit/replacement bağı</td><td>source and target invoice</td></tr>
+<tr><td>InventoryItem</td><td>Seat, booth, table, capacity bucket</td><td>hold/reservation/booking</td></tr>
+<tr><td>InventoryHold</td><td>Süreli ve tokenlı ayırma</td><td>order/session</td></tr>
+<tr><td>Credential</td><td>QR/badge kimliği</td><td>ticket/person/event</td></tr>
+<tr><td>CheckInEvent</td><td>Giriş/çıkış/attendance hareketi</td><td>credential, gate, device, occurrence</td></tr>
+</tbody></table>
+<h2>Mevcut modelden hedefe geçiş</h2>
+<table><thead><tr><th>Mevcut</th><th>Hedef</th><th>Göç kararı</th></tr></thead><tbody>
+<tr><td>Workspace</td><td>Organization</td><td>İlk aşamada 1:1 map; ID korunabilir.</td></tr>
+<tr><td>Form</td><td>FormDefinition</td><td>EventFormBinding ile event/purpose eklenir.</td></tr>
+<tr><td>Submission</td><td>Submission + Registration</td><td>Ham cevap korunur; başarılı dönüşüm registration üretir.</td></tr>
+<tr><td>Submission.paymentStatus</td><td>Kaldırılacak projection</td><td>Payment/Allocation bakiyesinden hesaplanır.</td></tr>
+<tr><td>PaymentOrder</td><td>Order + PaymentAttempt</td><td>Eski kayıtlar migration source olarak tutulur.</td></tr>
+<tr><td>InvoiceRecord</td><td>Invoice</td><td>PaymentOrder unique bağı çözülür.</td></tr>
+<tr><td>InvoiceLineSnapshot</td><td>InvoiceLine</td><td>Snapshot yaklaşımı korunur.</td></tr>
+<tr><td>InvoiceDocument/Decision/Delivery</td><td>Aynı bounded context</td><td>Büyük ölçüde yeniden kullanılır.</td></tr>
+<tr><td>OutboxEvent</td><td>IntegrationOutbox + MessageDelivery</td><td>Form/submission zorunluluğu kaldırılır.</td></tr>
+<tr><td>EFPS Event</td><td>Core Event reference</td><td>EFPS&#x27;de authoritative kopya kaldırılır veya read projection olur.</td></tr>
+<tr><td>EFPS Attendee</td><td>Participant projection</td><td>`registrationId/personId/ticketId` referansı; sınırlı display snapshot.</td></tr>
+</tbody></table>
+<h2>Durum makineleri</h2>
+<p><strong>Registration:</strong> <code>draft → submitted → pending_review → confirmed | rejected | waitlisted → cancelled</code>. Finans durumu registration statüsüne gömülmez.</p>
+<p><strong>Order:</strong> <code>draft → open → partially_paid → paid → fulfilled</code>; ayrıca <code>cancelled</code>, <code>refunding</code>, <code>refunded</code>. Bakiye hesaplanmış projection&#x27;dır.</p>
+<p><strong>Payment:</strong> <code>recorded/pending → under_review → confirmed → allocated</code>; hata/düzeltme için <code>rejected</code>, <code>reversed</code>, <code>partially_refunded</code>, <code>refunded</code>, <code>disputed</code>. Manuel ödeme provider authorization durumlarını taklit etmez.</p>
+<p><strong>Invoice:</strong> <code>requested → data_review → approved_for_issue → issued → delivered</code>; ayrıca <code>rejected</code>, <code>delivery_failed</code>, <code>cancel_requested</code>, <code>cancelled</code>, <code>credited</code>, <code>replaced</code>. “PDF yüklendi” ile “yasal belge düzenlendi” aynı durum değildir.</p>
+<p><strong>Inventory:</strong> <code>available → held → reserved/booked</code>; <code>blocked</code> ve <code>released</code>. Hold TTL dolunca otomatik release; paid order sonrası idempotent booking.</p>
+<h2>Finansal invariantlar</h2>
+<ul>
+<li>Para birimi tutarları minor unit ve ISO currency ile tutulur.</li>
+<li>Order total; item snapshots toplamıdır, sonradan fiyat kataloğundan tekrar hesaplanmaz.</li>
+<li>Allocation toplamı payment net tutarını aşamaz.</li>
+<li>Confirmed/reversed hareketler güncellenmez; düzeltme karşı hareketle yapılır.</li>
+<li>Refund, özgün payment/transaction ve order item bağı taşır.</li>
+<li>Invoice ve payment mutabakatı ayrı projection&#x27;dır; biri diğerinin varlığını otomatik kanıtlamaz.</li>
+<li>Tüm mutation&#x27;larda organization scope ve optimistic concurrency vardır.</li>
+</ul>
+<hr>
+<h1>MavenForms → Maven Event Platform Ana Planı</h1>
+<p><strong>Rapor tarihi:</strong> 17 Eylül 2026  </p>
+<p><strong>İncelenen ana kaynak:</strong> <code>mavenform-main-son.zip</code>  </p>
+<p><strong>Amaç:</strong> MavenForms&#x27;u kayıt/form ürünü sınırından çıkarıp Maven Event Platform&#x27;un güvenli çekirdeğine dönüştürmek; Event Floor Plan Studio ile ortak kavram, veritabanı sahipliği ve API/event sözleşmesi kurmak; manuel finans süreçlerinden canlı ödeme ve e-belgeye, en son da Multi-Tenant yapıya ilerlemek.</p>
+<h2>Neden ilk ürün fazı olmalı?</h2>
+<p>Şirket içi pilotta banka havalesi/EFT, nakit, çek, satın alma emri, proforma sonrası ödeme veya harici POS gibi yöntemler gerçek hayatın parçasıdır. Cvent&#x27;in offline payment yaklaşımı ödeme türü, tutar ve dağıtımı ayrı yönetir; Paraşüt&#x27;te de tahsilat ve kısmi tahsilat kavramları vardır. Mevcut MavenForms yalnız “paid” işareti tutabildiği için mutabakat yapamaz.</p>
+<h2>Manuel Payment kaydı</h2>
+<p>Zorunlu alanlar: organization, payer/customer, currency, amount, method, value date, recorded date, reference, source, status, recorder, approver, evidence hash ve idempotency key. Bank transfer için banka/işlem referansı; çek için numara/vade; nakit için kasa/receipt; PO için sipariş belgesi ve beklenen ödeme tarihi eklenir. Hassas banka verileri gereksiz kopyalanmaz.</p>
+<h2>Akış</h2>
+<ol>
+<li>Finans kullanıcısı açık siparişi seçer.</li>
+<li>Ödeme yöntemi, tutar, tarih ve referans girer; belge yükler.</li>
+<li>Sistem aynı referans+tutar+tarih kombinasyonunda olası duplicate uyarısı verir.</li>
+<li><code>recorded</code> hareket, yetki matrisine göre ikinci onay ister.</li>
+<li>Onaylayan kişi kaydı <code>confirmed</code> yapar; aynı kullanıcı yüksek tutarlı kaydı hem oluşturup hem onaylayamaz.</li>
+<li>PaymentAllocation ile tutar bir veya daha çok order&#x27;a dağıtılır.</li>
+<li>Order balance transaction içinde güncellenir; partial/paid projection üretilir.</li>
+<li>Yanlış kayıt editlenmez; reversal ve yeni doğru payment oluşturulur.</li>
+</ol>
+<h2>Kabul senaryoları</h2>
+<ul>
+<li>Tam havale tek order&#x27;a ayrılır ve order <code>paid</code> olur.</li>
+<li>Kısmi havale order&#x27;ı <code>partially_paid</code> yapar; kalan bakiye görünür.</li>
+<li>Tek ödeme bir grup siparişinin birden çok item/registration&#x27;ına dağıtılır.</li>
+<li>Aynı banka referansı tekrar girilirse duplicate/review akışına düşer.</li>
+<li>Fazla ödeme <code>unallocatedAmount</code> olarak kalır; otomatik gelir yazılmaz.</li>
+<li>Farklı currency allocation reddedilir veya onaylı FX snapshot ister.</li>
+<li>Reversal, bakiyeyi geri açar ve audit zincirini korur.</li>
+<li>Refund, özgün payment&#x27;a bağlı yeni hareket olarak kaydedilir.</li>
+<li>Belgesiz ödeme, belirlenen eşik üstünde onaylanamaz.</li>
+<li>Export toplamı ledger toplamıyla aynı çıkar.</li>
+</ul>
+<h2>Admin ekranları</h2>
+<p><code>Finans &gt; Açık Bakiyeler</code>, <code>Ödeme Kaydet</code>, <code>İnceleme Kuyruğu</code>, <code>Dağıtılmamış Ödemeler</code>, <code>Mutabakat</code>, <code>İade/Düzeltme</code>, <code>Kanıt Belgeleri</code> ve <code>Audit</code> ekranları gerekir. Dashboard yalnız “paid” sayısı değil; tahsil edilen, açık, kısmi, incelemede, iade ve dağıtılmamış tutarları para birimine göre gösterir.</p>
+<h2>Faz kapısı</h2>
+<p>İç pilotta hiçbir canlı provider gerekmez. Ancak dört göz onayı, duplicate kontrolü, reversal, allocation, export/reconciliation ve backup/restore kanıtı olmadan manuel finans fazı tamamlanmış sayılmaz.</p>
+<hr>
+<h1>MavenForms → Maven Event Platform Ana Planı</h1>
+<p><strong>Rapor tarihi:</strong> 17 Eylül 2026  </p>
+<p><strong>İncelenen ana kaynak:</strong> <code>mavenform-main-son.zip</code>  </p>
+<p><strong>Amaç:</strong> MavenForms&#x27;u kayıt/form ürünü sınırından çıkarıp Maven Event Platform&#x27;un güvenli çekirdeğine dönüştürmek; Event Floor Plan Studio ile ortak kavram, veritabanı sahipliği ve API/event sözleşmesi kurmak; manuel finans süreçlerinden canlı ödeme ve e-belgeye, en son da Multi-Tenant yapıya ilerlemek.</p>
+<h2>Manuel fatura kontrolü — ilk sürüm</h2>
+<p>İlk sürüm e-belge üretmez. Platform fatura talebini ve kontrol zincirini yönetir; muhasebe dış sistemde belgeyi düzenler, PDF/XML veya referansı Maven&#x27;a yükler, ikinci kullanıcı eşleşmeyi onaylar ve gönderimi kontrollü yapar.</p>
+<h3>Ayrılması gereken kavramlar</h3>
+<table><thead><tr><th>Kavram</th><th>Anlam</th></tr></thead><tbody>
+<tr><td>InvoiceRequest</td><td>Kullanıcının/operasyonun belge talebi ve alıcı verisi</td></tr>
+<tr><td>Invoice</td><td>Mali belgenin kanonik kaydı, numarası, UUID&#x27;si, tipi ve tutarı</td></tr>
+<tr><td>InvoiceDocument</td><td>PDF/XML/UBL gibi özel dosya; hash, scan ve visibility taşır</td></tr>
+<tr><td>InvoiceRelation</td><td>İptal, iade, credit/debit note veya replacement ilişkisi</td></tr>
+<tr><td>InvoiceDelivery</td><td>Kime, hangi kanaldan, hangi belge sürümü gönderildiği</td></tr>
+<tr><td>AccountingSync</td><td>Paraşüt/GİB durum eşleme ve provider kanıtı</td></tr>
+</tbody></table>
+<h3>Manuel akış</h3>
+<ol>
+<li>Paid veya onaylı post-pay order için fatura talebi açılır.</li>
+<li>Alıcı tipi, unvan, vergi/TCKN alanları, adres, e-posta ve satır snapshot&#x27;ları server tarafında doğrulanır.</li>
+<li>Muhasebe kuyruğu belge türünü ve vergi kararını kontrol eder.</li>
+<li>Harici muhasebe sisteminde düzenlenen belge yüklenir; MIME/hash/AV/quarantine uygulanır.</li>
+<li>Sistem tutar, currency, order ve alıcı eşleşmesi önerir; kullanıcı açıkça onaylar.</li>
+<li>Belge <code>ready</code> olur; gönderim intent&#x27;i ayrı oluşturulur.</li>
+<li>Teslimat sonucu provider evidence ile güncellenir; başarısızlık fatura durumunu geriye yazmaz.</li>
+</ol>
+<h2>GİB/e-belge gerçeği</h2>
+<p>GİB&#x27;in resmî iptal/itiraz portalı fatura numarası ve tutar bilgisiyle imzalı talep ister. Bu bile belge yaşam döngüsünün <code>issued</code> sonrasında bitmediğini gösterir. İptal/itiraz süreleri, e-Fatura/e-Arşiv senaryoları, KDV/tevkifat/istisna ve belge tipi kararları kodlanmadan önce mali müşavir ve güncel resmî kılavuzla doğrulanmalıdır. Rapor, vergi hukuku kararı vermez; sistemin bu kararları snapshot ve audit ile taşımasını ister.</p>
+<h2>Otomasyon fazları</h2>
+<table><thead><tr><th>Alt faz</th><th>Kapsam</th><th>Go kapısı</th></tr></thead><tbody>
+<tr><td>F3A</td><td>Manuel request, alıcı/satır kontrolü, belge upload</td><td>İç muhasebe UAT</td></tr>
+<tr><td>F3B</td><td>Güvenli belge gönderimi ve delivery evidence</td><td>Domain/sender doğrulaması</td></tr>
+<tr><td>F7A</td><td>Paraşüt OAuth/connection health ve read-only lookup</td><td>Sandbox/staging kanıtı</td></tr>
+<tr><td>F7B</td><td>Contact/product eşleme ve explicit approval</td><td>Muhasebe örnek seti</td></tr>
+<tr><td>F7C</td><td>Sales invoice create + job polling + provider IDs</td><td>Canlı olmayan gerçek hesap kanıtı</td></tr>
+<tr><td>F7D</td><td>e-Fatura/e-Arşiv formalization, PDF/XML inbox</td><td>Mali müşavir kabulü</td></tr>
+<tr><td>F7E</td><td>İptal/iade/credit note reconciliation</td><td>Uçtan uca ledger mutabakatı</td></tr>
+</tbody></table>
+<h2>Mevcut koda özel değişiklikler</h2>
+<ul>
+<li><code>InvoiceRecord.paymentOrderId @unique</code> kaldırılmalı; invoice order/customer&#x27;a bağlanmalı.</li>
+<li>Invoice-payment ilişkisi gerektiğinde junction/allocation tablosu olmalı.</li>
+<li><code>InvoiceRelation</code> eklenmeli.</li>
+<li>Document/Decision/Delivery modelleri korunmalı; organization ve immutable version bağı güçlendirilmeli.</li>
+<li>Invoice candidate, yalnız succeeded provider payment değil, order policy ve confirmed allocations üzerinden üretilmeli.</li>
+<li>Refund/chargeback sonrası otomatik belge iptali yapılmamalı; accounting review task açılmalı.</li>
+</ul>
+<hr>
+<h1>MavenForms → Maven Event Platform Ana Planı</h1>
+<p><strong>Rapor tarihi:</strong> 17 Eylül 2026  </p>
+<p><strong>İncelenen ana kaynak:</strong> <code>mavenform-main-son.zip</code>  </p>
+<p><strong>Amaç:</strong> MavenForms&#x27;u kayıt/form ürünü sınırından çıkarıp Maven Event Platform&#x27;un güvenli çekirdeğine dönüştürmek; Event Floor Plan Studio ile ortak kavram, veritabanı sahipliği ve API/event sözleşmesi kurmak; manuel finans süreçlerinden canlı ödeme ve e-belgeye, en son da Multi-Tenant yapıya ilerlemek.</p>
+<h2>Mevcut çakışma</h2>
+<p>Event Floor Plan Studio bugün kendi <code>Organization</code>, <code>User</code>, <code>Event</code>, <code>Company</code>, <code>Attendee</code>, <code>Venue</code>, <code>Hall</code>, <code>EventPlan</code>, <code>Stand</code>, seating hierarchy ve subscription modellerine sahiptir. Bu yapı bağımsız demo için anlaşılırdır; platform birleşiminde Event ve Attendee için ikinci gerçek kaynağa dönüşür.</p>
+<h2>Hedef sahiplik</h2>
+<table><thead><tr><th>Kavram</th><th>Otorite</th></tr></thead><tbody>
+<tr><td>Organization/User/Role</td><td>Maven Platform Core</td></tr>
+<tr><td>Event/Occurrence/Person/Registration/Ticket</td><td>Maven Platform Core</td></tr>
+<tr><td>Company master</td><td>Core Party/CRM; Floor modülü sınırlı projection</td></tr>
+<tr><td>Venue/Hall</td><td>Floor modülü yönetebilir; Core event reference yayınlar</td></tr>
+<tr><td>EventPlan/PlanVersion/Canvas/Geometry</td><td>Floor Editor</td></tr>
+<tr><td>Stand/Seat/Table/Section inventory</td><td>Floor Editor</td></tr>
+<tr><td>Order/Payment/Invoice</td><td>Commerce/Finance core</td></tr>
+<tr><td>Assignment/booking kararı</td><td>Core order + Floor inventory sözleşmesi</td></tr>
+<tr><td>Badge/credential/check-in</td><td>Onsite module; core participant ID</td></tr>
+</tbody></table>
+<h2>Entegrasyon API&#x27;si</h2>
+<table><thead><tr><th>İşlem</th><th>Sözleşme</th></tr></thead><tbody>
+<tr><td>Plan bağlama</td><td>`POST /v1/events/{eventId}/floor-plan-bindings`</td></tr>
+<tr><td>Yayınlı planı oku</td><td>`GET /v1/floor-plans/{planId}/published`</td></tr>
+<tr><td>Uygun envanter</td><td>`GET /v1/events/{eventId}/inventory?type=seat</td><td>booth`</td></tr>
+<tr><td>Süreli hold</td><td>`POST /v1/inventory-holds` + idempotency + TTL</td></tr>
+<tr><td>Hold uzatma/expire</td><td>Açık policy; sınırlı retry</td></tr>
+<tr><td>Booking doğrula</td><td>`POST /v1/inventory-bookings` orderId + holdToken</td></tr>
+<tr><td>Release</td><td>`POST /v1/inventory-releases`; permission ve reason zorunlu</td></tr>
+<tr><td>Katılımcı atama</td><td>`PUT /v1/seats/{seatId}/assignment` ticketId/version</td></tr>
+<tr><td>Booth atama</td><td>`PUT /v1/spaces/{spaceId}/assignment` orderItemId/companyId</td></tr>
+</tbody></table>
+<h2>Domain event&#x27;leri</h2>
+<p><code>EventCreated</code>, <code>EventUpdated</code>, <code>RegistrationConfirmed</code>, <code>TicketIssued</code>, <code>OrderPaid</code>, <code>FloorPlanPublished</code>, <code>InventoryHeld</code>, <code>HoldExpired</code>, <code>InventoryBooked</code>, <code>InventoryReleased</code>, <code>SeatAssigned</code>, <code>BoothAssigned</code>, <code>AssignmentRevoked</code>.</p>
+<p>Floor Editor bu event&#x27;lerden local projection tutabilir; kişi e-posta/telefonunu kopyalamak yerine <code>personId</code>, <code>registrationId</code>, <code>ticketId</code> ve gerektiğinde isim/badge label snapshot&#x27;ı taşır.</p>
+<h2>Satış ve envanter akışı</h2>
+<ol>
+<li>Kullanıcı koltuk/stand seçer; Floor module süreli hold üretir.</li>
+<li>Commerce order ve item yaratır; hold token order&#x27;a bağlanır.</li>
+<li>Manuel veya online payment confirmed olur.</li>
+<li>Commerce <code>OrderPaid</code> yayınlar; orchestration idempotent booking çağırır.</li>
+<li>Booking başarısızsa order otomatik “tamamlandı” sayılmaz; operasyon task ve refund/reassignment politikası çalışır.</li>
+<li>İptalde finans ve inventory ayrı compensating actions kullanır.</li>
+</ol>
+<p>Seats.io&#x27;nun resmî modeli hold token ile seçimi korur; booking held seat&#x27;i token sahibiyle doğrular; erken release&#x27;in double booking doğurabileceğini açıkça belirtir. Maven entegrasyonu aynı concurrency disiplinini taşımalıdır.</p>
+<h2>EFPS göç adımları</h2>
+<ol>
+<li>EFPS <code>Event</code> ve <code>Attendee</code> tabloları için source-of-truth dondurulur.</li>
+<li>Core ID mapping tablosu oluşturulur: <code>sourceSystem/sourceType/sourceId → coreType/coreId</code>.</li>
+<li>Event kayıtları core&#x27;a aktarılır; çakışma raporu üretilir.</li>
+<li>Attendee kayıtları person+registration&#x27;a dedup kurallarıyla taşınır; otomatik merge yapılmaz.</li>
+<li>EFPS tabloları read projection&#x27;a çevrilir veya <code>coreEventId/coreParticipantId</code> taşır.</li>
+<li>Yeni write yalnız core API üzerinden yapılır.</li>
+<li>Plan/geometry verisi EFPS&#x27;de kalır; canvas JSON core DB&#x27;ye kopyalanmaz.</li>
+</ol>
+<h2>Tekil çalışabilme</h2>
+<p>Floor Editor standalone modda local demo identity ve stub event catalog kullanabilir. Entegre modda core OIDC/session ve API kullanır. İki mod aynı build-time interface&#x27;i uygular; üretimde demo adapter&#x27;ı kapalıdır.</p>
+<hr>
+<h1>MavenForms → Maven Event Platform Ana Planı</h1>
+<p><strong>Rapor tarihi:</strong> 17 Eylül 2026  </p>
+<p><strong>İncelenen ana kaynak:</strong> <code>mavenform-main-son.zip</code>  </p>
+<p><strong>Amaç:</strong> MavenForms&#x27;u kayıt/form ürünü sınırından çıkarıp Maven Event Platform&#x27;un güvenli çekirdeğine dönüştürmek; Event Floor Plan Studio ile ortak kavram, veritabanı sahipliği ve API/event sözleşmesi kurmak; manuel finans süreçlerinden canlı ödeme ve e-belgeye, en son da Multi-Tenant yapıya ilerlemek.</p>
+<h2>Admin bilgi mimarisi</h2>
+<table><thead><tr><th>Ana alan</th><th>Alt ekranlar</th></tr></thead><tbody>
+<tr><td>Etkinlikler</td><td>Genel bilgi, tarihler, ekip, venue/hall, modül durumu</td></tr>
+<tr><td>Kayıt</td><td>Formlar, kayıtlar, onay/waitlist, grup kayıtları, duplicate kişiler</td></tr>
+<tr><td>Ürün ve fiyat</td><td>Ticket, paket, stand/sponsor, fiyat, indirim, vergi snapshot</td></tr>
+<tr><td>Siparişler</td><td>Order, item, müşteri, bakiye, cancellation</td></tr>
+<tr><td>Finans</td><td>Açık bakiye, manuel ödeme, allocation, mutabakat, refund</td></tr>
+<tr><td>Faturalar</td><td>Talep, veri kontrolü, belge, gönderim, iptal/iade inceleme</td></tr>
+<tr><td>Floor plan</td><td>Plan, yayın, inventory, holds, assignments</td></tr>
+<tr><td>Onsite</td><td>Badge, credential, check-in, cihaz, offline sync</td></tr>
+<tr><td>Program</td><td>Session, track, room, speaker, abstract</td></tr>
+<tr><td>İletişim</td><td>Template, audience, consent, queue, delivery</td></tr>
+<tr><td>Raporlar</td><td>Kayıt funnel, gelir, tahsilat, attendance, sponsor ROI</td></tr>
+<tr><td>Ayarlar</td><td>Kullanıcı/rol, entegrasyon, güvenlik, audit, saklama</td></tr>
+</tbody></table>
+<h2>Rol matrisi</h2>
+<table><thead><tr><th>Rol</th><th>Ana yetki</th></tr></thead><tbody>
+<tr><td>Platform Admin</td><td>Teknik operasyon; finans içeriğini varsayılan olarak görmez.</td></tr>
+<tr><td>Event Owner</td><td>Event yapılandırması ve ekip atama.</td></tr>
+<tr><td>Registration Manager</td><td>Form, kayıt, onay ve katılımcı işlemleri.</td></tr>
+<tr><td>Finance Recorder</td><td>Manuel ödeme kaydı ve belge yükleme.</td></tr>
+<tr><td>Finance Approver</td><td>Ödeme/fatura onayı ve reversal.</td></tr>
+<tr><td>Floor Planner</td><td>Plan/geometry/inventory; finans erişimi yok.</td></tr>
+<tr><td>Onsite Operator</td><td>Check-in ve badge; sınırlı PII.</td></tr>
+<tr><td>Analyst</td><td>Maskeli read-only rapor.</td></tr>
+<tr><td>Support</td><td>Süreli, ticket&#x27;lı, read-only break-glass. Multi-Tenant fazında.</td></tr>
+</tbody></table>
+<h2>Operasyonel gerçeklik ekranları</h2>
+<p>Her async iş için <code>queued/processing/retry/dead</code> görünümü, correlation id, son hata, sonraki deneme ve güvenli replay butonu bulunmalıdır. Dashboard “gönderildi” ile “provider kabul etti/delivered” ayrımını; “ödeme callback geldi” ile “retrieve ile doğrulandı” ayrımını göstermelidir.</p>
+<h2>Hata çözme runbook&#x27;ları</h2>
+<ul>
+<li>Banka referansı duplicate.</li>
+<li>Payment confirmed, booking failed.</li>
+<li>Booking succeeded, ödeme sonradan disputed.</li>
+<li>Fatura belgesi order ile tutarsız.</li>
+<li>E-posta teslim edilemedi/suppressed.</li>
+<li>Floor plan yeni sürümde assigned seat silindi.</li>
+<li>Offline check-in cihazı conflict üretti.</li>
+<li>Provider webhook kayıp; retrieve/reconciliation gerekli.</li>
+</ul>
+<hr>
+<h1>MavenForms → Maven Event Platform Ana Planı</h1>
+<p><strong>Rapor tarihi:</strong> 17 Eylül 2026  </p>
+<p><strong>İncelenen ana kaynak:</strong> <code>mavenform-main-son.zip</code>  </p>
+<p><strong>Amaç:</strong> MavenForms&#x27;u kayıt/form ürünü sınırından çıkarıp Maven Event Platform&#x27;un güvenli çekirdeğine dönüştürmek; Event Floor Plan Studio ile ortak kavram, veritabanı sahipliği ve API/event sözleşmesi kurmak; manuel finans süreçlerinden canlı ödeme ve e-belgeye, en son da Multi-Tenant yapıya ilerlemek.</p>
+<h2>Faz planı</h2>
+<p>Süreler küçük bir ürün ekibine göre tahmindir; takvim taahhüdü değildir. Bir fazın çıkış kanıtı yoksa sonraki fazın production özelliği açılmaz.</p>
+<table><thead><tr><th>Faz</th><th>Yaklaşık süre</th><th>Teslim</th><th>Çıkış kapısı</th></tr></thead><tbody>
+<tr><td>F0 — Gerçeklik ve paket bütünlüğü</td><td>1-2 hf</td><td>Kanonik status, çalışan test runner, local-ready, CI, karar kayıtları</td><td>Context check + seçili gate&#x27;ler temiz</td></tr>
+<tr><td>F1 — Tek şirket Event Core</td><td>4-6 hf</td><td>Organization, Event, Occurrence, Person, Registration, FormBinding, Postgres</td><td>Kayıt formundan canonical registration oluşur</td></tr>
+<tr><td>F2 — Sipariş ve manuel ödeme</td><td>3-5 hf</td><td>Catalog/Price/Order/Item, Payment ledger, allocation, evidence, approval</td><td>Tam/kısmi/overpayment/reversal mutabakatı</td></tr>
+<tr><td>F3 — Manuel fatura kontrolü</td><td>3-5 hf</td><td>InvoiceRequest, Invoice, relation, document decision, controlled delivery</td><td>Muhasebe UAT ve export reconciliation</td></tr>
+<tr><td>F4 — İç şirket pilotu ve onsite</td><td>2-4 hf</td><td>Ticket, credential, badge binding, check-in temel akışı</td><td>Gerçek iç etkinlik dry-run, backup/restore</td></tr>
+<tr><td>F5 — Floor Editor entegrasyonu</td><td>4-6 hf</td><td>Event/participant ID birleşimi, plan binding, hold/book/release, assignment</td><td>Concurrency ve double-booking testleri</td></tr>
+<tr><td>F6 — Canlı ödeme dalgası</td><td>5-8 hf</td><td>Önce hosted iyzico; webhook/retrieve/refund; sonra banka sanal POS adapter&#x27;ı</td><td>Gerçek merchant staging/canary ve mutabakat</td></tr>
+<tr><td>F7 — Otomatik fatura/e-belge</td><td>5-8 hf</td><td>Paraşüt contact/product/invoice/job/PDF/XML/delivery; iptal/iade review</td><td>Mali müşavir + provider UAT + replay testleri</td></tr>
+<tr><td>F8 — Event modülleri</td><td>Modül başına 3-12 hf</td><td>Program/speaker, abstract, sponsor/exhibitor, survey, analytics vb.</td><td>Her modül bağımsız capability gate</td></tr>
+<tr><td>F9 — Multi-Tenant son kapı</td><td>8-14 hf</td><td>Provisioning, RLS, tenant domain, BYO provider, tenant billing, support</td><td>Cross-tenant negatif test, restore, DPA/ops</td></tr>
+</tbody></table>
+<h2>F0 mikro teslimleri</h2>
+<ul>
+<li>Eksik <code>scripts/local-ready.mjs</code> kararını çöz: geri getir veya packet&#x27;lerden kontrollü kaldır.</li>
+<li><code>npm/bun test</code> için tek runner ve test sınıfları: unit, contract, DB integration, e2e, external evidence.</li>
+<li><code>STATUS.md</code> çelişkisini makine-okunur release registry ile bitir.</li>
+<li>Current DB backup ve migration rehearsal kopyası oluştur.</li>
+<li>“live”, “ready”, “delivered”, “paid”, “issued” kelimeleri için kanıt sözlüğü yayınla.</li>
+</ul>
+<h2>F1-F3 veri göç sırası</h2>
+<ol>
+<li>PostgreSQL hedef şema ve shadow migration.</li>
+<li>Workspace→Organization map.</li>
+<li>Event/Person/Registration tabloları; mevcut submission&#x27;lar değişmeden kalır.</li>
+<li>EventFormBinding ile yeni kayıtlar dual-write değil transaction içi orchestration ile registration üretir.</li>
+<li>Order/Payment/Allocation eklenir; eski PaymentOrder read adapter ile görüntülenir.</li>
+<li>Invoice migration; eski unique bağlantı çözülür.</li>
+<li>Eski scalar payment status yalnız read projection olur; write kapatılır.</li>
+</ol>
+<h2>F6 ödeme sırası</h2>
+<ol>
+<li>Hosted/redirect iyzico ile kart verisini platform dışında tut.</li>
+<li>Create intent idempotency ve server-calculated amount.</li>
+<li>Signed webhook inbox; hızlı 2xx; async processing.</li>
+<li>Retrieve ile basket/conversation/amount/currency eşleştir.</li>
+<li>Full/partial refund ve transaction-level mapping.</li>
+<li>Settlement/payout dosyası veya provider report ile günlük reconciliation.</li>
+<li>Canary event ve tutar limitleri.</li>
+<li>Banka sanal POS ancak aynı provider contract&#x27;ı karşılayan ayrı adapter olarak eklenir; provider özel durumlar core&#x27;a sızmaz.</li>
+</ol>
+<h2>F8 modül önceliği</h2>
+<p>İç müşteri talebine göre seçilir. Varsayılan sıra: Program/Speaker → Abstract/Review → Sponsor/Exhibitor/Booth → Surveys/Certificates → Networking/Lead Retrieval → Accommodation/Travel → Attendee Mobile. Her modül önce event core, permission, API, event ve analytics sözleşmesini tanımlar.</p>
+<h2>Multi-Tenant son kapı</h2>
+<p>Multi-Tenant geliştirmesi F9&#x27;a kadar product backlog&#x27;ta dondurulur. F9 öncesi yapılacak tek hazırlık organization scope, unique key&#x27;lerde organization, repository filtreleri ve tenant leakage testleridir. Bunlar güvenlik borcunu önler; SaaS UI/provisioning değildir.</p>
+<hr>
+<h1>MavenForms → Maven Event Platform Ana Planı</h1>
+<p><strong>Rapor tarihi:</strong> 17 Eylül 2026  </p>
+<p><strong>İncelenen ana kaynak:</strong> <code>mavenform-main-son.zip</code>  </p>
+<p><strong>Amaç:</strong> MavenForms&#x27;u kayıt/form ürünü sınırından çıkarıp Maven Event Platform&#x27;un güvenli çekirdeğine dönüştürmek; Event Floor Plan Studio ile ortak kavram, veritabanı sahipliği ve API/event sözleşmesi kurmak; manuel finans süreçlerinden canlı ödeme ve e-belgeye, en son da Multi-Tenant yapıya ilerlemek.</p>
+<h2>Vibe coding ve halüsinasyon kontrolü</h2>
+<p>Yeni özellik istemi doğrudan koda dönüşmemelidir. Her iş aşağıdaki küçük kanıt paketinden geçer:</p>
+<ol>
+<li><strong>Problem ve kullanıcı:</strong> Kim, hangi event akışında, hangi kararı veriyor?</li>
+<li><strong>Domain sahibi:</strong> Kavram hangi modüle ait? Aynı kavram başka tabloda var mı?</li>
+<li><strong>Invariant:</strong> Hangi durum asla oluşmamalı?</li>
+<li><strong>Sözleşme:</strong> API request/response, event schema, idempotency ve permission.</li>
+<li><strong>Veri etkisi:</strong> Migration, backfill, rollback, retention ve PII.</li>
+<li><strong>Kabul örnekleri:</strong> En az bir success, duplicate/retry, unauthorized ve failure/recovery.</li>
+<li><strong>Kanıt türü:</strong> Local test mi, staging mi, canlı provider mı, muhasebe/hukuk onayı mı?</li>
+</ol>
+<h2>Çalışma birimi</h2>
+<p>Mevcut repo&#x27;nun 15 dakikalık READY packet yaklaşımı korunabilir; fakat packet ürün fazı değildir. Her packet tek invariant veya tek sözleşme değiştirir. <code>allowedFiles</code>, <code>reads</code>, bağımlılık, migration etkisi, test komutu ve beklenen kanıt içerir. Yapay zekâ yalnız READY packet üzerinde çalışır; yeni ihtiyaç görürse kod yerine issue/ADR açar.</p>
+<h2>Definition of Done</h2>
+<ul>
+<li>Domain terimi sözlükte tek anlam taşır.</li>
+<li>Server validation ve authorization vardır.</li>
+<li>Organization scope negatifi test edilmiştir.</li>
+<li>Idempotency duplicate ve payload conflict&#x27;i ayırır.</li>
+<li>Mutation + outbox aynı transaction&#x27;dadır.</li>
+<li>Migration forward ve rollback/restore provası vardır.</li>
+<li>UI gerçek provider durumunu taklit eden optimistic “başarılı” metin yazmaz.</li>
+<li>Audit hassas veriyi/log secret&#x27;ı sızdırmaz.</li>
+<li>Runbook ve ölçüm/alert tanımlıdır.</li>
+<li>Production iddiası yalnız ilgili evidence registry kaydıyla yapılır.</li>
+</ul>
+<h2>Yasaklı kısayollar</h2>
+<ul>
+<li><code>Submission</code>a yeni bir string alan ekleyip ayrı domain&#x27;i taklit etmek.</li>
+<li>UI butonu ekleyip provider/mutation yokken tamamlandı saymak.</li>
+<li>Başka modül tablosuna route içinden doğrudan write yapmak.</li>
+<li>Payment/fatura kaydını edit ederek geçmişi silmek.</li>
+<li>Webhook&#x27;u tek gerçek kaynak kabul etmek.</li>
+<li>Test fixture sonucunu canlı provider kanıtı olarak sunmak.</li>
+<li>Multi-Tenant UI açıp izolasyon ve restore kanıtını sonraya bırakmak.</li>
+</ul>
+<h2>Karar yönetimi</h2>
+<p>Her büyük karar ADR alır: canonical IDs, PostgreSQL, form-registration sınırı, order/payment model, invoice lifecycle, Floor ownership, payment provider contract ve Multi-Tenant gate. ADR değişebilir; değişiklik nedeni ve migration etkisi kaybolmaz.</p>
+<hr>
+<h1>MavenForms → Maven Event Platform Ana Planı</h1>
+<p><strong>Rapor tarihi:</strong> 17 Eylül 2026  </p>
+<p><strong>İncelenen ana kaynak:</strong> <code>mavenform-main-son.zip</code>  </p>
+<p><strong>Amaç:</strong> MavenForms&#x27;u kayıt/form ürünü sınırından çıkarıp Maven Event Platform&#x27;un güvenli çekirdeğine dönüştürmek; Event Floor Plan Studio ile ortak kavram, veritabanı sahipliği ve API/event sözleşmesi kurmak; manuel finans süreçlerinden canlı ödeme ve e-belgeye, en son da Multi-Tenant yapıya ilerlemek.</p>
+<h2>En önemli riskler</h2>
+<table><thead><tr><th>Risk</th><th>Olasılık/Etki</th><th>Erken sinyal</th><th>Karşılık</th></tr></thead><tbody>
+<tr><td>Form-centric model geri gelir</td><td>Yüksek/Yüksek</td><td>Yeni özellikler Submission alanı olur</td><td>Domain review gate</td></tr>
+<tr><td>Finans toplamı tutmaz</td><td>Orta/Kritik</td><td>UI ve export farklı bakiye</td><td>Immutable ledger + allocation invariant</td></tr>
+<tr><td>Double booking</td><td>Orta/Kritik</td><td>Aynı seat/stand iki order&#x27;da</td><td>TTL hold, version, DB uniqueness, idempotency</td></tr>
+<tr><td>Provider callback yanlış success üretir</td><td>Orta/Kritik</td><td>Callback sonrası amount mismatch</td><td>Signed inbox + retrieve</td></tr>
+<tr><td>E-belge yanlış kişi/tutara gider</td><td>Orta/Kritik</td><td>Otomatik fuzzy match</td><td>Explicit approval, hash, two-person review</td></tr>
+<tr><td>Workspace/tenant veri sızıntısı</td><td>Orta/Kritik</td><td>ID ile başka kaynağa erişim</td><td>Scope repository + BOLA tests; final RLS</td></tr>
+<tr><td>Test sayısı kalite yanılsaması yaratır</td><td>Yüksek/Yüksek</td><td>Runner/CI çalışmıyor</td><td>Kanonik test harness + evidence classes</td></tr>
+<tr><td>Repo belgeleri gerçeklikle ayrışır</td><td>Yüksek/Orta</td><td>PASS ve WIP aynı anda</td><td>Machine-readable registry</td></tr>
+<tr><td>SQLite→Postgres göçü gecikir</td><td>Orta/Yüksek</td><td>Finans pilotu SQLite&#x27;da büyür</td><td>F1&#x27;de shadow migration</td></tr>
+<tr><td>Modüller bağımsız çalışamaz</td><td>Orta/Yüksek</td><td>Cross-table import/write</td><td>Owned schema + contract tests</td></tr>
+<tr><td>Multi-Tenant erken açılır</td><td>Orta/Yüksek</td><td>Tenant UI/backlog öne gelir</td><td>F9 gate ve feature freeze</td></tr>
+<tr><td>KVKK amaçları karışır</td><td>Orta/Yüksek</td><td>Kayıt e-postası marketing&#x27;e dönüşür</td><td>Consent purpose ve retention matrix</td></tr>
+</tbody></table>
+<h2>Kanonik kararlar</h2>
+<table><thead><tr><th>ID</th><th>Karar</th></tr></thead><tbody>
+<tr><td>D-01</td><td>MavenForms kod tabanı çekirdek temelidir; Form platform root aggregate değildir.</td></tr>
+<tr><td>D-02</td><td>Tek şirket iç pilot önce gelir.</td></tr>
+<tr><td>D-03</td><td>PostgreSQL + modüler monolit ilk deployment&#x27;tır.</td></tr>
+<tr><td>D-04</td><td>Event/Person/Registration core otoritesidir.</td></tr>
+<tr><td>D-05</td><td>Floor Editor geometry/inventory otoritesidir.</td></tr>
+<tr><td>D-06</td><td>Order, Payment, Allocation ve Invoice ayrıdır.</td></tr>
+<tr><td>D-07</td><td>Manuel ödeme ve manuel fatura kontrolü canlı ödemeden önce gelir.</td></tr>
+<tr><td>D-08</td><td>Hosted iyzico ilk kart ödeme yoludur; banka vPOS adapter olarak sonra gelir.</td></tr>
+<tr><td>D-09</td><td>Paraşüt otomasyonu manuel fallback&#x27;i kaldırmaz.</td></tr>
+<tr><td>D-10</td><td>Multi-Tenant ürün fazı en sondur; isolation hygiene baştan sürer.</td></tr>
+</tbody></table>
+<hr>
+<h1>MavenForms → Maven Event Platform Ana Planı</h1>
+<p><strong>Rapor tarihi:</strong> 17 Eylül 2026  </p>
+<p><strong>İncelenen ana kaynak:</strong> <code>mavenform-main-son.zip</code>  </p>
+<p><strong>Amaç:</strong> MavenForms&#x27;u kayıt/form ürünü sınırından çıkarıp Maven Event Platform&#x27;un güvenli çekirdeğine dönüştürmek; Event Floor Plan Studio ile ortak kavram, veritabanı sahipliği ve API/event sözleşmesi kurmak; manuel finans süreçlerinden canlı ödeme ve e-belgeye, en son da Multi-Tenant yapıya ilerlemek.</p>
+<h2>Faz kabul matrisi</h2>
+<table><thead><tr><th>Faz</th><th>Zorunlu kabul kanıtları</th></tr></thead><tbody>
+<tr><td>F0</td><td>Context/bootstrap çalışır; tek runner; CI; status çelişkisi yok; secret scan.</td></tr>
+<tr><td>F1</td><td>Event→form binding; duplicate person review; registration history; Postgres restore.</td></tr>
+<tr><td>F2</td><td>Full/partial/overpayment; split allocation; duplicate reference; reversal; audit; export equality.</td></tr>
+<tr><td>F3</td><td>Recipient/line validation; document quarantine; mismatch rejection; resend idempotency; invoice relation.</td></tr>
+<tr><td>F4</td><td>Ticket/badge mapping; duplicate scan policy; offline check-in conflict; device/operator audit.</td></tr>
+<tr><td>F5</td><td>Hold expiry; concurrent hold; idempotent book; early release protection; paid-booking failure recovery.</td></tr>
+<tr><td>F6</td><td>Provider signature; delayed/out-of-order/duplicate webhook; retrieve mismatch; partial refund; settlement reconciliation.</td></tr>
+<tr><td>F7</td><td>Contact/product ambiguity; provider retry; invoice job polling; PDF/XML hash; cancel/credit review.</td></tr>
+<tr><td>F8</td><td>Her modül için permissions, API, event, migration, analytics ve independent-run contract.</td></tr>
+<tr><td>F9</td><td>Cross-tenant BOLA, RLS default deny, owner bypass test, custom domain routing, tenant restore/delete/export.</td></tr>
+</tbody></table>
+<h2>Finans test veri seti</h2>
+<p>En az şu senaryolar fixture değil DB integration seviyesinde çalışır: TRY tam ödeme; TRY iki kısmi ödeme; tek ödeme iki order&#x27;a allocation; overpayment; duplicate reference; yanlış currency; onaysız yüksek tutar; reversed payment; partial refund; full refund; chargeback; payment sonrası fatura; ödeme öncesi fatura; credit note; belge mismatch; resend; provider timeout; event replay.</p>
+<h2>Floor/onsite concurrency</h2>
+<ul>
+<li>Aynı seat&#x27;e eşzamanlı iki hold: tek kazanan.</li>
+<li>Süresi dolmuş token ile booking: reddedilir.</li>
+<li>Aynı orderId ile retry: aynı sonuç.</li>
+<li>Paid order booking conflict: manual recovery task ve alarm.</li>
+<li>Plan version değişirken assignment: version conflict.</li>
+<li>Offline cihaz aynı credential&#x27;ı iki kez okur: policy&#x27;ye göre duplicate/exit/re-entry.</li>
+</ul>
+<h2>Güvenlik</h2>
+<p>OWASP API Security 2023&#x27;e göre object-level, property-level ve function-level authorization her ID kullanan fonksiyonda değerlendirilir. Public formlar rate/resource limit, anti-automation ve idempotency conflict testlerine; internal worker&#x27;lar authentication, replay ve least privilege testlerine girer.</p>
+<hr>
+<h1>MavenForms → Maven Event Platform Ana Planı</h1>
+<p><strong>Rapor tarihi:</strong> 17 Eylül 2026  </p>
+<p><strong>İncelenen ana kaynak:</strong> <code>mavenform-main-son.zip</code>  </p>
+<p><strong>Amaç:</strong> MavenForms&#x27;u kayıt/form ürünü sınırından çıkarıp Maven Event Platform&#x27;un güvenli çekirdeğine dönüştürmek; Event Floor Plan Studio ile ortak kavram, veritabanı sahipliği ve API/event sözleşmesi kurmak; manuel finans süreçlerinden canlı ödeme ve e-belgeye, en son da Multi-Tenant yapıya ilerlemek.</p>
+<h2>Sektör ve standart kaynakları</h2>
+<ul>
+<li><a href="https://www.cvent.com/">Cvent — Online Event Registration Software</a></li>
+<li><a href="https://support.cvent.com/s/communityarticle/Managing-Your-Payment-Methods">Cvent — Managing Payment Methods</a></li>
+<li><a href="https://support.cvent.com/s/communityarticle/Processing-Offline-Payments">Cvent — Recording Offline Payments</a></li>
+<li><a href="https://support.cvent.com/s/communityarticle/Importing-Offline-Payments">Cvent — Importing Offline Payments</a></li>
+<li><a href="https://support.cvent.com/s/communityarticle/Applying-Partial-Payments">Cvent — Applying Partial Payments</a></li>
+<li><a href="https://support.cvent.com/s/communityarticle/What-is-the-difference-between-online-and-offline-orders">Cvent — Online and Offline Orders</a></li>
+<li><a href="https://release.cvent.com/">Cvent — Registration and Event Diagramming integration</a></li>
+<li><a href="https://www.eventsair.com/">EventsAir — Platform Overview</a></li>
+<li><a href="https://swoogo.events/platform/">Swoogo — Platform Overview</a></li>
+<li><a href="https://swoogo.events/integrations/">Swoogo — Integrations</a></li>
+<li><a href="https://developer.swoogo.com/">Swoogo Developer Documentation</a></li>
+<li><a href="https://www.swapcard.com/">Swapcard — Event Platform</a></li>
+<li><a href="https://www.swapcard.com/features/exhibitor-center">Swapcard — Exhibitor Center</a></li>
+<li><a href="https://www.eventleaf.com/">Eventleaf — Event Management</a></li>
+<li><a href="https://docs.seats.io/docs/renderer/config-holdtoken/">Seats.io — Hold Token</a></li>
+<li><a href="https://docs.seats.io/docs/api/book-objects/">Seats.io — Book Objects</a></li>
+<li><a href="https://docs.seats.io/docs/api/release-objects/">Seats.io — Release Objects</a></li>
+<li><a href="https://docs.iyzico.com/">iyzico — Refund &amp; Cancel</a></li>
+<li><a href="https://blog.pcisecuritystandards.org/faq-clarifies-new-saq-a-eligibility-criteria-for-e-commerce-merchants">PCI SSC — SAQ A e-commerce eligibility clarification</a></li>
+<li><a href="https://docs.stripe.com/api/idempotent_requests">Stripe — Idempotent Requests</a></li>
+<li><a href="https://docs.stripe.com/webhooks">Stripe — Webhooks</a></li>
+<li><a href="https://learn.microsoft.com/en-us/azure/architecture/databases/guide/transactional-out-box-cosmos">Microsoft — Transactional Outbox Pattern</a></li>
+<li><a href="https://api-security.owasp.org/editions/2023/en/0x11-t10/">OWASP — API Security Top 10 2023</a></li>
+<li><a href="https://www.postgresql.org/docs/current/ddl-rowsecurity.html">PostgreSQL — Row Security Policies</a></li>
+<li><a href="https://ebelgebasvuru.gib.gov.tr/">GİB — e-Fatura İptal/İtiraz Portalı</a></li>
+<li><a href="https://www.parasut.com/">Paraşüt — Tahsilat Makbuzu</a></li>
+<li><a href="https://www.kvkk.gov.tr/">Kişisel Verileri Koruma Kurumu</a></li>
+</ul>
+<h2>İncelenen repo kanıtları</h2>
+<p>Ana dosyalar: <code>prisma/schema.prisma</code>, <code>src/lib/auth.ts</code>, <code>src/lib/policy.ts</code>, <code>src/lib/manual-payment-status.ts</code>, public submission route, payment state/webhook/retrieve kodu, invoice candidate/snapshot/document/delivery kodu, badge sözleşmeleri, <code>AGENTS.md</code>, <code>STATUS.md</code>, <code>PROJECT_CONTEXT.md</code>, workflow packet&#x27;leri ve script&#x27;ler.</p>
+<p>Floor Editor tarafında <code>prisma/schema.prisma</code>, <code>PROJECT_CONTEXT.md</code>, API route envanteri, Event/Venue/Hall/EventPlan/Company/Attendee/Seating modelleri incelendi.</p>
+<h2>Sınırlar</h2>
+<ul>
+<li>Kaynak ZIP&#x27;te bağımlılıklar yoktu; tam build/lint/typecheck yapılmadı.</li>
+<li>Canlı Stripe/iyzico/Paraşüt, SMTP, AV, object storage veya GİB çağrısı yapılmadı.</li>
+<li>Vergi, e-belge ve KVKK kararları hukuk/mali müşavir onayı gerektirir.</li>
+<li>Event Floor Plan Studio incelemesi çalışma alanındaki public repo kopyasına dayanır; yeni MavenForms ZIP&#x27;i yalnız MavenForms için güncel kaynak kabul edilmiştir.</li>
+<li>Süre tahminleri ekip büyüklüğü, mevcut test borcu ve provider erişimine göre değişir.</li>
+</ul></body></html>

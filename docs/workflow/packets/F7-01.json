@@ -1,0 +1,32 @@
+{
+  "id": "F7-01",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F7 durum kaydı: otomasyon alt fazları provider/mali müşavir bekler; manuel fallback korunur",
+  "rollback": "Yalnız F7-01 packet, ADR eki ve registry/test değişimini geri al; kod ve veriye dokunma",
+  "previous": ["F6-05"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/evidence-registry.json",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/08_FATURA_EBELGE.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/11_YOL_HARITASI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F7-01.json",
+    "docs/adr/0005-f7-gates.md",
+    "docs/workflow/evidence-registry.json",
+    "tests/f7-gates.test.mjs"
+  ],
+  "acceptance": [
+    "F7A..F7E her biri sağlayıcı/onay bağı ile EXTERNAL_DEPENDENCY kayıtlıdır",
+    "Manuel fallback kaldırılmaz kuralı kayıtta yazılır"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/f7-gates.test.mjs"]
+  ]
+}

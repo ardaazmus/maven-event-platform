@@ -158,9 +158,9 @@ export async function sendAdminVerificationEmail(input: AdminVerificationEmailIn
     await command(socket, `MAIL FROM:<${from}>`, [250])
     await command(socket, `RCPT TO:<${recipient}>`, [250, 251])
     await command(socket, 'DATA', [354])
-    const subject = `=?UTF-8?B?${Buffer.from('MavenForms admin doğrulama kodu', 'utf8').toString('base64')}?=`
+    const subject = `=?UTF-8?B?${Buffer.from('Maven Event Platform admin doğrulama kodu', 'utf8').toString('base64')}?=`
     const text = [
-      'MavenForms güvenlik doğrulaması',
+      'Maven Event Platform güvenlik doğrulaması',
       '',
       `İstenen işlem: ${input.actionLabel}`,
       `Doğrulama kodu: ${input.code}`,

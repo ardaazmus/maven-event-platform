@@ -1,0 +1,26 @@
+{
+  "id": "F1-01",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F1 keşif: mevcut Prisma datasource + Workspace/Submission/Form modeli envanteri; Postgres shadow plan notu",
+  "rollback": "Yalnız F1-01 packet ve envanter notunu geri al; schema, migration ve veriye dokunma",
+  "previous": ["F0-06A"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "prisma/schema.prisma",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/11_YOL_HARITASI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F1-01.json",
+    "docs/workflow/f1-01-inventory.md"
+  ],
+  "acceptance": [
+    "Datasource, Workspace→Organization map notu ve Submission korunumu yazılır",
+    "Schema/migration/veriye dokunulmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["node", "scripts/local-ready.mjs"], ["node", "scripts/context-check.mjs"]]
+}

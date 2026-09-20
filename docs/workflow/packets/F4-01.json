@@ -1,0 +1,31 @@
+{
+  "id": "F4-01",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F4-4.1 model: Ticket katılım hakkı + Credential QR/badge kimliği (migration ayrı)",
+  "rollback": "Yalnız F4-01 packet, schema ekini ve model testini geri al; migration ve veriye dokunma",
+  "previous": ["F3-14"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "prisma/schema.prisma",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F4-01.json",
+    "prisma/schema.prisma",
+    "tests/ticket-model.test.mjs"
+  ],
+  "acceptance": [
+    "Ticket registration/order bağı + Credential QR kimliği tanımlıdır",
+    "prisma validate geçer, migration bu fazda uygulanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/ticket-model.test.mjs"],
+    ["bun", "x", "prisma", "validate"]
+  ]
+}

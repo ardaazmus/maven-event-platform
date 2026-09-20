@@ -8,23 +8,26 @@ const inter = { variable: "--font-geist-sans" } as const;
 const jetbrainsMono = { variable: "--font-geist-mono" } as const;
 
 export const metadata: Metadata = {
-  title: "MavenForms — Modern Form Platform",
+  title: "Maven Event Platform — Etkinlik Yönetimi",
   description:
-    "MavenForms ile profesyonel formlar oluşturun, yayınlayın, yanıtları toplayın ve otomatikleştirin. KVKK uyumlu, mobil öncelikli, çok kiracılı form platformu.",
+    "Maven Event Platform ile etkinlikleri yönetin; kayıt, bilet, yaka kartı, yoklama ve salon planını tek çalışma alanında toplayın. Maven Forms & Intake modülüyle KVKK uyumlu, mobil öncelikli formlar.",
   keywords: [
-    "MavenForms",
-    "form builder",
-    "form platform",
+    "Maven Event Platform",
+    "Maven Event Management",
+    "Maven Forms & Intake",
+    "Maven Event Floor",
+    "Maven Event Mobile",
+    "etkinlik yönetimi",
     "KVKK",
-    "online form",
+    "online kayıt",
     "veri toplama",
   ],
-  authors: [{ name: "MavenForms" }],
+  authors: [{ name: "Maven Event Platform" }],
   openGraph: {
-    title: "MavenForms — Modern Form Platform",
+    title: "Maven Event Platform — Etkinlik Yönetimi",
     description:
-      "Profesyonel formlar oluşturun, yayınlayın, yanıtları toplayın ve otomatikleştirin.",
-    siteName: "MavenForms",
+      "Etkinlikleri yönetin; kayıt, bilet, yaka kartı, yoklama ve salon planını tek çalışma alanında toplayın.",
+    siteName: "Maven Event Platform",
     type: "website",
   },
 };

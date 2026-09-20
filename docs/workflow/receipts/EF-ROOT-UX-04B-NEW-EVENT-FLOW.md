@@ -1,0 +1,28 @@
+# Receipt: EF-ROOT-UX-04B-NEW-EVENT-FLOW
+
+- Packet: EF-ROOT-UX-04B-NEW-EVENT-FLOW
+- Faz: FAZ-1 (KRITIK ROOT EVENT-FIRST UI GATE)
+- Amac: Canli desktop smokeun buldugu cross-view new-event yarisini duzelt (CODE_FAILURE -> kok neden duzeltmesi).
+- Kok neden: Sidebar/dashboard `setView('events')` sonrasi dispatch ettigi `mavenforms:new-event` olmintonos; EventListView henuz mount olmadigindan dinleyici kaciriyordu. Ayni-gorunum tiklamasinda sorun yoktu; baska gorunumden tiklamada create formu acilmiyordu (04-new-event.png kaniti).
+- Degisen dosyalar:
+  - src/components/mavenforms/sidebar.tsx (tiklamada `mavenforms:new-event-pending` intent yazilir; ayni-gorunum dispatch korunur)
+  - src/components/mavenforms/views/dashboard-view.tsx (banner + no-event karti CTA ayni intent yazimi)
+  - src/components/mavenforms/views/event-list-view.tsx (mount aninda intent tuketilir + temizlenir; ayni-gorunum dinleyici korunur)
+  - tests/ef-root-ux-new-event-flow.test.mjs (yeni sozlesme testi)
+- previous: [] gerekcesi: 04 verify sonrasi canli derleyici EventBar JSX fragment hatasini yakaladi ve 04 dosyasi duzeltildi; zincir bagimliligi yerine bagimsiz baseline + 04 testi regresyon olarak kosuldu.
+- Korunan eski davranis:
+  - Form durduk yere acilmaz (formOpen baslangici false; intent yalniz tiklamada yazilir).
+  - POST /api/events, loading/error/success, keyboard/label durumlari korunur.
+  - forms-list new-form dialog baglantisi etkilenmez.
+- Calistirilan kontroller:
+  - node tests/ef-root-ux-new-event-flow.test.mjs -> PASS
+  - node tests/ef-root-ux-sidebar-cta.test.mjs -> PASS
+  - node tests/ef-root-ux-initial-view.test.mjs -> PASS
+  - node tests/ef-root-ux-no-event.test.mjs -> PASS
+  - node tests/ef-event-create-ui.test.mjs -> PASS
+  - node tests/ef-root-ux-eventbar.test.mjs -> PASS
+- Sonuc: LOCAL_PASS (verify kaniti artifacts/workflow/EF-ROOT-UX-04B-NEW-EVENT-FLOW/verified.json)
+- Kanit sinifi: SOURCE_CONFIRMED + LOCAL_PASS (canli tekrar smoke 05B icinde)
+- Kalan dis bagimlilik: yok.
+- Acik risk: yok.
+- Siradaki packet: EF-ROOT-UX-05B-LIVE-SMOKE

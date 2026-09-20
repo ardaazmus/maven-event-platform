@@ -20,8 +20,8 @@ function safePublicBrandingMediaUrl(value: unknown, workspaceId: string) {
 
 function getDefaultBranding(workspaceName: string) {
   return {
-    appName: 'MavenForms',
-    appTagline: 'FORM PLATFORM',
+    appName: 'Maven Event Platform',
+    appTagline: 'EVENT PLATFORM',
     logoMediaId: null,
     logoUrl: null,
     logoDarkMediaId: null,
@@ -29,13 +29,13 @@ function getDefaultBranding(workspaceName: string) {
     faviconMediaId: null,
     faviconUrl: null,
     primaryColor: '#10b981',
-    loginTitle: 'Formlarınızı tasarlayın, yanıtları otomatikleştirin.',
-    loginSubtitle: 'Modern, mobil öncelikli form platformu. Tasarla → yayınla → topla → raporla zincirinde tek çalışma alanı.',
+    loginTitle: 'Etkinliklerinizi yönetin, kayıtları otomatikleştirin.',
+    loginSubtitle: 'Modern, mobil öncelikli etkinlik platformu. Etkinlik → kayıt → bilet → yoklama zincirinde tek çalışma alanı.',
     loginHeroMediaId: null,
     loginHeroImage: null,
     loginBgColor: '#10b981',
     loginShowFeatures: true,
-    footerText: `© ${new Date().getFullYear()} MavenForms. Tüm hakları saklıdır.`,
+    footerText: `© ${new Date().getFullYear()} Maven Event Platform. Tüm hakları saklıdır.`,
     footerLinks: [],
     customDomain: null,
   }
@@ -75,7 +75,7 @@ export async function GET(req: NextRequest) {
     branding = await db.workspaceBranding.create({
       data: {
         workspaceId,
-        ...getDefaultBranding(ws?.name || 'MavenForms'),
+        ...getDefaultBranding(ws?.name || 'Maven Event Platform'),
       } as any,
     })
   }
@@ -157,7 +157,7 @@ export async function PATCH(req: NextRequest) {
     branding = await db.workspaceBranding.create({
       data: {
         workspaceId: ctx.workspace.id,
-        ...getDefaultBranding(ws?.name || 'MavenForms'),
+        ...getDefaultBranding(ws?.name || 'Maven Event Platform'),
         ...data,
       } as any,
     })

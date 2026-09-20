@@ -1,0 +1,32 @@
+{
+  "id": "F5-12",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F5-5.4 assign: POST /api/holds/[id]/assign ticket eşleşme + scope; farklı event 422",
+  "rollback": "Yalnız F5-12 packet, assign route ve testi geri al; schema ve veriye dokunma",
+  "previous": ["F5-11"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/inventory-bookings/route.ts",
+    "src/lib/policy.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/09_FLOOR_EDITOR_ENTEGRASYONU.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F5-12.json",
+    "src/app/api/holds/[id]/assign/route.ts",
+    "tests/hold-assign.test.mjs"
+  ],
+  "acceptance": [
+    "Assign 200 hold-ticket bağlar",
+    "Farklı event ticket 422 bloklar"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/hold-assign.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

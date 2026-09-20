@@ -104,10 +104,56 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     if (formMeta.startDate && new Date() < new Date(formMeta.startDate)) return NextResponse.json({ error: 'Form henüz açılmadı' }, { status: 403 })
     if (formMeta.endDate && new Date() > new Date(formMeta.endDate)) return NextResponse.json({ error: settings.closedMessage || 'Form kapandı' }, { status: 403 })
 
+    // F1-17: registration orchestration in the same transaction (no dual-write).
+    // Only when the form is bound to an event with purpose=registration.
+    const binding = await db.eventFormBinding.findFirst({
+      where: { formId: formMeta.id, purpose: 'registration' },
+      select: { eventId: true },
+    })
+    let bindingEvent: { id: string; workspaceId: string } | null = null
+    if (binding) {
+      bindingEvent = await db.event.findFirst({
+        where: { id: binding.eventId, workspaceId: formMeta.workspaceId },
+        select: { id: true, workspaceId: true },
+      })
+    }
+
     const submission = await db.$transaction(async (tx) => {
       const sub = await tx.submission.create({ data: { formId: formMeta.id, publicToken, status: 'new', locale: settings.locale || 'tr', source: 'web', ipHash, userAgentHash } })
       if (values.length > 0) await tx.submissionValue.createMany({ data: values.map(v => ({ ...v, submissionId: sub.id })) })
       await tx.form.update({ where: { id: formMeta.id }, data: { submissionCount: { increment: 1 }, todaySubmissionCount: { increment: 1 } } })
+      if (bindingEvent) {
+        // Canonical identity: reuse workspace person with same email, else create.
+        // No auto-merge of differing data; link only.
+        const emailField = snapshotFields.find(sf => sf.type === 'email')
+        const emailValue = emailField ? body[emailField.fieldKey] : null
+        const email = typeof emailValue === 'string' ? emailValue.trim().toLowerCase() : null
+        const nameField = snapshotFields.find(sf => /name|ad.?soyad/i.test(sf.fieldKey || ''))
+        const nameValue = nameField ? body[nameField.fieldKey] : null
+        const fullName = typeof nameValue === 'string' && nameValue.trim() ? nameValue.trim().slice(0, 200) : 'Kayıt Katılımcısı'
+        let person = email
+          ? await tx.person.findFirst({ where: { workspaceId: formMeta.workspaceId, email } })
+          : null
+        if (!person) {
+          person = await tx.person.create({
+            data: { workspaceId: formMeta.workspaceId, fullName, email, phone: null },
+          })
+        }
+        const reg = await tx.registration.create({
+          data: {
+            workspaceId: formMeta.workspaceId,
+            eventId: bindingEvent.id,
+            personId: person.id,
+            formId: formMeta.id,
+            formVersionId: formMeta.publishedVersionId,
+            formSnapshot: JSON.stringify({ formVersionId: formMeta.publishedVersionId, submittedAt: new Date().toISOString() }),
+            status: 'submitted',
+          },
+        })
+        await tx.registrationHistory.create({
+          data: { registrationId: reg.id, fromStatus: null, toStatus: 'submitted', actorId: null },
+        })
+      }
       await enqueueSubmissionOutbox(tx, {
         workspaceId: formMeta.workspaceId,
         formId: formMeta.id,

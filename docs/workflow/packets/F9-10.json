@@ -1,0 +1,48 @@
+{
+  "id": "F9-10",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "MavenForms ve Maven Event Management icin kanitli UX/IA yeniden tasarim ve badge-template format genisletme calisma dosyasi",
+  "rollback": "Yalniz bu packet ve yeni kok calisma dosyasini geri al; mevcut kod, veri, migration ve onceki kanitlara dokunma",
+  "previous": ["F9-09"],
+  "sourceOfTruth": "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/",
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/00_OKU_BENI.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/04_MAVENFORMS_KAPSAM_UYUMU.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/05_HEDEF_MIMARI.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/11_YOL_HARITASI.md",
+    "src/components/mavenforms/app-shell.tsx",
+    "src/components/mavenforms/sidebar.tsx",
+    "src/components/mavenforms/topbar.tsx",
+    "src/components/mavenforms/views/forms-list-view.tsx",
+    "src/components/mavenforms/views/form-builder-view.tsx",
+    "src/app/api/forms/[id]/badges/templates/route.ts",
+    "src/lib/badge-template-contract.ts",
+    "src/lib/badge-template-storage.ts",
+    "src/lib/badge-front-render-contract.ts",
+    "src/lib/badge-field-mapping.ts",
+    "src/app/api/forms/[id]/media/route.ts",
+    "src/lib/file-policy.ts",
+    "tests/badge-template-upload-route.test.mjs",
+    "tests/badge-template-contract.test.mjs",
+    "tests/badge-front-render-contract.test.mjs",
+    "tests/badge-field-mapping.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F9-10.json",
+    "MAVENFORMS_EVENT_MANAGEMENT_UX_REDESIGN_MASTER_PLAN_2026-09-18.md"
+  ],
+  "acceptance": [
+    "Calisma dosyasi mevcut repo, yerel canli UI, ana plan, resmi standartlar ve resmi etkinlik urunu akislari arasindaki kanit sinirini acikca ayirir",
+    "Event, registration, person, order, ticket, credential, check-in, floor plan ve form iliskisi kullanici akislariyla birlikte tanimlanir",
+    "Yaka karti PDF disi template inputlari, guvenli upload, dinamik alan esleme, onizleme, surumleme ve PDF/PNG/JPEG cikti politikasi icin uygulanabilir kabul kapilari vardir",
+    "Mevcut kodun yeniden kullanilacak, donusturulecek, yeni gelistirilecek ve dis kanit bekleyen kisimlari ayri etiketlenir",
+    "Belge urun/release onayi veya production kaniti iddiasinda bulunmaz"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["node", "scripts/context-check.mjs"]]
+}

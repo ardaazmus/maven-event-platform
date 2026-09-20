@@ -88,6 +88,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
   if (form.status !== 'published' || !form.publishedVersionId) return NextResponse.json({ error: 'Yalnız yayınlanmış ve sürümü bulunan formdan üretim yapılabilir' }, { status: 409 })
   const template = await findBadgeTemplate({ workspaceId: ctx.workspace.id, formId: form.id, templateId: request.request.templateId, versionId: request.request.templateVersionId, rootDir: BADGE_TEMPLATE_ROOT })
   if (!template) return NextResponse.json({ error: 'Seçilen private şablon bu forma ait değil' }, { status: 404 })
+  if (template.format !== 'pdf') return NextResponse.json({ error: 'Raster şablon üretimi henüz kapalı', code: 'RENDER_FORMAT_UNSUPPORTED' }, { status: 409 })
   const faceMode = request.request.faceMode ?? (template.pageCount === 2 ? 'DUAL_FACE' : 'SINGLE_FACE')
   if ((faceMode === 'DUAL_FACE' ? 2 : 1) !== template.pageCount) return NextResponse.json({ error: 'Yüz modu şablon sayfa sayısıyla eşleşmiyor', code: 'PAGE_COUNT_MISMATCH' }, { status: 400 })
   const storedTemplate = await readBadgeTemplate({ scope: { workspaceId: ctx.workspace.id, formId: form.id, templateId: template.templateId, versionId: template.versionId }, rootDir: BADGE_TEMPLATE_ROOT })

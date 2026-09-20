@@ -1,0 +1,45 @@
+﻿phase,id,work_item,depends_on,exit_evidence
+F0,0.1,Canonical evidence registry,,context-check and status agree
+F0,0.2,Repair local-ready and test runner,0.1,CI runs locally
+F0,0.3,Freeze product vocabulary and ADRs,0.1,Dictionary approved
+F1,1.1,PostgreSQL target and shadow migration,F0,Restore rehearsal
+F1,1.2,Organization and explicit session context,1.1,Wrong-org negatives
+F1,1.3,Event and occurrence,1.1,Event lifecycle
+F1,1.4,Person and party identity,1.2,Dedup review
+F1,1.5,Registration and FormBinding,"1.3,1.4",Published form creates registration
+F1,1.6,Generic integration outbox/inbox,1.1,Atomic publish/replay
+F2,2.1,"Catalog, price, tax and order snapshots",F1,Order totals invariant
+F2,2.2,Manual Payment ledger and evidence,2.1,Full and partial payment
+F2,2.3,Allocation and balance projection,2.2,Split and overpayment
+F2,2.4,"Approval, reversal and refund",2.2,Four-eyes and immutable correction
+F2,2.5,Finance admin and reconciliation export,"2.3,2.4",Ledger/export equality
+F3,3.1,InvoiceRequest and recipient snapshot,F2,PII and validation gates
+F3,3.2,Independent Invoice and relations,3.1,Credit/replacement chain
+F3,3.3,Document quarantine/match/decision reuse,3.2,Mismatch blocked
+F3,3.4,Controlled delivery and evidence,3.3,Idempotent resend
+F4,4.1,Ticket and credential,"F1,F2",Ticket issued policy
+F4,4.2,Badge binding to credential snapshot,4.1,Render package verified
+F4,4.3,CheckInEvent and device/operator,4.1,Duplicate/offline policy
+F4,4.4,Internal event dry-run,"F3,4.2,4.3",Operational signoff
+F5,5.1,Core↔EFPS ID mapping and ownership freeze,F4,No duplicate writes
+F5,5.2,Plan binding and published plan API,5.1,Version conflict
+F5,5.3,Inventory hold/book/release,5.2,Concurrency tests
+F5,5.4,Seat/booth assignment projection,5.3,Recovery runbook
+F6,6.1,Hosted iyzico adapter and server pricing,F5,Sandbox checkout
+F6,6.2,Webhook inbox and retrieve,6.1,Duplicate/out-of-order/mismatch
+F6,6.3,Refund and settlement reconciliation,6.2,Daily totals match
+F6,6.4,Limited live canary,6.3,Merchant evidence
+F6,6.5,Bank virtual POS adapter,6.4,Same provider contract
+F7,7.1,Paraşüt connection and read-only lookup,F6,Staging health
+F7,7.2,Contact/product explicit resolution,7.1,Ambiguity review
+F7,7.3,Invoice create/job/inbox/PDF/XML,7.2,Replay-safe UAT
+F7,7.4,Cancel/credit/refund reconciliation,7.3,Accountant signoff
+F8,8.1,Program/session/speaker,F5,Module gate
+F8,8.2,Abstract/review,8.1,Module gate
+F8,8.3,Sponsor/exhibitor/booth/lead,F5,Consent and ROI gate
+F8,8.4,Survey/certificate/analytics,F4,Module gate
+F9,9.1,Tenant provisioning and lifecycle,"F7,F8",Lifecycle tests
+F9,9.2,PostgreSQL RLS and tenant leakage suite,9.1,Default deny and bypass tests
+F9,9.3,"Tenant domains, BYO providers and secrets",9.2,Routing/rotation tests
+F9,9.4,"Tenant billing, quotas and support access",9.3,Break-glass and billing UAT
+F9,9.5,Tenant export/delete/restore and release,9.4,Final release evidence

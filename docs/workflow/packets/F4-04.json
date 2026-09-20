@@ -1,0 +1,31 @@
+{
+  "id": "F4-04",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F4-4.3 model: CheckInEvent kapı/cihaz/operatör hareketi (migration ayrı)",
+  "rollback": "Yalnız F4-04 packet, schema ekini ve model testini geri al; migration ve veriye dokunma",
+  "previous": ["F4-03"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "prisma/schema.prisma",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F4-04.json",
+    "prisma/schema.prisma",
+    "tests/checkin-model.test.mjs"
+  ],
+  "acceptance": [
+    "CheckInEvent credential/kapı/cihaz/occurrence bağı ile tanımlıdır",
+    "prisma validate geçer, migration bu fazda uygulanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/checkin-model.test.mjs"],
+    ["bun", "x", "prisma", "validate"]
+  ]
+}

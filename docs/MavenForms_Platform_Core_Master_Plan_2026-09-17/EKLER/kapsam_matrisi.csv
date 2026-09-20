@@ -1,0 +1,13 @@
+﻿capability,decision,current_readiness,target
+Forms/builder,reuse,high,FormDefinition and EventFormBinding
+Registration,transform,medium,Canonical Registration aggregate
+Identity/RBAC/Audit,transform,medium,Explicit org and stronger sessions
+Manual payments,new,low,Payment ledger and allocation
+Online payments,transform+evidence,medium,Hosted provider and live evidence
+Invoice documents,reuse/transform,high,Independent invoice lifecycle
+Badge,reuse,high,Bind to ticket/credential
+Check-in,new,low,Attendance domain
+Event core,new,low,Event/occurrence/person
+Floor plan,external module,medium,API/event integration
+Messaging/outbox,transform,high,Generic domain outbox
+Multi-Tenant,final gate,low,Provisioning/RLS/ops

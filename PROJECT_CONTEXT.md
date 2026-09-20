@@ -1,36 +1,41 @@
-# MavenForms — kısa proje bağlamı
+# MavenForms — kanonik proje bağlamı
 
-Bu belge başlangıç yönlendirmesidir; tarihsel kayıt değildir. Güncel karar `STATUS.md`, faz ayrıntısı `AI-RELEASE-EXECUTION-PLAN.md`, ürün/teknik gerekçe `RELEASE-ROADMAP.md` içindedir.
+## Kaynak hiyerarşisi
+
+Ürün ve çalışma kararlarının tek normatif kaynağı:
+
+`docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/`
+
+Eski root belgeleri `docs/legacy/root-docs/` altında referanstır. Root compatibility bridge dosyaları yalnız yönlendiricidir. Eski bir belge master planla çelişirse eski belge engel veya yeni kural değildir.
 
 ## Sistem sınırı
 
-Next.js App Router + React + TypeScript + Bun + Prisma + SQLite pilot tabanı. Kimlik doğrulamalı uygulama, server API, public form snapshot/submission sınırı, ödeme/faturalama adapter’ları, özel belge depolama ve transactional outbox ayrı katmanlardır. Public form yalnız allowlist snapshot ve write-only submission yüzeyini görür; token, workspace bilgisi, admin verisi ve provider sırrı public’e çıkmaz.
+Next.js App Router + React + TypeScript + Bun + Prisma tabanı; kimlik doğrulamalı uygulama, server API, public form snapshot/submission sınırı, Event/Person/Registration çekirdeği, commerce/finance, invoice/document, credential/check-in, floor plan binding, notification/outbox ve ileride event modülleri.
 
-## Ana faz ve mevcut yürütme
+Public form yalnız allowlist snapshot ve write-only submission yüzeyini görür. Token, workspace bilgisi, admin verisi, provider sırrı ve özel belge public’e çıkmaz.
 
-Ana teknik sıra değişmez: PAY → INV/F manuel → Paraşüt API v4 → document security/document-ready → transactional delivery → pilot → form UX → SaaS. R-10 V4’e özel bir kapı değil, V1/V2/V3 için de ortak güvenlik, release ve dış kanıt kapısıdır; V4 bu tabana tenant izolasyonu/BYO/SaaS koşullarını ekler. Kullanıcıya açılacak ürün sürümleri bu teknik sırayı bozmadan V1 Maven iç kullanım formları → V2 Maven first-party ödeme + manuel fatura → V3 Paraşüt/ertelenmiş provider değerlendirmesi → en son V4 tenant kendi bağlantılarıyla SaaS şeklindedir. V4-00..02 yalnız ileri SaaS izolasyonu için hazırlık sözleşmeleridir; V4-03 ve sonrası first-party ödeme, manuel fatura, transactional mail ve pilot kapıları kapanmadan başlatılamaz. Güncel provider kararı: V2’de Türkiye için iyzico birincildir; banka Sanal POS, Stripe ve Google Pay direct ileri faz adaylarıdır. Paraşüt ve otomatik/toplu fatura gönderimi silinmemiş, risk ve resmi kanıt kapısına bağlı ertelenmiştir. Erken fazlar yalnız provider-neutral port/capability/evidence sözleşmesi kurar. Sürümlü modül/entitlement ve geçiş kapıları için `docs/superpowers/plans/2026-09-06-mavenforms-release-modules-first-party-saas-roadmap.md`, provider karar kaydı için `docs/acceptance/v2-deferred-provider-decision.md`, güncel alt faz için `STATUS.md` okunur. Paraşüt P-00..P-11 yerel sözleşmeleri ve P-12A teslimat kapsam düzeltmesi geçmiştir; P-12 bütünü tamamlanmış değildir.
+## Kanonik ürün akışı
 
-## Release hedefi
+`Organization → Event → Occurrence/Venue → FormDefinition + EventFormBinding → Person + Registration → Ticket/Order/Payment/Invoice → Credential/Badge → Check-in/Attendance → Floor Plan/Inventory → Reports/Communication → F8 modules → F9 Multi-Tenant gate`
 
-İlk gerçek ürün hedefi **V1 çalışan Maven iç kullanım formları + V2 Maven first-party gerçek ödeme alma + manuel fatura gönderim pilotudur**. Paraşüt otomatik faturalama ve SaaS bu hedefin önkoşulu değildir; ileride yeniden değerlendirilecek V3/V4 hedefleridir. R-10 ilk hedefi blanket olarak durdurmaz; V1 güvenli iç kullanım ve V2 kontrollü first-party ödeme/manual fatura pilotu için ayrı kanıt kapıları uygular. Gerçek production ödeme ancak ilgili merchant/provider, webhook, belge, teslimat ve operasyon kanıtları tamamlanınca açılır.
+Kanonik fazlar: `F0` gerçeklik/paket bütünlüğü, `F1` Event Core, `F2` order/manual payment, `F3` manual invoice, `F4` onsite/badge/check-in, `F5` Floor Editor, `F6` live payment, `F7` e-document, `F8` event modules, `F9` multi-tenant.
+
+## Güncel kanıt sınırı
+
+Yerel kod ve test sözleşmeleri mevcut olabilir; production/live özelliği sayılmaz. R-10 ortak dış kanıt kapısıdır. Gerçek provider, AV/quarantine, sender-domain, staging, backup/restore ve hukuk/muhasebe kanıtı yoksa release `NO-GO` veya `EXTERNAL_DEPENDENCY` kalır.
 
 ## Görev yönlendirmesi
 
-| Görev | Önce okunacak kaynaklar |
-| --- | --- |
-| Public form, publish, embed, WordPress | `docs/OzelAPP_Derin_Arastirma_2026-09-03/11_Public_Form_Embed_WordPress.md`, `src/app/api/public/**`, ilgili test |
-| Builder, UI/UX, responsive, medya | `docs/OzelAPP_Derin_Arastirma_2026-09-03/12_Form_Builder_ve_UX.md`, `src/components/**`, ilgili test |
-| Ödeme | `docs/OzelAPP_Derin_Arastirma_2026-09-03/01_Stripe.md`, `02_iyzico.md`, `03_Google_Pay.md`, `04_PCI_DSS_ve_Odeme_Guvenligi.md`, PAY planı ve ilgili adapter/test |
-| Manuel fatura/import/export | `docs/OzelAPP_Derin_Arastirma_2026-09-03/06_Manuel_Fatura_Sistemi.md`, `src/lib/invoice-*.ts`, ilgili test |
-| Paraşüt/e-belge | `docs/OzelAPP_Derin_Arastirma_2026-09-03/07_Parasut_API_v4.md`, `08_Turkiye_eFatura_eArsiv.md`, `src/lib/providers/**`, `tests/parasut-*.mjs` |
-| Belge hazır olma ve teslimat | `09_Document_Ready_ve_Belge_Guvenligi.md`, `10_Transactional_Epostalar.md`, ilgili `invoice-document-*`, `invoice-delivery-*` kaynakları; ana plandaki MAIL-00..08 kanal/şablon/toplu gönderim kapıları ve `docs/research-sources/2026-09-07-mail-configuration-research-receipt.md` |
-| Tenant/SaaS | `13_SaaS_Tenant_Mimarisi.md`, `AI-RELEASE-EXECUTION-PLAN.md` içindeki SaaS bölümü, ilgili auth/policy testleri |
-| Context/ajan yürütmesi | `AGENTS.md`, `docs/workflow/README.md`, görev packet’i, `scripts/workflow.mjs`, `scripts/context-check.mjs` |
+| Görev | Önce okunacaklar |
+|---|---|
+| Event/Person/Registration | `05_HEDEF_MIMARI.md`, `06_KANONIK_VERI_MODELI.md`, `11_YOL_HARITASI.md`, ilgili API/test |
+| Form/builder/public | `04_MAVENFORMS_KAPSAM_UYUMU.md`, ilgili builder/public planı ve source/test |
+| Badge/check-in | `06_KANONIK_VERI_MODELI.md`, `11_YOL_HARITASI.md`, badge/onsite source/test |
+| Floor plan | `09_FLOOR_EDITOR_ENTEGRASYONU.md`, event/floor source/test |
+| Payment/invoice | `07_MANUEL_ODEME.md`, `08_FATURA_EBELGE.md`, R-10 kanıtları ve source/test |
+| UI/UX | `MAVENFORMS_EVENT_MANAGEMENT_UX_REDESIGN_MASTER_PLAN_2026-09-18.md`, ilgili source/test |
+| Workflow/context | `12_GELISTIRME_KONTROL_SISTEMI.md`, `16_KANONIK_KAYNAK_VE_MIGRASYON_POLITIKASI_2026-09-18.md`, packet, scripts |
 
 ## Okuma politikası
 
-Kısa dosyalar her görevde okunabilir. Uzun plan, worklog veya araştırma dosyası yalnız doğrudan görev kaynağıysa ya da kod/test çelişkisini çözmek gerekiyorsa açılır. Proje geneli inceleme gerektiğinde engel yoktur; tamamı context’e yüklenmesi yerine `rg` ile sembol, route, model ve test izlenir.
-
-## Gerçeklik ve güvenlik
-
-Kaynak doküman, kod, test ve canlı davranış ayrı kanıtlardır. Test/mock/sandbox/provider dokümanı production kanıtı değildir. Gerçek provider credential’ı yoksa durum `EXTERNAL_DEPENDENCY` veya `UNVERIFIED` kalır. Secret, PII, ödeme kart verisi ve gerçek ortam değerleri context katmanına yazılmaz.
+Tüm worklog veya eski root planları varsayılan context’e yüklenmez. Yalnız packet `reads` alanında ya da tarihsel karar doğrulaması için gerektiğinde okunur. Eski kayıtlardan güncel durum çıkarılmaz; kod, test, registry ve güncel planla yeniden doğrulanır.

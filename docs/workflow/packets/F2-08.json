@@ -1,0 +1,32 @@
+{
+  "id": "F2-08",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F2-2.4 onay: PATCH /api/payments/[id] confirm/reject + four-eyes (recorder onaylayamaz)",
+  "rollback": "Yalnız F2-08 packet, payment detail route ve testi geri al; schema ve veriye dokunma",
+  "previous": ["F2-07"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/payments/route.ts",
+    "src/lib/policy.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/07_MANUEL_ODEME.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F2-08.json",
+    "src/app/api/payments/[id]/route.ts",
+    "tests/payment-approval.test.mjs"
+  ],
+  "acceptance": [
+    "Farklı kullanıcı confirm 200 confirmed yapar",
+    "Kaydedenin onayı 403 döner; confirmed tekrarı 409 döner"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/payment-approval.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

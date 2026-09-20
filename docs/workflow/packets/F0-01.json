@@ -1,0 +1,33 @@
+{
+  "id": "F0-01",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F0 bütünlük: STATUS 6KB bootstrap + context-check PASS + kanonik plan referansı; eski FORM-UX zinciri tarihsel sayılır",
+  "rollback": "Yalnız F0-01 packet, STATUS.md ve status-history.md değişimini geri al; veri, migration ve provider dosyasına dokunma",
+  "previous": [],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "scripts/context-check.mjs",
+    "scripts/workflow.mjs",
+    "scripts/local-ready.mjs",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/00_OKU_BENI.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/11_YOL_HARITASI.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/12_GELISTIRME_KONTROL_SISTEMI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F0-01.json",
+    "STATUS.md",
+    "docs/workflow/status-history.md",
+    "scripts/context-check.mjs"
+  ],
+  "acceptance": [
+    "STATUS.md 6KB altında kanonik faz, blocker ve sonraki READY bilgisini taşır",
+    "context-check PASS verir",
+    "Eski FORM-UX-07 bayatlığı F0 yürütmesini engellemez; gerekçe kayıtta yazılır"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["node", "scripts/context-check.mjs"], ["node", "scripts/local-ready.mjs"]]
+}

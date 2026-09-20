@@ -1,0 +1,32 @@
+{
+  "id": "F5-08",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F5 booking: POST /api/inventory-bookings holdToken + orderId → booked; expired 410, retry idempotent",
+  "rollback": "Yalnız F5-08 packet, bookings route ve testi geri al; schema ve veriye dokunma",
+  "previous": ["F5-07"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/events/[id]/holds/route.ts",
+    "src/lib/policy.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/09_FLOOR_EDITOR_ENTEGRASYONU.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F5-08.json",
+    "src/app/api/inventory-bookings/route.ts",
+    "tests/inventory-booking.test.mjs"
+  ],
+  "acceptance": [
+    "Geçerli token+order booking 200 booked yapar",
+    "Süresi dolmuş token 410, tekrar retry aynı sonuç 200 döner"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/inventory-booking.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

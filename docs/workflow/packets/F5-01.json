@@ -1,0 +1,31 @@
+{
+  "id": "F5-01",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F5-5.1 model: ExternalIdMapping sourceSystem/sourceType/sourceId → coreType/coreId (migration ayrı)",
+  "rollback": "Yalnız F5-01 packet, schema ekini ve model testini geri al; migration ve veriye dokunma",
+  "previous": ["F4-08"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "prisma/schema.prisma",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/09_FLOOR_EDITOR_ENTEGRASYONU.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F5-01.json",
+    "prisma/schema.prisma",
+    "tests/id-mapping-model.test.mjs"
+  ],
+  "acceptance": [
+    "ExternalIdMapping unique source üçlüsü + core referansı taşır",
+    "prisma validate geçer, migration bu fazda uygulanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/id-mapping-model.test.mjs"],
+    ["bun", "x", "prisma", "validate"]
+  ]
+}

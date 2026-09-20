@@ -1,0 +1,31 @@
+{
+  "id": "F6-01",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F6-6.1 model: CheckoutIntent server-priced tutar + idempotency unique (migration ayrı, canlı tahsilat yok)",
+  "rollback": "Yalnız F6-01 packet, schema ekini ve model testini geri al; migration ve veriye dokunma",
+  "previous": ["F5-14"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "prisma/schema.prisma",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F6-01.json",
+    "prisma/schema.prisma",
+    "tests/checkout-intent-model.test.mjs"
+  ],
+  "acceptance": [
+    "CheckoutIntent order bağı + server tutarı + idempotency unique taşır",
+    "prisma validate geçer, migration bu fazda uygulanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/checkout-intent-model.test.mjs"],
+    ["bun", "x", "prisma", "validate"]
+  ]
+}

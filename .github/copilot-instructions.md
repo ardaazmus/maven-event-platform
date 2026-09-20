@@ -1,5 +1,5 @@
 # MavenForms Copilot adapter
 
-Read `AGENTS.md`, then `PROJECT_CONTEXT.md` and `STATUS.md`. Use `docs/workflow/README.md` for the task packet workflow. Do not load the full plans or worklog unless the current task requires them.
+Normatif ürün, domain ve faz kaynağı `docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/` klasörüdür. Önce `AGENTS.md`, `PROJECT_CONTEXT.md`, `STATUS.md` ve bu yolu gösteren READY packet’i oku. `docs/legacy/root-docs/` ve root compatibility bridge dosyaları tarihsel referanstır.
 
-Before code, select a `status: READY` 15-minute packet under `docs/workflow/packets/` and run its baseline. Keep changes inside `allowedFiles`; verify with `node scripts/workflow.mjs verify <packet>`. A local pass is not a release approval. Preserve the fixed PAY → INV/F → Paraşüt → document → delivery → pilot → FORM-UX → SaaS order and all server-side security boundaries.
+Kod veya testten önce packet baseline al. `allowedFiles` dışına çıkma. Server auth, organization scope, input validation, idempotency, public/private sınırı, audit ve evidence ayrımını koru. `LOCAL_PASS` release onayı değildir.

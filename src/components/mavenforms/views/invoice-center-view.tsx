@@ -136,8 +136,15 @@ export function InvoiceCenterView({ formId }: { formId: string }) {
               <label key={row.payment.id} className="flex flex-col gap-3 p-4 transition-colors hover:bg-muted/20 sm:flex-row sm:items-center">
                 <input type="checkbox" checked={selected.has(row.payment.id)} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(row.payment.id); else next.delete(row.payment.id); return next })} />
                 <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2 text-sm font-medium"><span className="truncate">{row.form.title}</span><Badge variant="outline">Ödeme: {row.payment.status}</Badge><Badge variant="outline">Fatura: {row.invoice.state}</Badge></div>
-                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground"><span>{row.payment.provider} · {row.payment.currency} {(row.payment.amountMinor / 100).toFixed(2)}</span><span>Belge: {readyDocument ? 'Hazır' : 'Hazır değil'}</span><span>Teslimat: {row.deliveries[0]?.status || 'Yok'}</span></div>
+                  <div className="text-sm font-medium"><span className="truncate">{row.form.title}</span></div>
+                  <dl className="mt-1 space-y-0.5 text-xs">
+                    <div className="flex flex-wrap gap-x-2"><dt className="text-muted-foreground">Ödeme durumu:</dt><dd><Badge variant="outline">{row.payment.status}</Badge> <span className="text-muted-foreground">{row.payment.provider} · {row.payment.currency} {(row.payment.amountMinor / 100).toFixed(2)}</span></dd></div>
+                    <div className="flex flex-wrap gap-x-2"><dt className="text-muted-foreground">Fatura durumu:</dt><dd><Badge variant="outline">{row.invoice.state}</Badge></dd></div>
+                    <div className="flex flex-wrap gap-x-2"><dt className="text-muted-foreground">Teslimat durumu:</dt><dd>{row.deliveries[0]?.status || 'Yok'}</dd></div>
+                    <div className="flex flex-wrap gap-x-2"><dt className="text-muted-foreground">Belge:</dt><dd>{readyDocument ? 'Hazır' : 'Hazır değil'}</dd></div>
+                  </dl>
+                  {refundLikeStates.has(row.payment.status) && <p className="mt-1 text-xs text-amber-700">Bu kayıttaki iade/itiraz durumu nedeniyle export dışı bırakıldı; ödeme ve fatura kayıtları inceleme için korunur.</p>}
+
                 </div>
                 <div className="flex items-center gap-2 text-xs">
                   {isEligible ? <CheckCircle2 className="h-4 w-4 text-emerald-600" aria-label="Export uygun" /> : <AlertTriangle className="h-4 w-4 text-amber-600" aria-label="Export uygun değil" />}

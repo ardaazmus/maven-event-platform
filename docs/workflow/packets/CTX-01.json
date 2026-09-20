@@ -2,6 +2,7 @@
   "id": "CTX-01B",
   "status": "READY",
   "timeboxMinutes": 15,
+  "sourceOfTruth": "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/",
   "goal": "Kısa taşınabilir giriş, görev bazlı kaynak yönlendirmesi ve IDE bağımsız yürütme kapıları",
   "rollback": "Bu değişikliğin diffini geri al; mevcut plan, araştırma, uygulama verisi ve tarihsel worklog’a dokunma",
   "previous": [],

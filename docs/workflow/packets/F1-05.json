@@ -1,0 +1,30 @@
+{
+  "id": "F1-05",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F1-1.1 migration: Event/EventOccurrence tabloları temp rehearsal + dev deploy, count/hash kanıtı",
+  "rollback": "Migration dosyası üretilerse packet revizyonu; dev DB yedeği F0-04 logundaki backup ile korunur",
+  "previous": ["F1-04"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "prisma/schema.prisma",
+    "docs/workflow/db-backup-log.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F1-05.json",
+    "prisma/migrations/**"
+  ],
+  "acceptance": [
+    "Temp kopyada migrate dev rehearsal geçer",
+    "Dev DB migrate deploy sonrası Event/EventOccurrence tabloları yazılabilir"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "x", "prisma", "validate"]
+  ]
+}

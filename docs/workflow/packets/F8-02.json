@@ -1,0 +1,29 @@
+{
+  "id": "F8-02",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F8-8.1 migration: ProgramSession/Speaker tabloları temp rehearsal + dev deploy",
+  "rollback": "Migration dosyası üretilerse packet revizyonu; dev DB yedeği F0-04 logundaki backup ile korunur",
+  "previous": ["F8-01"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "prisma/schema.prisma",
+    "docs/workflow/db-backup-log.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F8-02.json",
+    "prisma/migrations/**"
+  ],
+  "acceptance": [
+    "Temp kopyada migrate dev rehearsal geçer",
+    "Dev DB migrate deploy sonrası session yazılabilir"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "x", "prisma", "validate"]
+  ]
+}

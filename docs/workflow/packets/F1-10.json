@@ -1,0 +1,32 @@
+{
+  "id": "F1-10",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F1-1.4 model: Person canonical kimlik (workspace scope, contact minimal, migration ayrı)",
+  "rollback": "Yalnız F1-10 packet, schema ekini ve model testini geri al; migration ve veriye dokunma",
+  "previous": ["F1-09"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "prisma/schema.prisma",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md",
+    "docs/domain-dictionary.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F1-10.json",
+    "prisma/schema.prisma",
+    "tests/person-model.test.mjs"
+  ],
+  "acceptance": [
+    "Person modeli workspace scope ve contact alanlarıyla tanımlıdır",
+    "prisma validate geçer, migration bu fazda uygulanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/person-model.test.mjs"],
+    ["bun", "x", "prisma", "validate"]
+  ]
+}

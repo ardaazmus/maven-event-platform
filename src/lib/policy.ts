@@ -1,6 +1,10 @@
 import type { UserRole } from '@/lib/types'
 
 export type Capability =
+  | 'events.read'
+  | 'events.write'
+  | 'persons.read'
+  | 'persons.write'
   | 'forms.read'
   | 'forms.write'
   | 'submissions.read'
@@ -18,13 +22,13 @@ export type Capability =
   | 'workspace.dangerous'
 
 export const ROLE_CAPABILITIES: Record<UserRole, readonly Capability[]> = {
-  owner: ['forms.read','forms.write','submissions.read','submissions.update','submissions.payment_update','submissions.delete','members.manage','settings.manage','integrations.manage','billing.manage','invoices.read','invoices.import','audit.read','reports.read','workspace.dangerous'],
-  admin: ['forms.read','forms.write','submissions.read','submissions.update','submissions.payment_update','submissions.delete','members.manage','settings.manage','integrations.manage','billing.manage','invoices.read','invoices.import','audit.read','reports.read'],
+  owner: ['events.read','events.write','persons.read','persons.write','forms.read','forms.write','submissions.read','submissions.update','submissions.payment_update','submissions.delete','members.manage','settings.manage','integrations.manage','billing.manage','invoices.read','invoices.import','audit.read','reports.read','workspace.dangerous'],
+  admin: ['events.read','events.write','persons.read','persons.write','forms.read','forms.write','submissions.read','submissions.update','submissions.payment_update','submissions.delete','members.manage','settings.manage','integrations.manage','billing.manage','invoices.read','invoices.import','audit.read','reports.read'],
   accounting: ['submissions.read','submissions.payment_update','invoices.read','invoices.import'],
-  form_manager: ['forms.read','forms.write','submissions.read','submissions.update','settings.manage','reports.read'],
-  analyst: ['forms.read','submissions.read','reports.read','audit.read'],
-  reviewer: ['forms.read','submissions.read','submissions.update'],
-  viewer: ['forms.read','submissions.read'],
+  form_manager: ['events.read','events.write','persons.read','persons.write','forms.read','forms.write','submissions.read','submissions.update','settings.manage','reports.read'],
+  analyst: ['events.read','forms.read','submissions.read','reports.read','audit.read'],
+  reviewer: ['events.read','forms.read','submissions.read','submissions.update'],
+  viewer: ['events.read','forms.read','submissions.read'],
 } as const
 
 export function hasCapability(role: UserRole, capability: Capability): boolean {
@@ -54,6 +58,10 @@ export function checkCapability(ctx: SessionContext | null | undefined, capabili
 
 // Named helpers — avoids boolean positional params
 export const can = {
+  readEvents: (ctx: SessionContext | null) => checkCapability(ctx, 'events.read'),
+  writeEvents: (ctx: SessionContext | null) => checkCapability(ctx, 'events.write'),
+  readPersons: (ctx: SessionContext | null) => checkCapability(ctx, 'persons.read'),
+  writePersons: (ctx: SessionContext | null) => checkCapability(ctx, 'persons.write'),
   readForms: (ctx: SessionContext | null) => checkCapability(ctx, 'forms.read'),
   writeForms: (ctx: SessionContext | null) => checkCapability(ctx, 'forms.write'),
   readSubmissions: (ctx: SessionContext | null) => checkCapability(ctx, 'submissions.read'),

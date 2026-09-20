@@ -1,0 +1,32 @@
+{
+  "id": "F4-06",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F4-4.3 scan: POST /api/checkin QR ile giriş kaydı + 60sn duplicate 409",
+  "rollback": "Yalnız F4-06 packet, checkin route ve testi geri al; schema ve veriye dokunma",
+  "previous": ["F4-05"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/registrations/[id]/ticket/route.ts",
+    "src/lib/policy.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F4-06.json",
+    "src/app/api/checkin/route.ts",
+    "tests/checkin-scan.test.mjs"
+  ],
+  "acceptance": [
+    "Geçerli QR scan 201 entry kaydı döner",
+    "60sn içinde aynı yön tekrarı 409 döner"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/checkin-scan.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "id": "F2-11",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F2-2.4 reversal: POST /api/payments/[id]/reversal counter-row + original reversed; çift reversal 409",
+  "rollback": "Yalnız F2-11 packet, reversal route ve testi geri al; schema ve veriye dokunma",
+  "previous": ["F2-10"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/payments/[id]/route.ts",
+    "src/lib/policy.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/07_MANUEL_ODEME.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F2-11.json",
+    "src/app/api/payments/[id]/reversal/route.ts",
+    "tests/payment-reversal.test.mjs"
+  ],
+  "acceptance": [
+    "Confirmed ödeme reversal ile reversed olur + linked counter-row oluşur",
+    "Çift reversal 409, kaydı silme/edit yok"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/payment-reversal.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

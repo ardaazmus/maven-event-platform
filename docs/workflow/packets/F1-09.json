@@ -1,0 +1,33 @@
+{
+  "id": "F1-09",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F1 occurrence create: POST /api/events/[id]/occurrences tarih invariantı + scope; ters tarih 400",
+  "rollback": "Yalnız F1-09 packet, occurrences route ve testi geri al; schema ve veriye dokunma",
+  "previous": ["F1-08"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/events/[id]/route.ts",
+    "src/lib/event-scope.ts",
+    "src/lib/policy.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F1-09.json",
+    "src/app/api/events/[id]/occurrences/route.ts",
+    "tests/event-occurrence.test.mjs"
+  ],
+  "acceptance": [
+    "startsAt<endsAt invariantı serverda doğrulanır; tersi 400 döner",
+    "Başka workspace eventine occurrence 404 döner"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/event-occurrence.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

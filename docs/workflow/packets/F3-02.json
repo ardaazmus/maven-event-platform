@@ -1,0 +1,29 @@
+{
+  "id": "F3-02",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F3-3.1 migration: InvoiceRequest tablosu temp rehearsal + dev deploy",
+  "rollback": "Migration dosyası üretilerse packet revizyonu; dev DB yedeği F0-04 logundaki backup ile korunur",
+  "previous": ["F3-01"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "prisma/schema.prisma",
+    "docs/workflow/db-backup-log.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F3-02.json",
+    "prisma/migrations/**"
+  ],
+  "acceptance": [
+    "Temp kopyada migrate dev rehearsal geçer",
+    "Dev DB migrate deploy sonrası InvoiceRequest yazılabilir"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "x", "prisma", "validate"]
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "F8-03",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F8 kapsam dondurma: Program/Speaker sonrası varsayılan modül sırası ADR ile sabitlenir",
+  "rollback": "Yalnız F8-03 packet, ADR eki ve registry/test değişimini geri al; kod ve veriye dokunma",
+  "previous": ["F8-02"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/evidence-registry.json",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/11_YOL_HARITASI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F8-03.json",
+    "docs/adr/0006-f8-module-order.md",
+    "docs/workflow/evidence-registry.json",
+    "tests/f8-scope.test.mjs"
+  ],
+  "acceptance": [
+    "Varsayılan modül sırası ADR'de yazılır; iç müşteri talebiyle seçilir kuralı korunur",
+    "Registry F8 Program LOCAL_PASS yansıtır"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/f8-scope.test.mjs"]
+  ]
+}

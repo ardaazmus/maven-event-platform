@@ -1,5 +1,5 @@
 {
-  "name": "nextjs_tailwind_shadcn_ts",
+  "name": "maven-event-platform",
   "version": "0.2.1",
   "private": true,
   "scripts": {
@@ -7,6 +7,7 @@
     "build": "next build && node -e \"const fs=require('fs'),p=require('path');const c=(s,d)=>{if(fs.existsSync(s)){fs.mkdirSync(p.dirname(d),{recursive:true});fs.cpSync(s,d,{recursive:true})}};const st=fs.existsSync('.next/standalone/server.js')?'.next/standalone':'.next/standalone/mavenform';c('.next/static',p.join(st,'.next/static'));c('public',p.join(st,'public'))\"",
     "start": "NODE_ENV=production bun .next/standalone/server.js 2>&1 | tee server.log",
     "lint": "eslint .",
+    "test": "node scripts/run-tests.mjs",
     "context:check": "node scripts/context-check.mjs",
     "db:push": "prisma db push --accept-data-loss",
     "db:generate": "prisma generate",

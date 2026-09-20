@@ -1,0 +1,33 @@
+{
+  "id": "F1-16",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F1-1.5 binding: POST/DELETE /api/events/[id]/bindings form-purpose eşleşme + scope; duplicate 409",
+  "rollback": "Yalnız F1-16 packet, bindings route ve testi geri al; schema ve veriye dokunma",
+  "previous": ["F1-15"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/events/[id]/route.ts",
+    "src/lib/event-scope.ts",
+    "src/lib/policy.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F1-16.json",
+    "src/app/api/events/[id]/bindings/route.ts",
+    "tests/event-binding.test.mjs"
+  ],
+  "acceptance": [
+    "Bind 201 döner; aynı event+form tekrarı 409 döner",
+    "Başka workspace form ile bind 404 döner"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/event-binding.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

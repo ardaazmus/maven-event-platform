@@ -18,6 +18,7 @@ interface AppState {
 
   // Navigation
   view: AppView
+  selectedEventId: string | null
   selectedFormId: string | null
   selectedFolderId: string | null
   formDetailTab: string
@@ -32,6 +33,7 @@ interface AppState {
 
   // Actions
   init: (user: User, workspace: Workspace) => void
+  selectEvent: (eventId: string | null) => void
   setView: (view: AppView) => void
   selectForm: (formId: string, tab?: string) => void
   setSelectedFormId: (formId: string | null, tab?: string) => void
@@ -50,6 +52,7 @@ export const useApp = create<AppState>((set) => ({
   initialized: false,
 
   view: 'dashboard',
+  selectedEventId: null,
   selectedFormId: null,
   selectedFolderId: null,
   formDetailTab: 'submissions',
@@ -61,6 +64,7 @@ export const useApp = create<AppState>((set) => ({
   theme: 'light',
 
   init: (user, workspace) => set({ user, workspace, initialized: true }),
+  selectEvent: (eventId) => set({ selectedEventId: eventId }),
   setView: (view) => set({ view }),
   selectForm: (formId, tab = 'submissions') =>
     set({ selectedFormId: formId, view: 'builder', formDetailTab: tab }),

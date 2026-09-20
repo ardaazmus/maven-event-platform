@@ -74,7 +74,7 @@ export function MavenFormsLogo({
         />
         {showText && (
           <div className="flex flex-col leading-none">
-            <span className="font-bold text-base tracking-tight">{branding?.appName || 'MavenForms'}</span>
+            <span className="font-bold text-base tracking-tight">{branding?.appName || 'Maven Event Platform'}</span>
             {branding?.appTagline && (
               <span className="text-[10px] text-muted-foreground font-medium tracking-wide">
                 {branding.appTagline}
@@ -86,7 +86,7 @@ export function MavenFormsLogo({
     )
   }
 
-  // Default MavenForms logo (gradient + M icon)
+  // Default Maven Event Platform logo (gradient + M icon)
   return (
     <div className={cn('flex items-center gap-2.5', className)}>
       <div
@@ -100,7 +100,7 @@ export function MavenFormsLogo({
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* M-shape representing MavenForms */}
+          {/* M-shape representing Maven */}
           <path
             d="M4 18V8L9 13L12 9L15 13L20 8V18"
             stroke="white"
@@ -115,11 +115,11 @@ export function MavenFormsLogo({
       {showText && (
         <div className="flex flex-col leading-none">
           <span className="font-bold text-base tracking-tight">
-            {(branding?.appName || 'Maven').split('')[0]}
-            <span className="text-primary">{(branding?.appName || 'MavenForms').slice(1) || 'Forms'}</span>
+            {(branding?.appName || 'Maven Event Platform').split('')[0]}
+            <span className="text-primary">{(branding?.appName || 'Maven Event Platform').slice(1) || 'Event Platform'}</span>
           </span>
           <span className="text-[10px] text-muted-foreground font-medium tracking-wide">
-            {branding?.appTagline || 'FORM PLATFORM'}
+            {branding?.appTagline || 'EVENT PLATFORM'}
           </span>
         </div>
       )}

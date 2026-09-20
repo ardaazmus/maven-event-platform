@@ -1,0 +1,237 @@
+{
+  "version": 1,
+  "canonicalOrder": ["F0", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9"],
+  "sourcePlan": "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17",
+  "states": ["LOCAL_PASS", "BLOCKED", "EXTERNAL_DEPENDENCY", "UNVERIFIED"],
+  "capabilities": [
+    {
+      "id": "F0-context",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/F0-01/verified.json",
+      "packetHash": "906a2722310fec32a42df580338b19daa025fc14a218b2cd135ecd07c913233e",
+      "note": "STATUS 6KB + context-check PASS"
+    },
+    {
+      "id": "F0-gates",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/F0-06A/verified.json",
+      "packetHash": null,
+      "note": "lint 0, tsc 0, build 0, ready PASS 2026-09-17"
+    },
+    {
+      "id": "F1-event-core",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/F1-17/verified.json",
+      "packetHash": null,
+      "note": "Event/Person/Registration/Binding + orchestration; ledger F2"
+    },
+    {
+      "id": "F2-manual-payment",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/F2-13/verified.json",
+      "packetHash": null,
+      "note": "Order/Payment/allocation/approval/reversal/summary/export"
+    },
+    {
+      "id": "F3-manual-invoice",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/F3-14/verified.json",
+      "packetHash": null,
+      "note": "Request/Invoice/approve/issue/relation/delivery/docs"
+    },
+    {
+      "id": "F4-onsite",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/F4-08/verified.json",
+      "packetHash": null,
+      "note": "Ticket/Credential/CheckIn/scan/badge/offline"
+    },
+    {
+      "id": "F5-floor",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/F5-14/verified.json",
+      "packetHash": null,
+      "note": "Mapping/binding/hold/book/release/assign/sweep/runbook"
+    },
+    {
+      "id": "F6-checkout-local",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/F6-04/verified.json",
+      "packetHash": null,
+      "note": "Server-priced intent + webhook contract; canlı yok"
+    },
+    {
+      "id": "F6-live",
+      "state": "EXTERNAL_DEPENDENCY",
+      "receipt": null,
+      "note": "Merchant staging/canary/refund-settlement/POS + F7 UAT bekler"
+    },
+    {
+      "id": "F7-auto",
+      "state": "EXTERNAL_DEPENDENCY",
+      "receipt": null,
+      "note": "F7A..F7E provider/mali müşavir bekler; manuel fallback korunur"
+    },
+    {
+      "id": "F8-program",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/F8-02/verified.json",
+      "packetHash": null,
+      "note": "ProgramSession/Speaker + migration; diğer modüller talep bekler"
+    },
+    {
+      "id": "F9-freeze",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/F9-01/verified.json",
+      "packetHash": null,
+      "note": "SaaS donduruldu; scope negatifleri kilitli; RLS Postgres kapısında"
+    },
+    {
+      "id": "F9-sweep",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/F9-02/verified.json",
+      "packetHash": null,
+      "note": "166/166 faz testi PASS (legacy dahil) + lint/tsc 2026-09-17"
+    },
+    {
+      "id": "F9-ux-research",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/F9-08A/verified.json",
+      "packetHash": "a5c3b30da479e0b885a798913d9f84a2beeb5e04d9a9075ca15dc627ab870a3e",
+      "note": "3 webfetch kaynak + 6 TR karari (K-01..K-06); dis bagimlilik iddiasi yok"
+    },
+    {
+      "id": "F9-invoice-relational",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/F9-09/verified.json",
+      "packetHash": "c8bb3d8a52fa2422e4b6ef2be0cb8811bb39240d9c145476bf6793013ea748b9",
+      "note": "K-06 iliskisel satirlar + iade aciklamasi; DTO degismedi"
+    },
+    {
+      "id": "F1-shadow-evidence",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/F1-25A/verified.json",
+      "packetHash": "8f6f04e92f2cbc0625f969418f628b684ae150229795095b97e42c20ff7f092c",
+      "note": "pg-probe PASS postgres 16.15 127.0.0.1:5433 trust-auth"
+    },
+    {
+      "id": "UX-shell-event",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/UX-EVENT-03/verified.json",
+      "packetHash": "755469b2201386701cc1109d93c8af70716c723828f6b82cec588a2b2acbc6dd",
+      "note": "Event context store + EventBar + liste + dashboard (SHELL-01, EVENT-01..03)"
+    },
+    {
+      "id": "UX-registration-binding",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/UX-FORMBIND-01/verified.json",
+      "packetHash": "0162db3b4c6ba130e9962c973e31ea00a987065bb1a5d6a615aed51bf86bae92",
+      "note": "Registration inbox GET + gorunum + form binding listesi (REG-01/02, FORMBIND-01)"
+    },
+    {
+      "id": "UX-finance-inbox",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/UX-INV-01/verified.json",
+      "packetHash": "2f9f8026618fd6906245b088827712f7b5655ba3707463ed49ffabc079df4e15",
+      "note": "Order/payment/invoice-request inbox GET listeleri (ORDER-01, PAY-01, INV-01)"
+    },
+    {
+      "id": "UX-onsite-floor",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/UX-FLOOR-01/verified.json",
+      "packetHash": "13a0011e4b002a591a7c99835de22870d007c38df50058ca9f0453922cce766f",
+      "note": "Check-in denetim akisi + hold listesi token-korumali (ONSITE-01, FLOOR-01)"
+    },
+    {
+      "id": "UX-provider-docs-modules",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/UX-MOD-01/verified.json",
+      "packetHash": "cf71558567912c64839e0e8cd32c2d5c74f38de11fce47631db2c0134662d7e4",
+      "note": "Webhook inbox + document readiness + occurrence listesi (PAYWEB-01, DOC-01, MOD-01)"
+    },
+    {
+      "id": "UX-tenant-guard",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/UX-TENANT-01/verified.json",
+      "packetHash": "bd0802c5f3e6fd94ff6254e9546eac1f4b739003695aff5a711a246ef505d59e",
+      "note": "11 inbox ucu BOLA guard kilidi; SaaS kapali (TENANT-01)"
+    },
+    {
+      "id": "UX-event-shell-list",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/UX-EVENT-01/verified.json",
+      "packetHash": "2b9843c5feb44c333bd1dd457f1834f6e07bb911d279f93494c2c03b97571751",
+      "note": "Event context store + EventBar + liste (SHELL-01, EVENT-01; readiness EVENT-02)"
+    },
+    {
+      "id": "UX-registration-views",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/UX-REG-02/verified.json",
+      "packetHash": "ef926bdfd1b3ac705c1a61290e69d9f80c6382586f2063949890369c9d6dda93",
+      "note": "Registration inbox API + gorunum (REG-01/02; FORMBIND-01 baglanti listesi)"
+    },
+    {
+      "id": "UX-order-payment-views",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/UX-PAY-01/verified.json",
+      "packetHash": "0b5cc5af7e4a786b41c57577146678c299905f62eab6ea9b50982c53073499fc",
+      "note": "Order/payment inbox listeleri + siparis durumu esleme (ORDER-01, PAY-01)"
+    },
+    {
+      "id": "UX-badge-checkin-floor-view",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/UX-FLOORV-02/verified.json",
+      "packetHash": "2f56c28c88192c6a92e9dcf29027a68d3a662349b161fb273b0c6e4dc32c033a",
+      "note": "Badge Studio adim-1 + check-in akisi + floor gorunumu (BADGE-01, CHECKIN-01, FLOORV-02)"
+    },
+    {
+      "id": "UX-finance-overview",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/UX-FINVIEW-01/verified.json",
+      "packetHash": "30a3218903edb5103b919371e8680d0334659599e2284b78cd50ac7b510d40c0",
+      "note": "Finans ozet kartlari + 403 yetki aciklamasi, salt-okunur (FINVIEW-01)"
+    },
+    {
+      "id": "UX-reports-event-scope",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/UX-REPVIEW-01/verified.json",
+      "packetHash": "0f51b8d7df7e2f5f8cd5e8f9cbfe2c5e3de93e6cb5ef7adca682186e58d4e0a5",
+      "note": "Raporlar event-first form onsecimi, fallback korunur (REPVIEW-01)"
+    },
+    {
+      "id": "UX-badge-mapping",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/UX-BADGE-02/verified.json",
+      "packetHash": "0d287278983fb981de33794c4ded0e13da6b1a2a3af518f7ce67c3f7a9fad515",
+      "note": "Allowlist paneli sabitlerden + yasak desen kilidi (BADGE-02)"
+    },
+    {
+      "id": "UX-effect-lint",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/UX-LINT-01/verified.json",
+      "packetHash": "73e49beccbcb35bf0a067d63109252dec9dc5fc0dcbf828ab44677a9bc2ba1a6",
+      "note": "5 gorunum senkron-reset borcu temiz, lint 0 (LINT-01)"
+    },
+    {
+      "id": "CTX-bootstrap",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/CTX-02/verified.json",
+      "packetHash": "97df4910283ed3ba04ffc64067ff7cbd08e492203036c127055fcd7d419d697d",
+      "note": "Kisa bootstrap + gorev bazli kaynak + IDE adapterlari + faz kapisi (CTX-01/R1)"
+    },
+    {
+      "id": "CTX-full-gates",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/F0-06A/verified.json",
+      "packetHash": "1668355f291d4e85cf21dcd1e27672b342edfb68a3439a2c7502ca58edb4aa3f",
+      "note": "lint/tsc/build/ready tam kapilari yesil (CTX-01/R1)"
+    },
+    {
+      "id": "CTX-invoice-doc-route",
+      "state": "LOCAL_PASS",
+      "receipt": "artifacts/workflow/F3-14/verified.json",
+      "packetHash": "b4abd78a223707c4ab99291a91078eedc11839d985470a34b89085f19123d6e5",
+      "note": "Upload POST-only + kimlikli hazirlik GET scope kilitli (INV/F-U-02-01 uzlasisi, R3)"
+    }
+  ]
+}

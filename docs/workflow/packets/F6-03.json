@@ -1,0 +1,32 @@
+{
+  "id": "F6-03",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F6-6.1 API: POST /api/checkout-intents order tutarını server hesaplar + Idempotency-Key tekrarı aynı intent",
+  "rollback": "Yalnız F6-03 packet, intents route ve testi geri al; schema ve veriye dokunma",
+  "previous": ["F6-02"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/orders/route.ts",
+    "src/lib/policy.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F6-03.json",
+    "src/app/api/checkout-intents/route.ts",
+    "tests/checkout-intent.test.mjs"
+  ],
+  "acceptance": [
+    "Intent 201 tutar order snapshot toplamına eşittir; client tutarı yok sayılır",
+    "Aynı Idempotency-Key 200 aynı intent döner"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/checkout-intent.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

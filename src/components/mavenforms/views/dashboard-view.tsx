@@ -39,6 +39,7 @@ import {
   Users,
   ExternalLink,
   Circle,
+  CalendarDays,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -161,10 +162,15 @@ const alertConfig: Record<string, { icon: any; color: string }> = {
 export function DashboardView() {
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [eventCount, setEventCount] = useState<number | null>(null)
+  const [eventsFailed, setEventsFailed] = useState(false)
   const { setView, selectForm } = useApp()
 
   useEffect(() => {
     let mounted = true
+    api<Array<{ id: string }>>('/api/events')
+      .then((rows) => mounted && setEventCount(Array.isArray(rows) ? rows.length : 0))
+      .catch(() => mounted && setEventsFailed(true))
     api<DashboardData>('/api/dashboard')
       .then((d) => mounted && setData(d))
       .catch(() => {})
@@ -224,14 +230,29 @@ export function DashboardView() {
               <TrendingUp className="w-4 h-4" />
               Raporları Gör
             </Button>
-            <Button size="sm" className="gap-2" onClick={() => window.dispatchEvent(new CustomEvent('mavenforms:new-form'))}>
-              <FileText className="w-4 h-4" />
-              Yeni Form
+            <Button size="sm" className="gap-2" aria-label="Yeni Etkinlik oluştur" onClick={() => { try { sessionStorage.setItem('mavenforms:new-event-pending', '1') } catch {}; setView('events'); window.dispatchEvent(new CustomEvent('mavenforms:new-event')) }}>
+              <CalendarDays className="w-4 h-4" />
+              Yeni Etkinlik
             </Button>
           </div>
         </div>
       </Card>
 
+      {/* No-event empty state (event-first entry) */}
+      {data && eventCount === 0 && !eventsFailed ? (
+        <Card className="p-6 border-primary/20" data-testid="dashboard-no-event">
+          <div className="relative flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
+            <div className="space-y-1">
+              <h3 className="font-semibold">Henüz etkinliğiniz yok</h3>
+              <p className="text-sm text-muted-foreground">Başlamak için ilk etkinliği oluşturun; kayıt formu, kayıtlar, ödeme, yaka kartı, check-in ve floor plan seçili etkinlikte çalışır.</p>
+            </div>
+            <Button className="gap-2 shrink-0" aria-label="İlk etkinliği oluştur" onClick={() => { try { sessionStorage.setItem('mavenforms:new-event-pending', '1') } catch {}; setView('events'); window.dispatchEvent(new CustomEvent('mavenforms:new-event')) }}>
+              <CalendarDays className="w-4 h-4" />
+              İlk Etkinliği Oluştur
+            </Button>
+          </div>
+        </Card>
+      ) : null}
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
         <StatCard

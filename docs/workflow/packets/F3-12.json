@@ -1,0 +1,31 @@
+{
+  "id": "F3-12",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F3-3.3 model: MediaAsset invoiceId bağı (karantina/scan gate için, migration ayrı)",
+  "rollback": "Yalnız F3-12 packet, schema ekini ve model testini geri al; migration ve veriye dokunma",
+  "previous": ["F3-11"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "prisma/schema.prisma",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/08_FATURA_EBELGE.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F3-12.json",
+    "prisma/schema.prisma",
+    "tests/invoice-document-model.test.mjs"
+  ],
+  "acceptance": [
+    "MediaAsset invoiceId opsiyonel bağı taşır",
+    "prisma validate geçer, migration bu fazda uygulanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/invoice-document-model.test.mjs"],
+    ["bun", "x", "prisma", "validate"]
+  ]
+}

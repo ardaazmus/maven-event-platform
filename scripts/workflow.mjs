@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 const hash = value => crypto.createHash('sha256').update(value).digest('hex');
 const ignored = new Set(['.git', '.next', 'node_modules', 'artifacts', 'db', 'storage', 'upload', 'tmp', 'coverage']);
 const extensions = /\.(md|mdc|json|[cm]?js|tsx?|css|sql|ya?ml|sh)$/;
+const canonicalSource = 'docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/';
 const fail = message => { throw new Error(`BLOCKED: ${message}`); };
 export function safePath(root, name) {
   if (typeof name !== 'string' || !name || name.includes('\\') || path.isAbsolute(name) || name.split('/').includes('..')) fail('repository-relative path required');
@@ -43,6 +44,7 @@ export function loadPacket(root, name) {
   const packet = json(root, name);
   if (!/^[A-Z][A-Z0-9-]+$/.test(packet.id) || packet.status !== 'READY') fail('READY packet with safe ID required');
   if (packet.lifecycle === 'SUPERSEDED') fail(`superseded packet cannot run: ${packet.id}`);
+  if (packet.sourceOfTruth !== canonicalSource) fail(`packet must declare canonical source: ${canonicalSource}`);
   for (const field of ['goal', 'rollback']) if (typeof packet[field] !== 'string' || !packet[field].trim()) fail(`${field} required`);
   for (const field of ['allowedFiles', 'reads', 'acceptance', 'preflight', 'checks']) if (!Array.isArray(packet[field]) || !packet[field].length) fail(`${field} required`);
   if (!Array.isArray(packet.previous) || packet.timeboxMinutes !== 15) fail('previous list and 15-minute timebox required');

@@ -24,6 +24,35 @@ function documentResponse(data: unknown, status: 200 | 201, duplicate: boolean) 
 }
 
 /** Stores an authenticated invoice artifact in private quarantine only. */
+export async function GET(req: Request, { params }: RouteParams) {
+  const ctx = await getSessionFromCookie()
+  if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const auth = can.readInvoices(ctx as any)
+  if (!auth.allowed) return NextResponse.json({ error: auth.error }, { status: auth.status })
+
+  const { id: invoiceId } = await params
+  if (!invoiceId || invoiceId.length > 128) return NextResponse.json({ error: 'Fatura bulunamadı' }, { status: 404 })
+
+  const invoice = await db.invoiceRecord.findFirst({
+    where: { id: invoiceId, workspaceId: ctx.workspace.id },
+    select: { id: true, workspaceId: true, paymentOrder: { select: { workspaceId: true } } },
+  })
+  if (!invoice || invoice.workspaceId !== ctx.workspace.id || invoice.paymentOrder.workspaceId !== ctx.workspace.id) {
+    return NextResponse.json({ error: 'Fatura bulunamadı' }, { status: 404 })
+  }
+
+  // Yalniz hazirlik metadata doner; icerik ve dahili anahtarlar listelenmez.
+  const rows = await db.invoiceDocument.findMany({
+    where: { invoiceRecordId: invoice.id },
+    orderBy: { createdAt: 'desc' },
+    take: 100,
+    select: { id: true, artifactKind: true, mime: true, size: true, sha256: true, scanStatus: true, visibility: true, state: true, quarantineReason: true, readyAt: true, createdAt: true },
+  })
+
+  return NextResponse.json({ data: rows })
+}
+
 export async function POST(req: Request, { params }: RouteParams) {
   const ctx = await getSessionFromCookie()
   if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

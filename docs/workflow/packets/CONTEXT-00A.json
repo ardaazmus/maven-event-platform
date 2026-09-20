@@ -1,5 +1,7 @@
 {
   "id": "CONTEXT-00A",
+  "lifecycle": "SUPERSEDED",
+  "supersededBy": "CONTEXT-00B",
   "status": "READY",
   "timeboxMinutes": 15,
   "goal": "Context-check'in yakaladığı eski R-04 packet read yolunu mevcut kanonik policy testiyle düzeltmek; packet keşfini yeniden çalışır hale getirmek ve V4 context kapısını kapatmak",

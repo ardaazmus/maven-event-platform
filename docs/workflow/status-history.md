@@ -158,3 +158,8 @@ Global R-10 release kararı `NO-GO` olarak kalır; ancak bu karar first-party lo
 ## 2026-09-15 R10-V4-45 research source normalization
 
 - `R10-V4-45`: **LOCAL_PASS**. `Anonim_Form_Platformu_R10_Production_V4_Live_Readiness_Arastirma_Raporu.md` SHA-256 ile kaynak kaydına alındı. Raporun araştırma/plan girdisi olduğu; gerçek merchant/provider, production DNS/TLS/e-posta, AV/KMS, backup/restore, hukuk/muhasebe veya bağımsız review kanıtı olmadığı açıkça ayrıldı. Güvenli yerel devam alanları provider-neutral sözleşme, sentetik test, evidence registry/expiry, quarantine/document-ready, tenant scope ve wizard doğrulamalarıyla sınırlı tutuldu. R-10 production ve V4 live `NO-GO/BLOCKED`, `productionMutationAllowed=false` kaldı.
+
+## 2026-09-17 F0-01 STATUS 6KB arşivi
+
+- STATUS.md 6016→4447 kısaltıldı; çıkarılan R10-V4-00..44 listesi burada korunur: R10-V4-00 PLAN_ALIGNED, 01 EVIDENCE_MODEL, 02 LIVE_GUARD, 03 CAPABILITY_SNAPSHOT, 04 EXTERNAL_EVIDENCE_REGISTRY, 04-R1 REVALIDATION, 05 ASSET_PURPOSE_STATE, 06 MEDIA_SCOPE, 07 MEDIA_STATE_UI, 08 SECURE_FILE_POLICY, 09 MEDIA_TOKEN_LIFECYCLE, 10 MEDIA_LIFECYCLE, 11 CONNECTION_PURPOSES, 12 SECRETS, 13 VERIFY, 14 LIFECYCLE, 15 PKCE, 16 CREDENTIAL_METHODS, 17 FAKE_PROVIDER, 18 WEBHOOK_FIXTURES, 19 DISPOSABLE_TEST_PROFILE, 20 SYNTHETIC_GRAPH, 21 FAILURE_MATRIX, 22 EPHEMERAL_STAGING, 23 PRODUCTION_GUARD_NEGATIVE, 24 WIZARD_SHELL, 25 PAY_WIZARD, 26-44 PASS, 44 WIP. R-10/V4 live NO-GO.
+- Eski FORM-UX-07 receipt bayatlığı (2026-09-15 commit sonrası sidebar hash farkı) F0 yürütmesini engellemez; gerekçe F0-01 packet kaydında.

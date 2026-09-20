@@ -1,0 +1,25 @@
+{
+  "id": "F0-04",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F0 veri güvenliği: timestamp backup + checksum + kopya üzerinde restore provası kaydı; canlı DB touch yok",
+  "rollback": "Yalnız F0-04 packet ve backup log dosyasını geri al; db/custom.db dosyasına dokunma",
+  "previous": ["F0-03"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "prisma/schema.prisma",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/11_YOL_HARITASI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F0-04.json",
+    "docs/workflow/db-backup-log.md"
+  ],
+  "acceptance": [
+    "Backup kopyalama ile alınır, checksum kaydedilir, kopya üzerinde restore provası yapılır",
+    "Canlı db/custom.db dosyasına migration/reset/seed/delete uygulanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["node", "scripts/local-ready.mjs"], ["node", "scripts/context-check.mjs"]]
+}

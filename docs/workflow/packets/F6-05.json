@@ -1,0 +1,31 @@
+{
+  "id": "F6-05",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F6 canlı kapılar: merchant staging/canary/refund-settlement/provider-POS EXTERNAL_DEPENDENCY kaydı",
+  "rollback": "Yalnız F6-05 packet, ADR ve registry değişimini geri al; kod ve veriye dokunma",
+  "previous": ["F6-04"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/evidence-registry.json",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/11_YOL_HARITASI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F6-05.json",
+    "docs/adr/0004-f6-live-gates.md",
+    "docs/workflow/evidence-registry.json",
+    "tests/live-gates.test.mjs"
+  ],
+  "acceptance": [
+    "Canlı gerektiren 6.3/6.4/6.5 kalemleri EXTERNAL_DEPENDENCY olarak kayıtlıdır",
+    "Hiçbir canlı tahsilat/mutabakat iddiası yoktur"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/live-gates.test.mjs"]
+  ]
+}

@@ -1,7 +1,7 @@
 ---
-description: "MavenForms task routing, small phases, security and verification"
+description: "MavenForms canonical Event Platform source, packet workflow and security gates"
 globs: "src/**/*,tests/**/*,prisma/**/*,scripts/**/*,docs/workflow/**/*"
 alwaysApply: false
 ---
 
-Read `AGENTS.md`, `PROJECT_CONTEXT.md`, `STATUS.md`, and the relevant `docs/workflow/packets/*.json` packet. Use only the packet's source files plus direct dependencies; inspect the wider project when correctness requires it and record that need. Keep the fixed phase order, use a 15-minute single-output phase, preserve tenant and public/private boundaries, and run `node scripts/workflow.mjs verify <packet>` before claiming completion.
+Kanonik ürün/faz kaynağı: `docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/`. Önce `AGENTS.md`, `PROJECT_CONTEXT.md`, `STATUS.md` ve master-plan `sourceOfTruth` taşıyan READY packet’i oku. Legacy root dokümanları yeni işi yönetmez. Event-first model, server-side scope/auth/idempotency/public-private/audit ve `node scripts/workflow.mjs verify <packet>` zorunludur.

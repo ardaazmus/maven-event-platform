@@ -1,0 +1,33 @@
+{
+  "id": "F1-07",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F1 event create: POST /api/events zod validation + workspace scope + events.write; invalid 400, anon 401",
+  "rollback": "Yalnız F1-07 packet, route eki ve testi geri al; schema ve veriye dokunma (test verisi ayrı fazda temizlenir)",
+  "previous": ["F1-06"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/events/route.ts",
+    "src/lib/policy.ts",
+    "src/lib/event-scope.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F1-07.json",
+    "src/app/api/events/route.ts",
+    "tests/event-create.test.mjs"
+  ],
+  "acceptance": [
+    "Geçerli POST 201 döner ve kayıt kendi workspace'indedir",
+    "Eksik başlık 400, anon 401, yetkisiz rol 403 döner"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/event-create.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

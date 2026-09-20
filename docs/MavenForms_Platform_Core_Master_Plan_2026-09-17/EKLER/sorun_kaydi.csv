@@ -1,0 +1,21 @@
+﻿id,phase,severity,problem,action,acceptance
+ISS-001,F2,critical,Manual payment is scalar status,Add immutable Payment and Allocation ledger,Payment full/partial/reversal tests pass
+ISS-002,F0,critical,Conflicting payment status vocabularies,Publish canonical state dictionary,No route writes legacy vocabulary
+ISS-003,F3,high,Invoice candidate requires succeeded PaymentOrder,Use order policy and confirmed allocations,Manual payments can open invoice request
+ISS-004,F3,high,One invoice per payment order,Independent Invoice aggregate and relations,Credit/replacement scenario passes
+ISS-005,F1,critical,No Event/Person/Registration domain,Create canonical event core,Form submission produces registration
+ISS-006,F1,high,SQLite pilot database,Migrate to PostgreSQL with rehearsal,Restore and count/hash evidence
+ISS-007,F0,high,Missing scripts/local-ready.mjs,Restore or replace canonical readiness script,context:check passes
+ISS-008,F0,medium,No single test script,Canonical runner and CI classes,CI report is reproducible
+ISS-009,F0,medium,STATUS PASS/WIP conflict,Machine-readable evidence registry,One state per capability
+ISS-010,F1,high,Global idempotency token without payload hash,Scoped idempotency record,Reuse conflict returns 409
+ISS-011,F1,high,Capacity check before transaction,Transactional capacity/inventory,Concurrent boundary test passes
+ISS-012,F1,high,30-day raw session token,Hash session and rotate refresh,Revocation and theft scenario passes
+ISS-013,F1,high,First active workspace silently selected,Explicit organization context,Wrong-org request denied
+ISS-014,F1,high,Form-bound outbox,Generic integration outbox,Order/floor events publish atomically
+ISS-015,F4,high,Badge without attendance domain,Ticket/Credential/CheckInEvent,Duplicate and offline scan tests
+ISS-016,F5,critical,Duplicate Event/Attendee across repos,Core ownership and ID mapping,No new EFPS authoritative writes
+ISS-017,F5,critical,No seat/booth hold protocol,TTL hold/book/release,Double booking test passes
+ISS-018,F6,critical,No live provider evidence,Hosted pilot and reconciliation,Canary and settlement signoff
+ISS-019,F7,critical,No legal/accounting acceptance,Provider and accountant UAT,Signed evidence registry
+ISS-020,F9,critical,Tenant product before isolation proof,Final Multi-Tenant gate,Cross-tenant/RLS/restore passes

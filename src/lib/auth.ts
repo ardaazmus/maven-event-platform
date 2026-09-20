@@ -96,12 +96,33 @@ export async function getSessionFromRequest(req?: NextRequest): Promise<{ user: 
       return null
     }
 
-    // Get the user's default workspace
-    const membership = await db.workspaceMember.findFirst({
-      where: { userId: session.user.id, status: 'active' },
-      include: { workspace: true },
-      orderBy: { joinedAt: 'asc' },
-    })
+    // Explicit workspace claim (ADR-0003): client sends x-workspace-id.
+    // Single-membership users keep working without a claim (backward compatible).
+    // Multi-membership users MUST send a valid claim; ambiguous requests are denied.
+    let claim: string | null = null
+    try {
+      const store = req ? req.headers : await headers()
+      claim = store.get('x-workspace-id')
+    } catch {
+      claim = null
+    }
+
+    let membership
+    if (claim) {
+      membership = await db.workspaceMember.findFirst({
+        where: { userId: session.user.id, workspaceId: claim, status: 'active' },
+        include: { workspace: true },
+      })
+      if (!membership) return null
+    } else {
+      const memberships = await db.workspaceMember.findMany({
+        where: { userId: session.user.id, status: 'active' },
+        include: { workspace: true },
+        orderBy: { joinedAt: 'asc' },
+      })
+      if (memberships.length !== 1) return null
+      membership = memberships[0]
+    }
 
     if (!membership) return null
 

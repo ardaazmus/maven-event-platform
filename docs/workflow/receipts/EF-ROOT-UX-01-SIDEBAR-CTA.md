@@ -1,0 +1,29 @@
+# Receipt: EF-ROOT-UX-01-SIDEBAR-CTA
+
+- Packet: EF-ROOT-UX-01-SIDEBAR-CTA
+- Faz: FAZ-1 (KRITIK ROOT EVENT-FIRST UI GATE, yeni-plan.md oncelikli)
+- Amac: Sidebar birincil CTA Yeni Etkinlik; Yeni Form Forms & Intake icinde ikincil/baglamsal korunur.
+- Degisen dosyalar:
+  - src/components/mavenforms/sidebar.tsx (birincil CTA: setView('events') + mavenforms:new-event; erisilebilir ad)
+  - src/components/mavenforms/views/event-list-view.tsx (mavenforms:new-event dinleyici -> create formu acar)
+  - src/components/mavenforms/views/forms-list-view.tsx (toolbar ikincil Yeni Form butonu; dialog korunur)
+  - tests/ef-root-ux-sidebar-cta.test.mjs (yeni sozlesme testi)
+  - tests/form-ux-single-create-action.test.mjs (Form-first kilit event-first sozlesmeye guncellendi)
+  - tests/form-ux-final-gate.test.mjs (sidebar CTA assertion event-first sozlesmeye guncellendi)
+- Korunan eski davranis:
+  - Yeni Form dialogu (Genel Form / Etkinlik Kaydi Formu + event guard) ve mavenforms:new-form baglantisi aynen durur.
+  - EventListView POST /api/events mutation, loading/error/success, keyboard/label durumlari korunur.
+  - Sidebar forms navigasyonu (id: 'forms') ve collapse davranisi korunur.
+- Calistirilan kontroller:
+  - node scripts/context-check.mjs (packet preflight + verify icinde)
+  - node tests/ef-root-ux-sidebar-cta.test.mjs -> PASS
+  - node tests/form-ux-single-create-action.test.mjs -> PASS
+  - node tests/form-ux-final-gate.test.mjs -> PASS
+  - node tests/ef-event-create-ui.test.mjs -> PASS
+  - node tests/ux-event-list.test.mjs -> PASS
+- Sonuc: LOCAL_PASS (verify kaniti artifacts/workflow/EF-ROOT-UX-01-SIDEBAR-CTA/verified.json)
+- Kanit sinifi: SOURCE_CONFIRMED + LOCAL_PASS (statik UI contract; canli smoke EF-ROOT-UX-05 icinde)
+- Sozlesme notu: onceki `sidebar -> mavenforms:new-form` ve `setView('forms')` kilitleri, yeni-plan KRITIK ROOT EVENT-FIRST UI GATE geregi cozuldu; eski FAZ-9 PASS kayitlari bu kapi olmadan Event-first kaniti sayilmaz.
+- Kalan dis bagimlilik: yok (local UI davranisi).
+- Acik risk: yok; canli desktop/mobil smoke packet 05 icinde.
+- Siradaki packet: EF-ROOT-UX-02-INITIAL-VIEW

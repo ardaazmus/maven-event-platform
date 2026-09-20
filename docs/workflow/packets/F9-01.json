@@ -1,0 +1,32 @@
+{
+  "id": "F9-01",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F9 kapı: SaaS UI dondurulur; workspace scope + RLS duruşu ADR ile sabitlenir",
+  "rollback": "Yalnız F9-01 packet, ADR eki ve registry/test değişimini geri al; kod ve veriye dokunma",
+  "previous": ["F8-03"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/evidence-registry.json",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/05_HEDEF_MIMARI.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/11_YOL_HARITASI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F9-01.json",
+    "docs/adr/0007-f9-freeze.md",
+    "docs/workflow/evidence-registry.json",
+    "tests/f9-freeze.test.mjs"
+  ],
+  "acceptance": [
+    "Provisioning/tenant-billing/custom-domain açılmadığı kayıtta yazılır",
+    "RLS Postgres kapısında; SQLite'da workspace scope negatifleri kilitlidir"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/f9-freeze.test.mjs"]
+  ]
+}

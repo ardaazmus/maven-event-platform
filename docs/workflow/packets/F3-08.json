@@ -1,0 +1,32 @@
+{
+  "id": "F3-08",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F3-3.2 relation: POST /api/invoices/[id]/relations kaynak/hedef zincir + duplicate 409",
+  "rollback": "Yalnız F3-08 packet, relations route ve testi geri al; schema ve veriye dokunma",
+  "previous": ["F3-07"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/invoices/[id]/issue/route.ts",
+    "src/lib/policy.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/08_FATURA_EBELGE.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F3-08.json",
+    "src/app/api/invoices/[id]/relations/route.ts",
+    "tests/invoice-relation.test.mjs"
+  ],
+  "acceptance": [
+    "Relation 201 döner; self-link 400, duplicate 409 döner",
+    "Başka workspace hedef 404 döner"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/invoice-relation.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

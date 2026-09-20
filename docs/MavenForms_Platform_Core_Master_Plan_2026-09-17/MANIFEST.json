@@ -1,0 +1,115 @@
+{
+  "package": "MavenForms_Platform_Core_Master_Plan_2026-09-17",
+  "files": [
+    {
+      "path": "00_OKU_BENI.md",
+      "bytes": 2419,
+      "sha256": "55efc432c144b85b981915c5e6b18cb7635ce506329bab3810b0a6034003ce43"
+    },
+    {
+      "path": "01_YONETICI_OZETI.md",
+      "bytes": 3741,
+      "sha256": "efb0f7a8cc3dd45bafe21aabd2452425744c22b5bd8758dd93750346e805b4c6"
+    },
+    {
+      "path": "02_SEKTOR_ARASTIRMASI.md",
+      "bytes": 5021,
+      "sha256": "f0ea198bd5b5f1cc39d7071d2d53554a93076bc06a2b2edee499bf4dab0457bf"
+    },
+    {
+      "path": "03_GUNCEL_REPO_DENETIMI.md",
+      "bytes": 5440,
+      "sha256": "f2d3a6d8e97ca12b2e2bc4bdaccd601133c5740c0141bdaddd1fba6bdbe5934a"
+    },
+    {
+      "path": "04_MAVENFORMS_KAPSAM_UYUMU.md",
+      "bytes": 4179,
+      "sha256": "b1007f617141fffcf06929c5a96f2c58f16c33ce491ba67b8e59ec04e29ad260"
+    },
+    {
+      "path": "05_HEDEF_MIMARI.md",
+      "bytes": 4059,
+      "sha256": "7345e505c5a09fc438aaaf218700728a8c07f394bf235e21c47f14c427648483"
+    },
+    {
+      "path": "06_KANONIK_VERI_MODELI.md",
+      "bytes": 4644,
+      "sha256": "5fb29671cdfa878d6003f542bbcbef59f1ee25a784dbb327aa9458ced762eab3"
+    },
+    {
+      "path": "07_MANUEL_ODEME.md",
+      "bytes": 3254,
+      "sha256": "fc33b95cf94c1f37ca9b558e0917e0b4e409068469c3435a3b504be5bbe63fa0"
+    },
+    {
+      "path": "08_FATURA_EBELGE.md",
+      "bytes": 3689,
+      "sha256": "ba2c335fbe5f7a71cceccd14fc4b7c94054f60ed24e5995d9032e72efc3d7ee9"
+    },
+    {
+      "path": "09_FLOOR_EDITOR_ENTEGRASYONU.md",
+      "bytes": 4178,
+      "sha256": "4220a81651a8f0976f39a97ae4bcaa470e36182697579a7b9268224ec340866b"
+    },
+    {
+      "path": "10_ADMIN_VE_OPERASYON.md",
+      "bytes": 2737,
+      "sha256": "eaaf9db23bff2730f1c23c12cb13d2e00bf265470b53e43f7e3bfca991db61c7"
+    },
+    {
+      "path": "11_YOL_HARITASI.md",
+      "bytes": 4639,
+      "sha256": "dad27bdafa079efb67fa21c6d170d363b1fcde807a56f632acf877987623ec09"
+    },
+    {
+      "path": "12_GELISTIRME_KONTROL_SISTEMI.md",
+      "bytes": 2916,
+      "sha256": "e6b40ea8bdb9f4a82241bf6b8d663d2a5080f4dac1d5068c7ca82b30c95624e1"
+    },
+    {
+      "path": "13_RISK_VE_KARAR_KAYDI.md",
+      "bytes": 2731,
+      "sha256": "395d3d07bc51a6e61c46e80c25a4b3fae2bded629a13782fea06d69738775e11"
+    },
+    {
+      "path": "14_KABUL_TEST_MATRISI.md",
+      "bytes": 2763,
+      "sha256": "f746d270654f343bd174b388c682ed33d179bd3d3c291abe56db2973bd024702"
+    },
+    {
+      "path": "15_KAYNAKLAR_VE_SINIRLAR.md",
+      "bytes": 3967,
+      "sha256": "3ffec873b781b85123d5c2dfa4aa308aefb5fcce3d2937508a5eb3cd11426eed"
+    },
+    {
+      "path": "EKLER/kanit_manifestosu.json",
+      "bytes": 794,
+      "sha256": "7ced1586b4c6dcb734b947ca6718523a5d8991f2b742216fcd364511f95378c6"
+    },
+    {
+      "path": "EKLER/kapsam_matrisi.csv",
+      "bytes": 736,
+      "sha256": "528dd3dcc99ebbb5892ae97fb5452cfd8649d15ad5dbe92f66734d8b28def438"
+    },
+    {
+      "path": "EKLER/sorun_kaydi.csv",
+      "bytes": 2361,
+      "sha256": "53a982960eaf6550400298fc3504ef23d35795d1987dbb3597730aa02416f779"
+    },
+    {
+      "path": "EKLER/uygulanabilir_backlog.csv",
+      "bytes": 2984,
+      "sha256": "df5e85ab024bc22afb1204390977efd018928afb6bad7137dbc72c711d4776a4"
+    },
+    {
+      "path": "RAPOR.html",
+      "bytes": 73797,
+      "sha256": "51934e70e16da41e473a09026632936409b0029320079587b66c13cc41bae745"
+    },
+    {
+      "path": "TUM_RAPOR.md",
+      "bytes": 60467,
+      "sha256": "4c3ef1fa8f3545fd28333911306d04c178924f83e710e2b76fa3ae594c950158"
+    }
+  ]
+}

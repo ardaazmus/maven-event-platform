@@ -1,0 +1,29 @@
+{
+  "id": "F2-05",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F2-2.2 migration: Payment/PaymentAllocation tabloları temp rehearsal + dev deploy",
+  "rollback": "Migration dosyası üretilerse packet revizyonu; dev DB yedeği F0-04 logundaki backup ile korunur",
+  "previous": ["F2-04"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "prisma/schema.prisma",
+    "docs/workflow/db-backup-log.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F2-05.json",
+    "prisma/migrations/**"
+  ],
+  "acceptance": [
+    "Temp kopyada migrate dev rehearsal geçer",
+    "Dev DB migrate deploy sonrası Payment tablosu yazılabilir"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "x", "prisma", "validate"]
+  ]
+}

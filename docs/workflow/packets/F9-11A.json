@@ -1,0 +1,27 @@
+{
+  "id": "F9-11A",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F9-11 canonical source migration sonucunu STATUS.md icinde dogru kapanis durumu ile kaydetmek",
+  "rollback": "Yalniz STATUS kapanis metnini geri al; onceki canonical source migration ve legacy arsivlerine dokunma",
+  "previous": ["F9-11"],
+  "sourceOfTruth": "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/",
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/workflow/README.md",
+    "docs/workflow/packets/F9-11.json",
+    "artifacts/workflow/F9-11/verified.json"
+  ],
+  "allowedFiles": [
+    "STATUS.md",
+    "docs/workflow/packets/F9-11A.json"
+  ],
+  "acceptance": [
+    "STATUS.md F9-11 canonical source migration sonucunu LOCAL_PASS olarak dogru ifade eder",
+    "R-10 NO-GO ve local evidence siniri korunur"
+  ],
+  "preflight": [["node", "scripts/context-check.mjs"]],
+  "checks": [["node", "scripts/context-check.mjs"]]
+}

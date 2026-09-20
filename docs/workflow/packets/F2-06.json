@@ -1,0 +1,32 @@
+{
+  "id": "F2-06",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F2-2.2 API: POST /api/payments manuel kayıt + duplicate reference 409; recorded status",
+  "rollback": "Yalnız F2-06 packet, payments route ve testi geri al; schema ve veriye dokunma",
+  "previous": ["F2-05"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/orders/route.ts",
+    "src/lib/policy.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/07_MANUEL_ODEME.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F2-06.json",
+    "src/app/api/payments/route.ts",
+    "tests/payment-record.test.mjs"
+  ],
+  "acceptance": [
+    "Geçerli manuel kayıt 201 recorded döner",
+    "Aynı referans+tutar tekrarı 409 review döner"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/payment-record.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

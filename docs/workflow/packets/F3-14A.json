@@ -1,0 +1,39 @@
+{
+  "id": "F3-14A",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F3-14 düzeltme: legacy documents route geri yüklenir, attach API document-links yoluna taşınır",
+  "rollback": "Yalnız F3-14A packet değişimini geri al; legacy route korunur",
+  "previous": [],
+  "supersedesNote": "F3-14 receipti hatalı overwrite içeriğine işaret ettiği için stale sayılır; F3-14A ile değiştirilir",
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/invoices/[id]/documents/route.ts",
+    "src/app/api/invoices/[id]/document-links/route.ts",
+    "tests/invoice-document-hash.test.mjs",
+    "tests/invoice-document-upload-route.test.mjs"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F3-14A.json",
+    "src/app/api/invoices/[id]/documents/route.ts",
+    "src/app/api/invoices/[id]/document-links/route.ts",
+    "tests/invoice-document.test.mjs"
+  ],
+  "acceptance": [
+    "Legacy upload route HEAD ile aynıdır (git diff temiz)",
+    "Attach API document-links yolunda 201/422/404 verir",
+    "Legacy 2 test + yeni test yeşildir",
+    "F3-14 lock superseded sayılır; gerekçe kayıtta yazılır"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/invoice-document.test.mjs"],
+    ["bun", "tests/invoice-document-hash.test.mjs"],
+    ["bun", "tests/invoice-document-upload-route.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

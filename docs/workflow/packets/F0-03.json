@@ -1,0 +1,31 @@
+{
+  "id": "F0-03",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F0 test bütünlüğü: tek kanonik runner (scripts/run-tests.mjs) package.json test scriptine bağlanır; local-ready korunur",
+  "rollback": "Yalnız F0-03 packet ve package.json test scriptini geri al; test, veri ve migrationa dokunma",
+  "previous": ["F0-02"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "package.json",
+    "scripts/run-tests.mjs",
+    "scripts/local-ready.mjs",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/11_YOL_HARITASI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F0-03.json",
+    "package.json"
+  ],
+  "acceptance": [
+    "bun/npm test tek komutla scripts/run-tests.mjs çalışır",
+    "scripts/local-ready.mjs korunur; karar kayıtta yazılır"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["node", "-e", "const s=require('./package.json').scripts; if(s.test!=='node scripts/run-tests.mjs') throw new Error('test script missing'); console.log('test script: PASS')"]
+  ]
+}

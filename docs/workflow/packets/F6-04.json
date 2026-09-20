@@ -1,0 +1,30 @@
+{
+  "id": "F6-04",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F6-6.2 kilit: mevcut stripe/iyzico webhook imza + inbox + fail-closed sözleşmesi testle doğrulanır",
+  "rollback": "Yalnız F6-04 packet ve sözleşme testini geri al; route ve veriye dokunma",
+  "previous": ["F6-03"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/webhooks/stripe/[connectionId]/route.ts",
+    "src/app/api/webhooks/iyzico/[connectionId]/route.ts",
+    "src/lib/payment-webhook-signatures.ts"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F6-04.json",
+    "tests/webhook-contract.test.mjs"
+  ],
+  "acceptance": [
+    "İmza doğrulama 401, secretsiz 503, revoked 410, bozuk gövde 400 sözleşmesi kodda kilitli",
+    "Canlı provider kanıtı iddia edilmez"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/webhook-contract.test.mjs"]
+  ]
+}

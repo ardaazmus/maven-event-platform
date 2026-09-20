@@ -30,6 +30,9 @@ import { useToast } from '@/hooks/use-toast'
 
 const viewTitles: Record<string, { title: string; subtitle: string }> = {
   dashboard: { title: 'Genel Bakış', subtitle: 'Workspace istatistikleri ve son aktiviteler' },
+  events: { title: 'Etkinlikler', subtitle: 'Etkinlik seçin ve yönetin' },
+  'event-dashboard': { title: 'Etkinlik Paneli', subtitle: 'Seçili etkinliğin özeti ve modülleri' },
+  registrations: { title: 'Kayıtlar', subtitle: 'Etkinlik kayıt havuzu' },
   forms: { title: 'Formlar', subtitle: 'Tüm formlarınızı yönetin' },
   builder: { title: 'Form Builder', subtitle: 'Sürükle-bırak ile form tasarlayın' },
   submissions: { title: 'Yanıtlar', subtitle: 'Form yanıtlarını görüntüleyin ve yönetin' },

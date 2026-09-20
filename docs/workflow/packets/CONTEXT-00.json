@@ -1,5 +1,7 @@
 {
   "id": "CONTEXT-00",
+  "lifecycle": "SUPERSEDED",
+  "supersededBy": "CONTEXT-00B",
   "status": "READY",
   "timeboxMinutes": 15,
   "goal": "STATUS.md bootstrap katmanını 6 KB sınırına indirirken geçmiş faz kanıtlarını ve karar kayıtlarını kaybetmemek; context-check, packet discovery ve diğer IDE yönlendirmelerini yeniden çalışır hale getirmek",

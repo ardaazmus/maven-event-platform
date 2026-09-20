@@ -783,7 +783,7 @@ function AppearanceSettings({ onOpenBranding }: { onOpenBranding: () => void }) 
           </div>
           <div className="space-y-2">
             <Label>Uygulama markası</Label>
-            <Input defaultValue="MavenForms" aria-label="Uygulama markası" />
+            <Input defaultValue="Maven Event Platform" aria-label="Uygulama markası" />
             <p className="text-xs text-muted-foreground">Panel ve giriş ekranındaki marka adıdır; SMTP gönderen kimliğinden bağımsızdır.</p>
           </div>
         </div>
@@ -1028,7 +1028,7 @@ function BrandingSettings() {
             <Input
               value={data.appName || ''}
               onChange={(e) => update('appName', e.target.value)}
-              placeholder="MavenForms"
+              placeholder="Maven Event Platform"
             />
             <p className="text-xs text-muted-foreground">Sidebar'da ve login ekranında görünür</p>
           </div>
@@ -1038,7 +1038,7 @@ function BrandingSettings() {
             <Input
               value={data.appTagline || ''}
               onChange={(e) => update('appTagline', e.target.value)}
-              placeholder="FORM PLATFORM"
+              placeholder="EVENT PLATFORM"
             />
           </div>
 
@@ -1125,7 +1125,7 @@ function BrandingSettings() {
             <Textarea
               value={data.loginTitle || ''}
               onChange={(e) => update('loginTitle', e.target.value)}
-              placeholder="Formlarınızı tasarlayın, yanıtları otomatikleştirin."
+              placeholder="Etkinliklerinizi yönetin, kayıtları otomatikleştirin."
               rows={2}
             />
             <p className="text-xs text-muted-foreground">Son 2 kelime gradient renkli olur</p>
@@ -1136,7 +1136,7 @@ function BrandingSettings() {
             <Textarea
               value={data.loginSubtitle || ''}
               onChange={(e) => update('loginSubtitle', e.target.value)}
-              placeholder="Modern, mobil öncelikli form platformu..."
+              placeholder="Modern, mobil öncelikli etkinlik platformu..."
               rows={3}
             />
           </div>

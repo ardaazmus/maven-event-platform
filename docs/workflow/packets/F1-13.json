@@ -1,0 +1,32 @@
+{
+  "id": "F1-13",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F1-1.5 model: Registration aggregate + status history + EventFormBinding (migration ayrı)",
+  "rollback": "Yalnız F1-13 packet, schema ekini ve model testini geri al; migration ve veriye dokunma",
+  "previous": ["F1-12"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "prisma/schema.prisma",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md",
+    "docs/domain-dictionary.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F1-13.json",
+    "prisma/schema.prisma",
+    "tests/registration-model.test.mjs"
+  ],
+  "acceptance": [
+    "Registration event/person/formSnapshot bağı ve history ile tanımlıdır",
+    "EventFormBinding event-form-purpose eşleşmesini taşır; prisma validate geçer"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/registration-model.test.mjs"],
+    ["bun", "x", "prisma", "validate"]
+  ]
+}

@@ -161,7 +161,7 @@ export function LoginView() {
                 )}
               </h1>
               <p className="text-muted-foreground text-lg leading-relaxed">
-                {branding?.loginSubtitle || 'Modern, mobil öncelikli form platformu. Tasarla → yayınla → topla → raporla zincirinde tek çalışma alanı.'}
+                {branding?.loginSubtitle || 'Modern, mobil öncelikli etkinlik platformu. Etkinlik → kayıt → bilet → yoklama zincirinde tek çalışma alanı.'}
               </p>
             </div>
 
@@ -185,7 +185,7 @@ export function LoginView() {
           </div>
 
           <div className="text-xs text-muted-foreground">
-            © 2026 MavenForms · Hostinger altyapısında çalışır
+            © 2026 Maven Event Platform · Hostinger altyapısında çalışır
           </div>
         </div>
       </div>

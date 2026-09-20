@@ -5,6 +5,7 @@ const legacyIds = [
   'BADGE-00', 'BADGE-01', 'FORM-UX-04', 'FORM-UX-05', 'FORM-UX-05A',
   'FORM-UX-15', 'FORM-UX-15-R1', 'FORM-UX-24', 'FORM-UX-30', 'FORM-UX-69',
   'V1-00', 'V1-04', 'V2-00', 'V2-04C', 'V2-09', 'V3-01A', 'V3-01B',
+  'F0-06', 'F1-24', 'F9-08',
 ]
 
 const workflow = fs.readFileSync('scripts/workflow.mjs', 'utf8')

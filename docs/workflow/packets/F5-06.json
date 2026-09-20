@@ -1,0 +1,29 @@
+{
+  "id": "F5-06",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F5-5.3 migration: InventoryHold tablosu temp rehearsal + dev deploy",
+  "rollback": "Migration dosyası üretilerse packet revizyonu; dev DB yedeği F0-04 logundaki backup ile korunur",
+  "previous": ["F5-05"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "prisma/schema.prisma",
+    "docs/workflow/db-backup-log.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F5-06.json",
+    "prisma/migrations/**"
+  ],
+  "acceptance": [
+    "Temp kopyada migrate dev rehearsal geçer",
+    "Dev DB migrate deploy sonrası hold yazılabilir"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "x", "prisma", "validate"]
+  ]
+}

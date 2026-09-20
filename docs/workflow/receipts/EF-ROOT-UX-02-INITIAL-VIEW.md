@@ -1,0 +1,30 @@
+# Receipt: EF-ROOT-UX-02-INITIAL-VIEW
+
+- Packet: EF-ROOT-UX-02-INITIAL-VIEW
+- Faz: FAZ-1 (KRITIK ROOT EVENT-FIRST UI GATE)
+- Amac: Store/app-shell/ilk route/persisted state ile event-first acilisi kilitle; dashboard CTA ve Event Dashboard modul baglantilari.
+- Degisen dosyalar:
+  - src/components/mavenforms/views/dashboard-view.tsx (banner birincil CTA: Yeni Etkinlik -> setView('events') + mavenforms:new-event; CalendarDays ikonu)
+  - src/components/mavenforms/views/event-dashboard-view.tsx (data-testid event-dashboard-modules; Kayit Formu/Kayitlar/Finans/Yaka Kartlari/Check-in/Floor Plan baglantilari; yalniz setView, mutation yok)
+  - src/components/mavenforms/topbar.tsx (viewTitles: events, event-dashboard, registrations; mobil menu ve baslik haritasi)
+  - tests/ef-root-ux-initial-view.test.mjs (yeni sozlesme testi)
+- Incelenen degismeyen davranis:
+  - src/lib/store.ts initial view 'dashboard' kilitlendi; forms-first acilis yok.
+  - src/components/mavenforms/app-shell.tsx ilk route dashboard + yetkisiz donus dashboard + token/tema restore kilitlendi.
+- Korunan eski davranis:
+  - Dashboard istatistik/grafik/aktivite yapi ve Raporlari Gor ikincil aksiyon korunur.
+  - Event Dashboard readiness kapilari/sayilari ve secim-yok/hata durumlari korunur (ux-event-dashboard PASS).
+  - Topbar mobil menu tam view map numaralandirmasi korunur (form-ux-navigation PASS).
+- Calistirilan kontroller:
+  - node tests/ef-root-ux-initial-view.test.mjs -> PASS
+  - node tests/ux-event-dashboard.test.mjs -> PASS
+  - node tests/form-ux-navigation.test.mjs -> PASS
+  - node tests/form-ux-topbar-a11y.test.mjs -> PASS
+  - node tests/form-ux-dashboard-a11y.test.mjs -> PASS
+  - node tests/form-ux-dashboard-kpi-a11y.test.mjs -> PASS
+  - node tests/form-ux-dashboard-kpi-truth.test.mjs -> PASS
+- Sonuc: LOCAL_PASS (verify kaniti artifacts/workflow/EF-ROOT-UX-02-INITIAL-VIEW/verified.json)
+- Kanit sinifi: SOURCE_CONFIRMED + LOCAL_PASS
+- Kalan dis bagimlilik: yok.
+- Acik risk: yok; no-event empty state packet 03 icinde.
+- Siradaki packet: EF-ROOT-UX-03-NO-EVENT-EMPTY-STATE

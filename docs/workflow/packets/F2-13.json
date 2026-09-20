@@ -1,0 +1,32 @@
+{
+  "id": "F2-13",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F2-2.5 export: GET /api/finance/export.csv ledger CSV; toplam summary ile eşit",
+  "rollback": "Yalnız F2-13 packet, export route ve testi geri al; schema ve veriye dokunma",
+  "previous": ["F2-12"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/finance/summary/route.ts",
+    "src/lib/policy.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/07_MANUEL_ODEME.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F2-13.json",
+    "src/app/api/finance/export.csv/route.ts",
+    "tests/finance-export.test.mjs"
+  ],
+  "acceptance": [
+    "Export CSV payment satırları döner; collected toplamı summary ile eşit çıkar",
+    "Anon 401 döner"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/finance-export.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

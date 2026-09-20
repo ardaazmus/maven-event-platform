@@ -1,0 +1,32 @@
+{
+  "id": "F1-18",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F1-1.6 model: OutboxEvent form/submission opsiyonel + generic event envelope alanları (migration ayrı)",
+  "rollback": "Yalnız F1-18 packet, schema ekini ve model testini geri al; migration ve veriye dokunma",
+  "previous": ["F1-17"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "prisma/schema.prisma",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/05_HEDEF_MIMARI.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F1-18.json",
+    "prisma/schema.prisma",
+    "tests/outbox-generic.test.mjs"
+  ],
+  "acceptance": [
+    "formId/submissionId opsiyonel; eventType/aggregate/correlation alanları tanımlıdır",
+    "prisma validate geçer, migration bu fazda uygulanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/outbox-generic.test.mjs"],
+    ["bun", "x", "prisma", "validate"]
+  ]
+}

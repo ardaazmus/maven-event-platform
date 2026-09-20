@@ -1,0 +1,33 @@
+{
+  "id": "F2-07",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F2-2.3 allocation: POST /api/payments/[id]/allocations split + order status projeksiyonu + unallocated",
+  "rollback": "Yalnız F2-07 packet, allocations route ve testi geri al; schema ve veriye dokunma",
+  "previous": ["F2-06"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/payments/route.ts",
+    "src/app/api/orders/route.ts",
+    "src/lib/policy.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/07_MANUEL_ODEME.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F2-07.json",
+    "src/app/api/payments/[id]/allocations/route.ts",
+    "tests/payment-allocation.test.mjs"
+  ],
+  "acceptance": [
+    "Kısmi allocation order partially_paid + unallocated döner",
+    "Tam allocation order paid yapar; toplamı aşan allocation 400 döner"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/payment-allocation.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

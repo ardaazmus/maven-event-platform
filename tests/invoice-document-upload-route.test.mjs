@@ -18,7 +18,14 @@ assert(route.includes("visibility: 'private'") || route.includes('visibility: "p
 assert(route.includes("state: 'quarantined'") || route.includes('state: "quarantined"'), 'uploaded documents must remain quarantined')
 assert(route.includes('auditLog'), 'document upload must be auditable')
 assert(route.includes('Cache-Control') && route.includes('no-store'), 'document upload response must not be cached')
-assert(!route.includes('export async function GET'), 'document upload route must not expose a public GET')
+// Public GET yasaktir; kimlikli + scope kilitli hazirlik listesi GET'i readiness sozlesmesindendir
+const getBlock = route.includes('export async function GET') ? route.slice(route.indexOf('export async function GET'), route.indexOf('export async function POST')) : ''
+if (getBlock) {
+  assert(getBlock.includes('getSessionFromCookie'), 'listeleme GET session istemeli (public degil)')
+  assert(getBlock.includes('can.readInvoices'), 'listeleme GET read gate tasimali')
+  assert(getBlock.includes('ctx.workspace.id'), 'listeleme GET tenant scope tasimali')
+  assert(!getBlock.includes('storageKey'), 'listeleme GET storageKey sizdirmamali')
+}
 assert(!route.includes('publicUrl') && !route.includes('storageKey: storageKey'), 'response must not expose public URL or storage key')
 
 assert(storage.includes('INVOICE_DOCUMENT_ROOT'), 'document storage must have a private root')

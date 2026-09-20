@@ -1,0 +1,32 @@
+{
+  "id": "F2-01",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F2-2.1 model: Order + OrderItem minor-unit snapshot toplamları (migration ayrı)",
+  "rollback": "Yalnız F2-01 packet, schema ekini ve model testini geri al; migration ve veriye dokunma",
+  "previous": ["F1-19"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "prisma/schema.prisma",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/07_MANUEL_ODEME.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F2-01.json",
+    "prisma/schema.prisma",
+    "tests/order-model.test.mjs"
+  ],
+  "acceptance": [
+    "Order/OrderItem minor-unit + ISO currency + snapshot ile tanımlıdır",
+    "prisma validate geçer, migration bu fazda uygulanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/order-model.test.mjs"],
+    ["bun", "x", "prisma", "validate"]
+  ]
+}

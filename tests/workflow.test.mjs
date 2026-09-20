@@ -12,7 +12,7 @@ assert.throws(() => safePath(root, 'C:\\escape'), /relative/);
 assert(!Object.keys(snapshot(root)).includes('.env'));
 assert.deepEqual(changedFiles({ 'a.ts': 'old' }, { 'b.ts': 'new' }), ['a.ts', 'b.ts']);
 assert.throws(() => assertScope(['src-other/a.ts'], ['src/**']), /out-of-scope/);
-const packet = { id: 'TEST-01', status: 'READY', timeboxMinutes: 15, goal: 'test', rollback: 'restore fixture', previous: [], reads: ['source.ts'], acceptance: ['real command'], allowedFiles: ['source.ts'], preflight: [['node', '-e', 'process.exit(0)']], checks: [['node', '-e', 'process.exit(0)']] };
+const packet = { id: 'TEST-01', status: 'READY', timeboxMinutes: 15, sourceOfTruth: 'docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/', goal: 'test', rollback: 'restore fixture', previous: [], reads: ['source.ts'], acceptance: ['real command'], allowedFiles: ['source.ts'], preflight: [['node', '-e', 'process.exit(0)']], checks: [['node', '-e', 'process.exit(0)']] };
 write('packet.json', JSON.stringify(packet));
 assert.throws(() => execute(root, 'verify', 'packet.json'), /ENOENT/);
 execute(root, 'begin', 'packet.json');

@@ -1,3 +1,3 @@
 # MavenForms Claude adapter
 
-Start with `AGENTS.md`, then `PROJECT_CONTEXT.md` and `STATUS.md`. Select a READY packet from `docs/workflow/packets/`; use `docs/workflow/README.md` for begin/verify. Read only routed sources unless a project-wide dependency check is needed. Do not skip server authorization, tenant scope, idempotency, security or verification gates.
+Kanonik ürün ve iş akışı `docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/` klasöründedir. Önce `AGENTS.md`, `PROJECT_CONTEXT.md`, `STATUS.md` ve `sourceOfTruth` alanı bu klasörü gösteren READY packet okunur. `docs/legacy/root-docs/` yalnız tarihsel referanstır. Auth, scope, idempotency, public/private, güvenlik ve verify kapıları atlanmaz.

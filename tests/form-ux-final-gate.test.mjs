@@ -14,7 +14,8 @@ for (const view of ['DashboardView', 'FormsListView', 'FormBuilderView', 'Submis
   assert.match(shell, new RegExp(`<${view} ?/?>`), `app shell must render ${view}`)
 }
 
-assert.match(sidebar, /onClick=\{\(\) => \{[\s\S]*setView\('forms'\)/, 'new form action must enter the forms workspace')
+assert.match(sidebar, /onClick=\{\(\) => \{[\s\S]*setView\('events'\)/, 'primary sidebar action must enter the events workspace')
+assert.match(sidebar, /id: 'forms'/, 'forms list must remain reachable from primary navigation')
 assert.match(sidebar, /onClick=\{toggleSidebar\}/, 'sidebar collapse action must remain wired')
 assert.match(topbar, /aria-label="Menüyü aç"/, 'mobile menu must have an accessible name')
 assert.match(topbar, /onClick=\{\(\) => useApp\.getState\(\)\.setView\('settings'\)\}/, 'account settings action must navigate to settings')

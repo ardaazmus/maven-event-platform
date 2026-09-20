@@ -17,6 +17,17 @@ import {
   Folder as FolderIcon,
   Hash,
   BarChart3,
+  CalendarDays,
+  Inbox,
+  IdCard,
+  ScanLine,
+  Map,
+  Mic,
+  ScrollText,
+  Building2,
+  ClipboardList,
+  Network,
+  Wallet,
   Bell,
   Zap,
   ShieldCheck,
@@ -32,6 +43,17 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { id: 'dashboard', label: 'Genel Bakış', icon: LayoutDashboard },
+  { id: 'events', label: 'Etkinlikler', icon: CalendarDays },
+  { id: 'program', label: 'Program', icon: Mic },
+  { id: 'abstracts', label: 'Bildiriler', icon: ScrollText },
+  { id: 'sponsors', label: 'Sponsorlar', icon: Building2 },
+  { id: 'surveys', label: 'Anketler', icon: ClipboardList },
+  { id: 'network', label: 'Leadler', icon: Network },
+  { id: 'registrations', label: 'Kayıtlar', icon: Inbox },
+  { id: 'badges', label: 'Yaka Kartları', icon: IdCard },
+  { id: 'checkin', label: 'Check-in', icon: ScanLine },
+  { id: 'floor', label: 'Floor Plan', icon: Map },
+  { id: 'finance', label: 'Finans', icon: Wallet },
   { id: 'forms', label: 'Formlar', icon: FileText },
   { id: 'submissions', label: 'Yanıtlar', icon: Activity, badge: '12' },
   { id: 'reports', label: 'Raporlar', icon: BarChart3 },
@@ -74,20 +96,23 @@ export function Sidebar() {
         )}
       </div>
 
-      {/* New Form Button */}
+      {/* New Event Button (event-first primary action) */}
       <div className="p-3 shrink-0">
         <Button
           className="w-full gap-2"
           variant={sidebarCollapsed ? 'default' : 'default'}
           size={sidebarCollapsed ? 'icon' : 'default'}
+          aria-label="Yeni Etkinlik oluştur"
+          title={sidebarCollapsed ? 'Yeni Etkinlik' : undefined}
           onClick={() => {
-            setView('forms')
-            // Trigger new form modal
-            window.dispatchEvent(new CustomEvent('mavenforms:new-form'))
+            setView('events')
+            // Cross-view intent survives until the events view mounts; same-view fast path below.
+            try { sessionStorage.setItem('mavenforms:new-event-pending', '1') } catch {}
+            window.dispatchEvent(new CustomEvent('mavenforms:new-event'))
           }}
         >
           <Plus className="w-4 h-4" />
-          {!sidebarCollapsed && <span>Yeni Form</span>}
+          {!sidebarCollapsed && <span>Yeni Etkinlik</span>}
         </Button>
       </div>
 

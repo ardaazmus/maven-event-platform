@@ -1,0 +1,32 @@
+{
+  "id": "F3-01",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F3-3.1 model: InvoiceRequest talebi + alıcı/satır snapshot + PII şifreli alanlar (migration ayrı)",
+  "rollback": "Yalnız F3-01 packet, schema ekini ve model testini geri al; migration ve veriye dokunma",
+  "previous": ["F2-13"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "prisma/schema.prisma",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/08_FATURA_EBELGE.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F3-01.json",
+    "prisma/schema.prisma",
+    "tests/invoice-request-model.test.mjs"
+  ],
+  "acceptance": [
+    "InvoiceRequest order bağı + alıcı tipi/unvan/vergi snapshot ile tanımlıdır",
+    "prisma validate geçer, migration bu fazda uygulanmaz"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/invoice-request-model.test.mjs"],
+    ["bun", "x", "prisma", "validate"]
+  ]
+}

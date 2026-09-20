@@ -1,0 +1,32 @@
+{
+  "id": "F2-04",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F2-2.2 model: Payment immutable hareket + PaymentAllocation dağılım (migration ayrı)",
+  "rollback": "Yalnız F2-04 packet, schema ekini ve model testini geri al; migration ve veriye dokunma",
+  "previous": ["F2-03"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "prisma/schema.prisma",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/07_MANUEL_ODEME.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F2-04.json",
+    "prisma/schema.prisma",
+    "tests/payment-model.test.mjs"
+  ],
+  "acceptance": [
+    "Payment method/kaynak türü + evidence hash + idempotency ile tanımlıdır",
+    "Allocation order bağı + reversal zinciri taşır; prisma validate geçer"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/payment-model.test.mjs"],
+    ["bun", "x", "prisma", "validate"]
+  ]
+}

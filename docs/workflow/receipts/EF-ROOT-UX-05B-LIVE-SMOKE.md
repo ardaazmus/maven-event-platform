@@ -1,0 +1,24 @@
+# Receipt: EF-ROOT-UX-05B-LIVE-SMOKE
+
+- Packet: EF-ROOT-UX-05B-LIVE-SMOKE (EF-ROOT-UX-05-LIVE-SMOKE yerine gecer; 05, 04B yarisi kapsayamadigi icin verify edilemedi)
+- Faz: FAZ-1 (KRITIK ROOT EVENT-FIRST UI GATE)
+- Amac: 04B duzeltmesi sonrasi desktop + dar mobil canli smoke.
+- Ortam: calisan dev server http://127.0.0.1:3000 (kullanicinin korunmus sureci; oldurulmedi, yalniz okuma + demo login kullanildi), headless-shell Chromium, demo hesabi.
+- Desktop (node scripts/render-check.mjs /tmp/ef-root-ux-smoke/desktop-rerun): PASS
+  - Login -> shell ('Genel Bakis'), metinler: Etkinlikler, Kayitlar, Etkinlik, Yeni Etkinlik gorunur.
+  - Sidebar Etkinlikler -> liste; Kayitlar -> inbox; sidebar Yeni Etkinlik -> Etkinlik adi create formu (04-new-event.png).
+  - Ekran goruntuleri: 01-shell.png, 02-events.png, 03-registrations.png, 04-new-event.png.
+- Dar mobil 390x844 (manual CDP probu /tmp/ef-mobile-probe.mjs -> /tmp/ef-root-ux-smoke/mobile-manual): PASS
+  - Shell responsive render; EventBar no-event + Yeni Etkinlik butonu gorunur; dashboard banner Yeni Etkinlik gorunur; istatistik grid 2 sutun, tasmasiz.
+  - Mobil menu 11 ogeyi listeler (Genel Bakis, Etkinlikler, Etkinlik Paneli, Kayitlar, Formlar, Form Builder, Yanitlar, Raporlar, Ayarlar, Kullanicilar, Denetim) - menu-open.png.
+  - Mobil Etkinlikler tiklamasi liste gorunumunu acar (events-mobile.png).
+- Harness notu (dogrulandi, urun hatasi degil): Radix DropdownMenu trigger sentetik element.click() ile acilmaz; pointerdown+pointerup+click dizisi gerekir. render-check mobil adimi bu yuzden prob ile degistirildi; render-check dosyasina dokunulmadi (05B kapsami).
+- Empty-state dali notu: demo workspace dolu oldugundan dashboard-no-event karti canli kosuda dogru sekilde gizlendi; bos-dal committed test (ef-root-ux-no-event) + kosul incelemesi ile kilitli.
+- Framework overlay: gozlenmedi. Console log yakalama harness kapsaminda degil (kalan risk olarak isaretli).
+- Calistirilan kontroller:
+  - node tests/ef-root-ux-smoke.test.mjs -> PASS
+  - canli desktop smoke -> PASS, canli mobil manual smoke -> PASS
+- Sonuc: LOCAL_PASS (verify kaniti artifacts/workflow/EF-ROOT-UX-05B-LIVE-SMOKE/verified.json)
+- Kanit sinifi: LIVE_SMOKE + LOCAL_PASS
+- Kalan dis bagimlilik: yok.
+- Siradaki packet: EF-ROOT-UX-06-REGRESSION-VERIFY

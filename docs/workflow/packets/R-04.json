@@ -1,5 +1,7 @@
 {
   "id": "R-04",
+  "lifecycle": "SUPERSEDED",
+  "supersededBy": "R-04B",
   "status": "READY",
   "timeboxMinutes": 15,
   "goal": "Fatura merkezi ve form yanıtları UI'sında responsive, keyboard ve rol görünürlüğü kapısını geçirmek",

@@ -157,6 +157,10 @@ export function FormsListView() {
   const [newFormOpen, setNewFormOpen] = useState(false)
   const [newForm, setNewForm] = useState({ title: '', description: '', slug: '', folderId: '', enableUserConfirmation: false })
   const [creating, setCreating] = useState(false)
+  const [formMode, setFormMode] = useState<'general' | 'event'>('general')
+  const [eventOptions, setEventOptions] = useState<Array<{ id: string; title: string }>>([])
+  const [eventId, setEventId] = useState('')
+  const [eventsLoading, setEventsLoading] = useState(false)
   const { selectedFormId, selectForm, setView, setFolders: setStoreFolders, setTags: setStoreTags } = useApp()
   const [focusedSummary, setFocusedSummary] = useState<FocusedFormSummary | null>(null)
   const [focusedSubmissions, setFocusedSubmissions] = useState<Submission[]>([])
@@ -254,9 +258,31 @@ export function FormsListView() {
     }
   }, [])
 
+  // Event picker options for "Etkinlik Kaydı Formu" mode
+  useEffect(() => {
+    if (!newFormOpen) return
+    let active = true
+    setEventsLoading(true)
+    api<Array<{ id: string; title: string }>>('/api/events')
+      .then((rows) => {
+        if (active) setEventOptions(Array.isArray(rows) ? rows : [])
+      })
+      .catch(() => {
+        if (active) setEventOptions([])
+      })
+      .finally(() => {
+        if (active) setEventsLoading(false)
+      })
+    return () => { active = false }
+  }, [newFormOpen])
+
   const handleCreate = async () => {
     if (!newForm.title.trim()) {
       toast({ title: 'Form adı gerekli', variant: 'destructive' })
+      return
+    }
+    if (formMode === 'event' && !eventId) {
+      toast({ title: 'Etkinlik seçin', description: 'Etkinlik Kaydı Formu bir etkinliğe bağlanmalıdır.', variant: 'destructive' })
       return
     }
     const slug = newForm.slug || slugify(newForm.title)
@@ -272,9 +298,21 @@ export function FormsListView() {
           enableUserConfirmation: newForm.enableUserConfirmation,
         }),
       })
+      if (formMode === 'event') {
+        try {
+          await api(`/api/events/${encodeURIComponent(eventId)}/bindings`, {
+            method: 'POST',
+            body: JSON.stringify({ formId: created.id, purpose: 'registration' }),
+          })
+        } catch (bindErr: any) {
+          toast({ title: 'Form oluşturuldu ancak etkinlik bağlantısı kurulamadı', description: bindErr.message, variant: 'destructive' })
+        }
+      }
       toast({ title: 'Form oluşturuldu', description: 'Builder açılıyor...' })
       setNewFormOpen(false)
       setNewForm({ title: '', description: '', slug: '', folderId: '', enableUserConfirmation: false })
+      setFormMode('general')
+      setEventId('')
       selectForm(created.id, 'fields')
       setView('builder')
     } catch (err: any) {
@@ -460,7 +498,16 @@ export function FormsListView() {
                 <SelectItem value="archived">Arşiv</SelectItem>
               </SelectContent>
             </Select>
-            <div className="flex gap-1 p-0.5 bg-muted rounded-lg border border-border">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              aria-label="Yeni Form oluştur (Forms)"
+              onClick={() => setNewFormOpen(true)}
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Yeni Form
+            </Button><div className="flex gap-1 p-0.5 bg-muted rounded-lg border border-border">
               <Button
                 size="sm"
                 variant={view === 'grid' ? 'default' : 'ghost'}
@@ -674,6 +721,57 @@ export function FormsListView() {
               ))}
             </div>
 
+            <div className="space-y-2">
+            </div>
+            <div className="space-y-2">
+              <Label>Form Modu *</Label>
+              <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Form modu">
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={formMode === 'general'}
+                  onClick={() => setFormMode('general')}
+                  className={cn(
+                    'rounded-lg border p-3 text-left transition-colors',
+                    formMode === 'general' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary'
+                  )}
+                >
+                  <div className="text-xs font-medium">Genel Form</div>
+                  <div className="text-[10px] text-muted-foreground">Etkinliksiz bağımsız veri toplama</div>
+                </button>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={formMode === 'event'}
+                  onClick={() => setFormMode('event')}
+                  className={cn(
+                    'rounded-lg border p-3 text-left transition-colors',
+                    formMode === 'event' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary'
+                  )}
+                >
+                  <div className="text-xs font-medium">Etkinlik Kaydı Formu</div>
+                  <div className="text-[10px] text-muted-foreground">Seçili etkinliğe kayıt üretir</div>
+                </button>
+              </div>
+            </div>
+            {formMode === 'event' ? (
+              <div className="space-y-2">
+                <Label>Etkinlik *</Label>
+                <Select value={eventId} onValueChange={setEventId}>
+                  <SelectTrigger aria-label="Etkinlik seç">
+                    <SelectValue placeholder={eventsLoading ? 'Etkinlikler yükleniyor...' : 'Kayıt toplanacak etkinliği seçin'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {eventOptions.map((option) => (
+                      <SelectItem key={option.id} value={option.id}>
+                        {option.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">Etkinlik Kaydı Formu, etkinlik seçilmeden yayınlanamaz; yanıtlar kayıt havuzuna düşer.</p>
+              </div>
+            ) : null}
             <div className="space-y-2">
               <Label htmlFor="form-title">Form Adı *</Label>
               <Input

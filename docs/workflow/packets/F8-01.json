@@ -1,0 +1,31 @@
+{
+  "id": "F8-01",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F8-8.1 model: Program Session + Speaker + atama (migration ayrı)",
+  "rollback": "Yalnız F8-01 packet, schema ekini ve model testini geri al; migration ve veriye dokunma",
+  "previous": ["F7-01"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "prisma/schema.prisma",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/11_YOL_HARITASI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F8-01.json",
+    "prisma/schema.prisma",
+    "tests/program-model.test.mjs"
+  ],
+  "acceptance": [
+    "Session event/occurrence bağı + zaman aralığı taşır",
+    "Speaker + SessionSpeaker ataması tanımlıdır"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/program-model.test.mjs"],
+    ["bun", "x", "prisma", "validate"]
+  ]
+}

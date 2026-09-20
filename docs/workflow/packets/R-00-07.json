@@ -1,5 +1,7 @@
 {
   "id": "R-00-07",
+  "lifecycle": "SUPERSEDED",
+  "supersededBy": "R-00-07B",
   "status": "READY",
   "timeboxMinutes": 15,
   "goal": "iYzico refund/cancel/chargeback provider sözleşmesini doğrulanmış capability ve event sınırıyla fail-closed hale getirmek",

@@ -1,0 +1,26 @@
+{
+  "id": "F1-03",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F1-1.2 politika: sessiz ilk-workspace seçimi kalkar, explicit organization context ve wrong-org 404 kuralı ADR olur",
+  "rollback": "Yalnız F1-03 packet ve ADR dosyasını geri al; auth kodu ve veriye dokunma",
+  "previous": ["F1-02"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/lib/auth.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/05_HEDEF_MIMARI.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F1-03.json",
+    "docs/adr/0003-org-context.md"
+  ],
+  "acceptance": [
+    "İlk aktif workspace sessiz seçilemez; seçim kullanıcı claim ile olur",
+    "Wrong-org kaynak isteği 404 verir; kural ADR'de yazılır"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["node", "scripts/local-ready.mjs"], ["node", "scripts/context-check.mjs"]]
+}

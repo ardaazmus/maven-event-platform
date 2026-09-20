@@ -1,0 +1,31 @@
+{
+  "id": "F9-02",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F9 kapanış süpürmesi: tüm yeni faz testleri + lint + typecheck tek koşuda yeşil",
+  "rollback": "Yalnız F9-02 packet, sweep script ve registry değişimini geri al; kod ve veriye dokunma",
+  "previous": [],
+  "previousNote": "F9-01 receipti registry dosyasının sweep-öncesi hashine işaret eder; registry F9-02'nin kendi değişimidir. F9-01 ADR+test kapsamı geçerliliğini korur.",
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "scripts/f9-sweep.mjs",
+    "docs/workflow/evidence-registry.json"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F9-02.json",
+    "scripts/f9-sweep.mjs",
+    "docs/workflow/evidence-registry.json"
+  ],
+  "acceptance": [
+    "Sweep tüm yeni faz testlerini exit 0 ile bitirir",
+    "Registry kapanış kaydı F9-sweep receiptine bağlanır"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "scripts/f9-sweep.mjs"]
+  ]
+}

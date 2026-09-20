@@ -1,0 +1,28 @@
+{
+  "id": "F0-05",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F0 sözlük dondurma: kanonik domain terimleri tek anlam + D-01..D-10 karar kaydı iskeleti",
+  "rollback": "Yalnız F0-05 packet, domain dictionary ve ADR dosyasını geri al; kod ve veriye dokunma",
+  "previous": ["F0-04"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/05_HEDEF_MIMARI.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/12_GELISTIRME_KONTROL_SISTEMI.md",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/13_RISK_VE_KARAR_KAYDI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F0-05.json",
+    "docs/domain-dictionary.md",
+    "docs/adr/0001-f0-kanonik-kararlar.md"
+  ],
+  "acceptance": [
+    "Domain terimi sözlükte tek anlam taşır",
+    "D-01..D-10 kararları ADR iskeletinde kayıtlıdır; değişiklik nedeni izlenir"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [["node", "scripts/local-ready.mjs"], ["node", "scripts/context-check.mjs"]]
+}

@@ -4,10 +4,23 @@ import { useEffect } from 'react'
 import { useApp } from '@/lib/store'
 import { api, getStoredToken } from '@/lib/api-client'
 import type { SessionContext } from '@/lib/types'
+import { EventBar } from '@/components/mavenforms/event-bar'
 import { Sidebar } from '@/components/mavenforms/sidebar'
 import { TopBar } from '@/components/mavenforms/topbar'
 import { LoginView } from '@/components/mavenforms/views/login-view'
 import { DashboardView } from '@/components/mavenforms/views/dashboard-view'
+import { EventListView } from '@/components/mavenforms/views/event-list-view'
+import { RegistrationInboxView } from '@/components/mavenforms/views/registration-inbox-view'
+import { EventDashboardView } from '@/components/mavenforms/views/event-dashboard-view'
+import { ProgramView } from '@/components/mavenforms/views/program-view'
+import { AbstractView } from '@/components/mavenforms/views/abstract-view'
+import { SponsorView } from '@/components/mavenforms/views/sponsor-view'
+import { SurveyView } from '@/components/mavenforms/views/survey-view'
+import { NetworkView } from '@/components/mavenforms/views/network-view'
+import { BadgeStudioView } from '@/components/mavenforms/views/badge-studio-view'
+import { CheckinView } from '@/components/mavenforms/views/checkin-view'
+import { FloorView } from '@/components/mavenforms/views/floor-view'
+import { FinanceView } from '@/components/mavenforms/views/finance-view'
 import { FormsListView } from '@/components/mavenforms/views/forms-list-view'
 import { FormBuilderView } from '@/components/mavenforms/views/form-builder-view'
 import { SubmissionsView } from '@/components/mavenforms/views/submissions-view'
@@ -85,8 +98,21 @@ export function AppShell() {
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <TopBar />
+        <EventBar />
         <main className="min-h-0 min-w-0 flex-1 overflow-auto">
           {view === 'dashboard' && <DashboardView />}
+          {view === 'events' && <EventListView />}
+          {view === 'program' && <ProgramView />}
+          {view === 'abstracts' && <AbstractView />}
+          {view === 'sponsors' && <SponsorView />}
+          {view === 'surveys' && <SurveyView />}
+          {view === 'network' && <NetworkView />}
+          {view === 'registrations' && <RegistrationInboxView />}
+          {view === 'event-dashboard' && <EventDashboardView />}
+          {view === 'badges' && <BadgeStudioView />}
+          {view === 'checkin' && <CheckinView />}
+          {view === 'floor' && <FloorView />}
+          {view === 'finance' && <FinanceView />}
           {view === 'forms' && <FormsListView />}
           {view === 'builder' && <FormBuilderView />}
           {view === 'submissions' && <SubmissionsView />}

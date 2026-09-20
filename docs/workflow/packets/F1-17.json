@@ -1,0 +1,32 @@
+{
+  "id": "F1-17",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F1-1.5 orchestration: bağlı formun public submission aynı transactionda Person eşleşme + Registration + history üretir",
+  "rollback": "Yalnız F1-17 packet, submission route eki ve testi geri al; schema ve veriye dokunma",
+  "previous": ["F1-16"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/public/forms/[slug]/submissions/route.ts",
+    "src/lib/policy.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F1-17.json",
+    "src/app/api/public/forms/[slug]/submissions/route.ts",
+    "tests/registration-orchestration.test.mjs"
+  ],
+  "acceptance": [
+    "Bağlı forma public submit 200 + registration event/person ile oluşur",
+    "Bağsız forma submit registration üretmez; dual-write yok, tek transaction"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/registration-orchestration.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

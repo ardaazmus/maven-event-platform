@@ -1,0 +1,32 @@
+{
+  "id": "F3-06",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F3-3.1 approve: POST /api/invoice-requests/[id]/approve request→approved + Invoice data_review oluşturur",
+  "rollback": "Yalnız F3-06 packet, approve route ve testi geri al; schema ve veriye dokunma",
+  "previous": ["F3-05"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/invoice-requests/route.ts",
+    "src/lib/policy.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/08_FATURA_EBELGE.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F3-06.json",
+    "src/app/api/invoice-requests/[id]/approve/route.ts",
+    "tests/invoice-approve.test.mjs"
+  ],
+  "acceptance": [
+    "Approve 201 invoice data_review + request approved yapar",
+    "Tekrar approve 409 döner"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/invoice-approve.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "id": "F4-07",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F4-4.2 binding: GET /api/tickets/[id]/badge credential snapshot + katılımcı/event görünen verisi döner",
+  "rollback": "Yalnız F4-07 packet, badge route ve testi geri al; schema ve veriye dokunma",
+  "previous": ["F4-06"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/registrations/[id]/ticket/route.ts",
+    "src/lib/policy.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F4-07.json",
+    "src/app/api/tickets/[id]/badge/route.ts",
+    "tests/ticket-badge.test.mjs"
+  ],
+  "acceptance": [
+    "Badge 200 qrCode + person/event snapshot döner",
+    "Başka workspace ticket 404, anon 401 döner"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/ticket-badge.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

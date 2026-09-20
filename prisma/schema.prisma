@@ -80,8 +80,32 @@ model Workspace {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  members                    WorkspaceMember[]
-  folders                    Folder[]
+  members       WorkspaceMember[]
+  events        Event[]
+  persons       Person[]
+  registrations Registration[]
+  formBindings  EventFormBinding[]
+  orders        Order[]
+  payments      Payment[]
+  invoiceRequests InvoiceRequest[]
+  invoices      Invoice[]
+  invoiceRelations InvoiceRelation[]
+  invoiceDeliveries InvoiceDelivery[]
+  tickets       Ticket[]
+  credentials   Credential[]
+  checkIns      CheckInEvent[]
+  idMappings    ExternalIdMapping[]
+  planBindings  FloorPlanBinding[]
+  holds         InventoryHold[]
+  checkoutIntents CheckoutIntent[]
+  sessions      ProgramSession[]
+  speakers      Speaker[]
+  abstracts     Abstract[]
+  sponsors      Sponsor[]
+  surveys       Survey[]
+  leads         Lead[]
+  connections   Connection[]
+  folders       Folder[]
   tags                       Tag[]
   forms                      Form[]
   themes                     Theme[]
@@ -141,6 +165,285 @@ model DangerousActionChallenge {
 
   @@index([workspaceId, userId, action, createdAt])
   @@index([expiresAt, consumedAt])
+}
+
+// ============ EVENT CORE (F1) ============
+
+model Event {
+  id          String   @id @default(cuid())
+  workspaceId String
+  title       String
+  description String?
+  timezone    String   @default("Europe/Istanbul")
+  status      String   @default("draft") // draft, published, archived
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace   Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  occurrences EventOccurrence[]
+  abstracts   Abstract[]
+  sponsors    Sponsor[]
+  surveys     Survey[]
+  leads       Lead[]
+  connections Connection[]
+  registrations Registration[]
+  formBindings  EventFormBinding[]
+  orders        Order[]
+  tickets       Ticket[]
+  planBindings  FloorPlanBinding[]
+  holds         InventoryHold[]
+  sessions      ProgramSession[]
+
+  @@index([workspaceId, status])
+}
+
+model EventOccurrence {
+  id        String   @id @default(cuid())
+  eventId   String
+  venue     String?
+  hall      String?
+  startsAt  DateTime
+  endsAt    DateTime
+  timezone  String   @default("Europe/Istanbul")
+  status    String   @default("scheduled") // scheduled, cancelled
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  checkIns CheckInEvent[]
+  sessions ProgramSession[]
+
+  @@index([eventId, startsAt])
+}
+
+model Person {
+  id          String   @id @default(cuid())
+  workspaceId String
+  fullName    String
+  email       String?
+  phone       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace     Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  registrations Registration[]
+
+  @@index([workspaceId])
+}
+
+model Registration {
+  id               String   @id @default(cuid())
+  workspaceId      String
+  eventId          String
+  personId         String
+  formId           String?
+  formVersionId    String?
+  formSnapshot     String   @default("{}")
+  status           String   @default("submitted") // draft, submitted, pending_review, confirmed, rejected, waitlisted, cancelled
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  workspace Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  event     Event                 @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  person    Person                @relation(fields: [personId], references: [id], onDelete: Cascade)
+  history   RegistrationHistory[]
+  ticket    Ticket?
+
+  @@index([workspaceId, eventId])
+  @@index([personId])
+}
+
+model RegistrationHistory {
+  id             String   @id @default(cuid())
+  registrationId String
+  fromStatus     String?
+  toStatus       String
+  actorId        String?
+  createdAt      DateTime @default(now())
+
+  registration Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+
+  @@index([registrationId, createdAt])
+}
+
+// ============ TICKET & CREDENTIAL (F4) ============
+// Badge check-in değildir; Ticket hak, Credential QR kimliğidir.
+
+model Ticket {
+  id             String   @id @default(cuid())
+  workspaceId    String
+  eventId        String
+  registrationId String   @unique
+  code           String   @unique
+  status         String   @default("issued") // issued, checked_in, cancelled
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  workspace    Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  event        Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  registration Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  credential   Credential?
+  holds        InventoryHold[]
+
+  @@index([workspaceId, eventId])
+}
+
+model Credential {
+  id          String   @id @default(cuid())
+  workspaceId String
+  ticketId    String   @unique
+  qrCode      String   @unique
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  ticket    Ticket    @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  checkIns  CheckInEvent[]
+
+  @@index([workspaceId])
+}
+
+model CheckInEvent {
+  id            String   @id @default(cuid())
+  workspaceId   String
+  credentialId  String
+  occurrenceId  String?
+  gate          String?
+  deviceId      String?
+  operatorId    String?
+  direction     String   @default("entry") // entry, exit
+  occurredAt    DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  workspace  Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  credential Credential       @relation(fields: [credentialId], references: [id], onDelete: Cascade)
+  occurrence EventOccurrence? @relation(fields: [occurrenceId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, occurredAt])
+  @@index([credentialId, occurredAt])
+}
+
+// ============ EXTERNAL ID MAPPING (F5) ============
+// EFPS ve diğer kaynak sistemlerin core kimlik eşlemesi. Yeni write core API üzerinden.
+
+model ExternalIdMapping {
+  id           String   @id @default(cuid())
+  workspaceId  String
+  sourceSystem String   // efps, import
+  sourceType   String   // event, attendee, venue
+  sourceId     String
+  coreType     String   // event, person, registration
+  coreId       String
+  createdAt    DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, sourceSystem, sourceType, sourceId])
+  @@index([coreType, coreId])
+}
+
+// ============ PROGRAM (F8) ============
+
+model ProgramSession {
+  id           String   @id @default(cuid())
+  workspaceId  String
+  eventId      String
+  occurrenceId String?
+  title        String
+  startsAt     DateTime
+  endsAt       DateTime
+  room         String?
+  createdAt    DateTime @default(now())
+
+  workspace  Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  event      Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  occurrence EventOccurrence?  @relation(fields: [occurrenceId], references: [id], onDelete: SetNull)
+  speakers   SessionSpeaker[]
+
+  @@index([workspaceId, eventId])
+}
+
+model Speaker {
+  id          String   @id @default(cuid())
+  workspaceId String
+  fullName    String
+  title       String?
+  createdAt   DateTime @default(now())
+
+  workspace Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  sessions  SessionSpeaker[]
+
+  @@index([workspaceId])
+}
+
+model SessionSpeaker {
+  sessionId String
+  speakerId String
+
+  session ProgramSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  speaker Speaker        @relation(fields: [speakerId], references: [id], onDelete: Cascade)
+
+  @@id([sessionId, speakerId])
+}
+
+// ============ FLOOR PLAN BINDING (F5) ============
+// Geometri EFPS otoritesinde; core yalnızca bağ ve sürüm tutar.
+
+model FloorPlanBinding {
+  id              String   @id @default(cuid())
+  workspaceId     String
+  eventId         String
+  externalPlanId  String
+  planVersion     Int      @default(1)
+  status          String   @default("active") // active, superseded
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  event     Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, externalPlanId])
+  @@index([workspaceId, eventId])
+}
+
+// ============ INVENTORY HOLD (F5) ============
+// Süreli hold; TTL dolunca release. Booking ayrı fazdadır.
+
+model InventoryHold {
+  id               String   @id @default(cuid())
+  workspaceId      String
+  eventId          String
+  spaceRef         String   // seat/booth external reference
+  holdToken        String   @unique
+  orderId          String?
+  assignedTicketId String?
+  status           String   @default("held") // held, booked, released, expired
+  expiresAt        DateTime
+  createdAt        DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  event     Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  order     Order?    @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  ticket    Ticket?   @relation(fields: [assignedTicketId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, eventId, status])
+  @@index([expiresAt, status])
+}
+
+model EventFormBinding {
+  id          String   @id @default(cuid())
+  workspaceId String
+  eventId     String
+  formId      String
+  purpose     String   @default("registration") // registration, survey
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  event     Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  form      Form      @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, formId])
+  @@index([workspaceId, eventId])
 }
 
 // ============ FOLDERS & TAGS ============
@@ -224,6 +527,7 @@ model Form {
   outboxEvents  OutboxEvent[]
   paymentOrders PaymentOrder[]
   paymentConfig FormPaymentConfig?
+  formBindings  EventFormBinding[]
 
   @@index([workspaceId, status])
   @@index([workspaceId, deletedAt])
@@ -342,6 +646,99 @@ model Submission {
   @@index([formId, status])
 }
 
+// ============ ORDER (F2) ============
+// Canonical alacak/borç aggregate. Tutarlar minor-unit + ISO currency.
+// Order total, item snapshot toplamıdır; katalogdan tekrar hesaplanmaz.
+
+model Order {
+  id            String   @id @default(cuid())
+  workspaceId   String
+  eventId       String?
+  customerName  String?
+  currency      String   @default("TRY")
+  status        String   @default("draft") // draft, open, partially_paid, paid, fulfilled, cancelled
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  workspace Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  event     Event?      @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  items     OrderItem[]
+  allocations PaymentAllocation[]
+  invoiceRequests InvoiceRequest[]
+  invoices      Invoice[]
+  checkoutIntents CheckoutIntent[]
+  holds         InventoryHold[]
+
+  @@index([workspaceId, status])
+  @@index([eventId])
+}
+
+model OrderItem {
+  id                  String @id @default(cuid())
+  orderId             String
+  description         String
+  quantity            Int    @default(1)
+  unitAmountMinor     Int
+  taxAmountMinor      Int    @default(0)
+  discountAmountMinor Int    @default(0)
+  currency            String @default("TRY")
+  snapshotJson        String @default("{}") // price/tax/discount snapshot
+  createdAt           DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+}
+
+// ============ PAYMENT LEDGER (F2) ============
+// Immutable finans hareketi. Confirmed hareket güncellenmez; düzeltme reversal ile yapılır.
+
+model Payment {
+  id             String   @id @default(cuid())
+  workspaceId    String
+  orderId        String?
+  payerName      String?
+  currency       String   @default("TRY")
+  amountMinor    Int
+  method         String   // bank_transfer, cash, cheque, po, external_pos, provider
+  source         String   @default("manual") // manual, provider
+  valueDate      DateTime @default(now())
+  reference      String?
+  status         String   @default("recorded") // recorded, under_review, confirmed, rejected, reversed, refunded
+  recorderId     String
+  approverId     String?
+  evidenceHash   String?
+  idempotencyKey String   @unique
+  reversalOfId   String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  workspace   Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  allocations PaymentAllocation[]
+  reversalOf  Payment?  @relation("PaymentReversal", fields: [reversalOfId], references: [id])
+  reversals   Payment[] @relation("PaymentReversal")
+
+  @@index([workspaceId, status])
+  @@index([orderId])
+}
+
+model PaymentAllocation {
+  id          String   @id @default(cuid())
+  paymentId   String
+  orderId     String
+  amountMinor Int
+  reversalOfId String?
+  createdAt   DateTime @default(now())
+
+  payment  Payment   @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  order    Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  reversal PaymentAllocation?  @relation("AllocationReversal", fields: [reversalOfId], references: [id])
+  reversals PaymentAllocation[] @relation("AllocationReversal")
+
+  @@index([paymentId])
+  @@index([orderId])
+}
+
 // ============ PAYMENT ORDER FOUNDATION (PAY-02A) ============
 // Provider-neutral internal payment records. Provider credentials, webhooks,
 // and payout/split records are intentionally modeled in later payment phases.
@@ -376,6 +773,122 @@ model PaymentOrder {
   @@index([submissionId])
   @@index([status, createdAt])
   @@index([provider, mode, providerOrderId])
+}
+
+// ============ INVOICE REQUEST (F3) ============
+// Manuel fatura talebi. PII şifreli alanlarda tutulur; log/export varsayılanı değildir.
+
+model InvoiceRequest {
+  id                    String   @id @default(cuid())
+  workspaceId           String
+  orderId               String?
+  recipientType         String   // individual, corporate
+  legalNameEncrypted    String?
+  taxNumberEncrypted    String?
+  taxOfficeEncrypted    String?
+  identityNumberEncrypted String?
+  emailEncrypted        String?
+  billingAddressEncrypted String?
+  countryCode           String   @default("TR")
+  lineSnapshotJson      String   @default("[]")
+  status                String   @default("requested") // requested, data_review, approved, rejected
+  requestedById         String
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  order     Order?    @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  invoices  Invoice[]
+
+  @@index([workspaceId, status])
+  @@index([orderId])
+}
+
+// ============ INVOICE AGGREGATE (F3) ============
+// PaymentOrder unique bağından bağımsız kanonik mali belge.
+
+model Invoice {
+  id           String   @id @default(cuid())
+  workspaceId  String
+  requestId    String?
+  orderId      String?
+  number       String?
+  uuid         String?
+  type         String   @default("sales") // sales, cancel, credit, debit, replacement
+  currency     String   @default("TRY")
+  totalMinor   Int      @default(0)
+  status       String   @default("requested") // requested, data_review, approved_for_issue, issued, delivered, rejected, cancelled, credited, replaced
+  issuedAt     DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  workspace Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  request   InvoiceRequest? @relation(fields: [requestId], references: [id], onDelete: SetNull)
+  order     Order?          @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  relationsFrom InvoiceRelation[] @relation("RelationSource")
+  relationsTo   InvoiceRelation[] @relation("RelationTarget")
+  deliveries    InvoiceDelivery[]
+  documents     MediaAsset[]
+
+  @@index([workspaceId, status])
+  @@index([orderId])
+}
+
+model InvoiceRelation {
+  id              String   @id @default(cuid())
+  workspaceId     String
+  sourceInvoiceId String
+  targetInvoiceId String
+  type            String   // cancel, credit, debit, replacement
+  createdAt       DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  source    Invoice   @relation("RelationSource", fields: [sourceInvoiceId], references: [id], onDelete: Cascade)
+  target    Invoice   @relation("RelationTarget", fields: [targetInvoiceId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceInvoiceId, targetInvoiceId, type])
+  @@index([workspaceId])
+}
+
+// ============ CHECKOUT INTENT (F6) ============
+// Kart verisi platforma girmez; tutar server order snapshotından hesaplanır.
+
+model CheckoutIntent {
+  id             String   @id @default(cuid())
+  workspaceId    String
+  orderId        String
+  provider       String   @default("iyzico") // iyzico, stripe
+  mode           String   @default("test") // test, live
+  currency       String   @default("TRY")
+  amountMinor    Int
+  idempotencyKey String   @unique
+  status         String   @default("created") // created, redirecting, succeeded, failed, canceled
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  order     Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, status])
+  @@index([orderId])
+}
+
+model InvoiceDelivery {
+  id             String   @id @default(cuid())
+  workspaceId    String
+  invoiceId      String
+  channel        String   // email, manual
+  idempotencyKey String   @unique
+  status         String   @default("queued") // queued, sent, failed
+  sentAt         DateTime?
+  lastError      String?
+  createdAt      DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  invoice   Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, status])
+  @@index([invoiceId])
 }
 
 // ============ INVOICE RECIPIENT SNAPSHOT (INV/F M-00) ============
@@ -978,6 +1491,7 @@ model MediaAsset {
   id           String   @id @default(cuid())
   workspaceId  String
   formId       String?
+  invoiceId    String?
   storageKey   String   @unique
   publicUrl    String?
   originalName String
@@ -995,10 +1509,12 @@ model MediaAsset {
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   form      Form?     @relation(fields: [formId], references: [id], onDelete: SetNull)
+  invoice   Invoice?  @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
   creator   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
 
   @@index([workspaceId, formId])
   @@index([checksum])
+  @@index([invoiceId])
 }
 
 // ============ OUTBOX EVENT (M10.2) ============
@@ -1006,8 +1522,15 @@ model MediaAsset {
 model OutboxEvent {
   id                String    @id @default(cuid())
   workspaceId       String
-  formId            String
-  submissionId      String
+  formId            String?
+  submissionId      String?
+  eventType         String?
+  eventId           String?
+  schemaVersion     Int       @default(1)
+  aggregateType     String?
+  aggregateId       String?
+  correlationId     String?
+  causationId       String?
   type              String // email, webhook
   provider          String?
   providerMessageId String?
@@ -1025,7 +1548,7 @@ model OutboxEvent {
   sentAt            DateTime?
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  form      Form      @relation(fields: [formId], references: [id], onDelete: Cascade)
+  form      Form?     @relation(fields: [formId], references: [id], onDelete: Cascade)
   invoiceDeliveryIntent InvoiceDeliveryIntent?
 
   @@index([status, availableAt])
@@ -1166,4 +1689,133 @@ model WorkspaceBranding {
   workspace         Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId])
+}
+
+// ============ ABSTRACT / REVIEW (F8) ============
+model Abstract {
+  id          String   @id @default(cuid())
+  workspaceId String
+  eventId     String
+  authorName  String
+  title       String
+  body        String
+  status      String   @default("submitted") // submitted, accepted, rejected
+  createdAt   DateTime @default(now())
+
+  workspace Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  event     Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  reviews   AbstractReview[]
+
+  @@index([workspaceId, eventId])
+}
+
+model AbstractReview {
+  id          String   @id @default(cuid())
+  workspaceId String
+  abstractId  String
+  reviewerId  String
+  score       Int
+  comment     String?
+  createdAt   DateTime @default(now())
+
+  abstract Abstract @relation(fields: [abstractId], references: [id], onDelete: Cascade)
+
+  @@index([abstractId])
+}
+
+// ============ SPONSOR / EXHIBITOR (F8) ============
+model Sponsor {
+  id          String   @id @default(cuid())
+  workspaceId String
+  eventId     String
+  name        String
+  tier        String   @default("standard") // platinum, gold, silver, standard
+  website     String?
+  createdAt   DateTime @default(now())
+
+  workspace Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  event     Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  booths    SponsorBooth[]
+
+  @@index([workspaceId, eventId])
+}
+
+model SponsorBooth {
+  id          String   @id @default(cuid())
+  workspaceId String
+  sponsorId   String
+  code        String
+  zone        String?
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  sponsor Sponsor @relation(fields: [sponsorId], references: [id], onDelete: Cascade)
+
+  @@unique([sponsorId, code])
+  @@index([workspaceId])
+}
+
+// ============ SURVEY (F8) ============
+model Survey {
+  id          String   @id @default(cuid())
+  workspaceId String
+  eventId     String
+  title       String
+  description String?
+  status      String   @default("draft") // draft, published, closed
+  createdAt   DateTime @default(now())
+
+  workspace Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  event     Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  responses SurveyResponse[]
+
+  @@index([workspaceId, eventId])
+}
+
+model SurveyResponse {
+  id            String   @id @default(cuid())
+  workspaceId   String
+  surveyId      String
+  respondentName String?
+  answersJson   String
+  createdAt     DateTime @default(now())
+
+  survey Survey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+
+  @@index([surveyId])
+}
+
+// ============ NETWORKING / LEAD (F8) ============
+model Lead {
+  id          String   @id @default(cuid())
+  workspaceId String
+  eventId     String
+  ownerId     String
+  fullName    String
+  company     String?
+  email       String?
+  note        String?
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  event     Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, eventId])
+  @@index([ownerId])
+}
+
+model Connection {
+  id                String   @id @default(cuid())
+  workspaceId       String
+  eventId           String
+  requesterPersonId String
+  targetPersonId    String
+  status            String   @default("pending") // pending, accepted, declined
+  createdAt         DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  event     Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, requesterPersonId, targetPersonId])
+  @@index([workspaceId, eventId])
 }

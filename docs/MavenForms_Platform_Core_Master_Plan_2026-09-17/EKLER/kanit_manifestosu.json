@@ -1,0 +1,26 @@
+{
+  "report_date": "2026-09-17",
+  "source_zip": "/workspace/scratch/af977548bc0b/upload/mavenform-main-son.zip",
+  "source_zip_sha256": "9943a87ee88e0d55cd4dff1c936c5411c22194024a6e58ca8bb1ce60e19a1232",
+  "mavenforms_metrics": {
+    "prisma_models": 49,
+    "api_routes": 70,
+    "test_files": 456,
+    "typescript_files": 389
+  },
+  "local_checks": [
+    {
+      "command": "node --experimental-strip-types --test selected files",
+      "result": "4 pass, 1 harness resolution failure"
+    },
+    {
+      "command": "node scripts/context-check.mjs",
+      "result": "BLOCKED: missing scripts/local-ready.mjs"
+    },
+    {
+      "command": "build/lint/typecheck",
+      "result": "not run; node_modules absent"
+    }
+  ],
+  "production_claim": "NO-GO; consistent with repository STATUS.md"
+}

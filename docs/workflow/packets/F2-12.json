@@ -1,0 +1,32 @@
+{
+  "id": "F2-12",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F2-2.5 özet: GET /api/finance/summary ledger toplamları (tahsil/açık/kısmi/incelemede/iade/dağıtılmamış)",
+  "rollback": "Yalnız F2-12 packet, finance route ve testi geri al; schema ve veriye dokunma",
+  "previous": ["F2-11"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/orders/route.ts",
+    "src/lib/policy.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/07_MANUEL_ODEME.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F2-12.json",
+    "src/app/api/finance/summary/route.ts",
+    "tests/finance-summary.test.mjs"
+  ],
+  "acceptance": [
+    "Özet değerleri DB ledger sorgusundan gelir; sabit sayı yok",
+    "Anon 401, yetkisiz rol 403 döner"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/finance-summary.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

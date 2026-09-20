@@ -1,0 +1,33 @@
+{
+  "id": "F1-08",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F1 event detail: GET /api/events/[id] occurrences ile + assertEventReadable 404; anon 401",
+  "rollback": "Yalnız F1-08 packet, detail route ve testi geri al; schema ve veriye dokunma",
+  "previous": ["F1-07"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/events/route.ts",
+    "src/lib/event-scope.ts",
+    "src/lib/policy.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/06_KANONIK_VERI_MODELI.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F1-08.json",
+    "src/app/api/events/[id]/route.ts",
+    "tests/event-detail.test.mjs"
+  ],
+  "acceptance": [
+    "Detail kendi workspace eventini occurrences ile döner",
+    "Başka workspace id 404, anon 401 döner"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/event-detail.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

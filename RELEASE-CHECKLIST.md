@@ -1,26 +1,15 @@
-# Release Checklist — MavenForms (Pilot)
+# Historical compatibility bridge — eski release checklist
 
-**Artifact:** `next build` 0, `prisma migrate deploy` up to date, `health/ready` 200
-**Date:** 2026-09-01 20:20 +03 Europe/Istanbul
-**Decision:** GO_WITH_CAVEATS — tek-instance pilot
+> **LEGACY / NON-NORMATIVE:** Bu dosya tek başına release kanıtı değildir.
 
-## Gates
-- [x] M00 lint 0 tsc 0 build 0, smoke login/me/public 200, backup sha256 9faab...
-- [x] M01 DTO forbidden 0, IDOR 404, preview 403/401, policy viewer 403/owner 200, session docs/SESSION-POLICY.md
-- [x] M02 transaction atomic, crypto token, HMAC ip/ua, validation, migrate 20260901201631_baseline_init, backup restore SQLite OK
-- [x] M03 publish version + sanitizePublicForm parity
-- [x] M04 dnd-kit basic + bounded Grid/Bento field layout (nested container intentionally out of scope)
-- [x] M05 card 16:9 + Ayarlar, M06 iframe referrer origin + wordpress plugin stub
-- [x] M07 outbox enqueue after commit + processOutboxOnce (ponytail: DB table when volume), file 5MB/type check, integrations redacted
-- [x] M08 health 200 ready 200 (SELECT 1), Caddy :81, middleware x-request-id, backup drill
-- [x] M09 perf p95 16ms err 0 (40 samples), security: IDOR/preview/forbidden 0, a11y: label/required/alt present
-- [x] M10 staging: local prod build smoke pass (see health/ready), rollback: previous .next artifact + db backup
+Özgün checklist:
 
-## Caveats (NO-GO for public SaaS until)
-- Bounded Grid/Bento responsive + template isolation tam E2E yok
-- Mail/webhook gerçek provider + retry dead-letter Dashboard yok (in-memory outbox)
-- Playwright E2E harness yok (manuel smoke var)
-- Staging canary ayrı ortamda değil, aynı DB üzerinde
+- [`docs/legacy/root-docs/RELEASE-CHECKLIST.md`](docs/legacy/root-docs/RELEASE-CHECKLIST.md)
 
-## Rollback
-`db/backup-*.db` + `prisma migrate deploy` önceki migration, `start.sh` önceki tar.gz
+Güncel release truth:
+
+- [`STATUS.md`](STATUS.md)
+- [`16_KANONIK_KAYNAK_VE_MIGRASYON_POLITIKASI_2026-09-18.md`](docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/16_KANONIK_KAYNAK_VE_MIGRASYON_POLITIKASI_2026-09-18.md)
+- ilgili `artifacts/workflow/<PACKET>/verified.json`
+
+Build, public snapshot, media upload private, WordPress, outbox, E2E ve backup restore kontrolleri geçmiş kayıtlar olarak korunur; bunların herhangi birinin yerel sonucu canlı provider, staging, AV/quarantine veya production onayı değildir.

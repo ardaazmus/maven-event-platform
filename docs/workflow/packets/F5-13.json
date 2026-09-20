@@ -1,0 +1,32 @@
+{
+  "id": "F5-13",
+  "status": "READY",
+  "timeboxMinutes": 15,
+  "goal": "F5 sweep: POST /api/inventory-sweeps TTL dolmuş held satırları expired yapar",
+  "rollback": "Yalnız F5-13 packet, sweeps route ve testi geri al; schema ve veriye dokunma",
+  "previous": ["F5-12"],
+  "reads": [
+    "AGENTS.md",
+    "PROJECT_CONTEXT.md",
+    "STATUS.md",
+    "src/app/api/events/[id]/holds/route.ts",
+    "src/lib/policy.ts",
+    "docs/MavenForms_Platform_Core_Master_Plan_2026-09-17/09_FLOOR_EDITOR_ENTEGRASYONU.md"
+  ],
+  "allowedFiles": [
+    "docs/workflow/packets/F5-13.json",
+    "src/app/api/inventory-sweeps/route.ts",
+    "tests/inventory-sweep.test.mjs"
+  ],
+  "acceptance": [
+    "Sweep expired sayısını döner ve held satırları expired olur",
+    "Booked satırlar etkilenmez"
+  ],
+  "preflight": [["node", "scripts/local-ready.mjs"]],
+  "checks": [
+    ["node", "scripts/local-ready.mjs"],
+    ["node", "scripts/context-check.mjs"],
+    ["bun", "tests/inventory-sweep.test.mjs"],
+    ["node", "node_modules/typescript/bin/tsc", "--noEmit"]
+  ]
+}

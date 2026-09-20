@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useApp } from '@/lib/store'
 import { api } from '@/lib/api-client'
 import type { FormListItem } from '@/lib/types'
 import { Card } from '@/components/ui/card'
@@ -87,10 +88,23 @@ export function ReportsView() {
   const [data, setData] = useState<ReportData | null>(null)
   const [loading, setLoading] = useState(true)
   const [days, setDays] = useState(30)
+  const selectedEventId = useApp((s) => s.selectedEventId)
 
   useEffect(() => {
-    api<FormListItem[]>('/api/forms').then((f) => {
+    api<FormListItem[]>('/api/forms').then(async (f) => {
       setForms(f)
+      if (selectedEventId) {
+        try {
+          const bound = await api<Array<{ form: { id: string } }>>(`/api/events/${encodeURIComponent(selectedEventId)}/bindings`)
+          const firstBound = (Array.isArray(bound) ? bound : []).map((b) => b.form.id).find((id) => f.some((form) => form.id === id))
+          if (firstBound) {
+            setSelectedForm(firstBound)
+            return
+          }
+        } catch {
+          // ignore: fallback asagida
+        }
+      }
       if (f.length > 0 && !selectedForm) setSelectedForm(f[0].id)
     })
   }, [])
